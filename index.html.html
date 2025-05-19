@@ -1,0 +1,800 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>永續商店地圖 - 首頁</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f7f4;
+        }
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        .tag {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+        .tag.active {
+            background-color: #16a34a;
+            color: white;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+        .shop-card {
+            transition: all 0.3s ease;
+        }
+        .shop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .shop-detail-header {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 比例 */
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        /* 確保地圖容器有正確的z-index和定位 */
+        .map-container {
+            position: relative;
+            z-index: 10; /* 確保地圖不會超出其容器 */
+            overflow: hidden;
+        }
+        /* 修正地圖控制項的z-index */
+        .leaflet-control-container {
+            z-index: 10;
+        }
+        /* 確保彈出視窗的z-index高於地圖 */
+        .modal {
+            z-index: 100;
+        }
+        /* 確保地圖在彈出視窗中正確顯示 */
+        .shop-map {
+            position: relative;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <a href="#" class="text-2xl font-bold text-gray-800">永續商店地圖</a>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="text-gray-700 hover:text-green-600 transition">首頁</a>
+                <a href="#map" class="text-gray-700 hover:text-green-600 transition">地圖</a>
+                <a href="#shops" class="text-gray-700 hover:text-green-600 transition">商店列表</a>
+                <a href="#newsletter" class="text-gray-700 hover:text-green-600 transition">訂閱電子報</a>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-4 py-2 bg-white">
+            <a href="#" class="block py-2 text-gray-700 hover:text-green-600">首頁</a>
+            <a href="#map" class="block py-2 text-gray-700 hover:text-green-600">地圖</a>
+            <a href="#shops" class="block py-2 text-gray-700 hover:text-green-600">商店列表</a>
+            <a href="#newsletter" class="block py-2 text-gray-700 hover:text-green-600">訂閱電子報</a>
+        </div>
+    </nav>
+
+    <!-- 英雄區塊 -->
+    <section class="hero-section py-20 md:py-32 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">探索台灣永續商店</h1>
+            <p class="text-xl max-w-2xl mx-auto mb-8">找到支持環保、公平貿易和永續發展的商店，一起為地球盡一份心力</p>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <a href="#map" class="btn-primary px-8 py-3 rounded-lg font-medium">查看地圖</a>
+                <a href="#shops" class="bg-white text-green-600 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition">瀏覽商店列表</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 搜尋和篩選區塊 -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold mb-4">搜尋永續商店</h2>
+                        <div class="flex">
+                            <input type="text" placeholder="輸入商店名稱或地址..." class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <button class="btn-primary px-6 py-3 rounded-r-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium mb-3">依類別篩選</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="tag px-3 py-1 rounded-full text-sm active">全部</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm">服飾</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm">食品</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm">咖啡廳</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm">家居用品</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm">無包裝商店</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm">二手商店</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 地圖區塊 -->
+    <section id="map" class="py-12 bg-green-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">永續商店地圖</h2>
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="map-container">
+                    <div id="sustainability-map" class="h-96 md:h-[500px] w-full"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 商店列表區塊 -->
+    <section id="shops" class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">永續商店列表</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 綠好物商店卡片 -->
+                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="h-48 bg-green-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold">綠好物</h3>
+                            <span class="tag px-2 py-1 rounded-full text-xs">家居用品</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">提供環保、永續的生活用品，致力於推廣零廢棄生活方式。</p>
+                        <div class="mb-4">
+                            <div class="flex items-center text-gray-600 text-sm mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                106台北市大安區信義路四段187之2號
+                            </div>
+                            <div class="flex items-center text-gray-600 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                週一至三、五 11:00-19:00，週四 12:00-19:00
+                            </div>
+                        </div>
+                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('eco-goodies')">查看詳情</button>
+                    </div>
+                </div>
+
+                <!-- 商店卡片 1 -->
+                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="h-48 bg-green-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold">Green Boutique</h3>
+                            <span class="tag px-2 py-1 rounded-full text-xs">服飾</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">臺北的永續時尚服飾店，提供環保、有機材料製成的服飾。</p>
+                        <div class="mb-4">
+                            <div class="flex items-center text-gray-600 text-sm mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                106台北市大安區大安路一段51巷23-4號
+                            </div>
+                            <div class="flex items-center text-gray-600 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                12:30 - 21:00
+                            </div>
+                        </div>
+                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('green-boutique')">查看詳情</button>
+                    </div>
+                </div>
+
+                <!-- 商店卡片 2 -->
+                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="h-48 bg-green-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold">無包裝商店</h3>
+                            <span class="tag px-2 py-1 rounded-full text-xs">食品</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">專門提供無包裝、散裝商品的永續商店，自備容器購物，減少一次性包裝浪費。</p>
+                        <div class="mb-4">
+                            <div class="flex items-center text-gray-600 text-sm mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                110台北市信義區松山路123號
+                            </div>
+                            <div class="flex items-center text-gray-600 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                10:00 - 19:00
+                            </div>
+                        </div>
+                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('no-package')">查看詳情</button>
+                    </div>
+                </div>
+
+                <!-- 商店卡片 3 -->
+                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="h-48 bg-green-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold">綠色咖啡館</h3>
+                            <span class="tag px-2 py-1 rounded-full text-xs">咖啡廳</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">使用有機咖啡豆和環保餐具的咖啡館，提供素食選項，並支持公平貿易。</p>
+                        <div class="mb-4">
+                            <div class="flex items-center text-gray-600 text-sm mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                100台北市中正區羅斯福路二段45號
+                            </div>
+                            <div class="flex items-center text-gray-600 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                08:00 - 22:00
+                            </div>
+                        </div>
+                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('green-cafe')">查看詳情</button>
+                    </div>
+                </div>
+
+                <!-- 商店卡片 4 -->
+                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="h-48 bg-green-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold">環保家居用品店</h3>
+                            <span class="tag px-2 py-1 rounded-full text-xs">家居用品</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">提供環保清潔用品和可重複使用的家居用品，減少家庭生活中的環境足跡。</p>
+                        <div class="mb-4">
+                            <div class="flex items-center text-gray-600 text-sm mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                220新北市板橋區文化路78號
+                            </div>
+                            <div class="flex items-center text-gray-600 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                11:00 - 20:00
+                            </div>
+                        </div>
+                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('eco-home')">查看詳情</button>
+                    </div>
+                </div>
+
+                <!-- 商店卡片 5 -->
+                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="h-48 bg-green-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold">二手書店</h3>
+                            <span class="tag px-2 py-1 rounded-full text-xs">二手商店</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">專門收購和販售二手書籍，延長書籍的生命週期，減少資源浪費。</p>
+                        <div class="mb-4">
+                            <div class="flex items-center text-gray-600 text-sm mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                403台中市西區公益路155號
+                            </div>
+                            <div class="flex items-center text-gray-600 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                10:00 - 21:00
+                            </div>
+                        </div>
+                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('second-hand-books')">查看詳情</button>
+                    </div>
+                </div>
+
+                <!-- 商店卡片 6 -->
+                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="h-48 bg-green-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold">有機農產品店</h3>
+                            <span class="tag px-2 py-1 rounded-full text-xs">食品</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">販售本地有機農產品，支持小農經濟，減少食物里程，提供健康飲食選擇。</p>
+                        <div class="mb-4">
+                            <div class="flex items-center text-gray-600 text-sm mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                802高雄市苓雅區四維路99號
+                            </div>
+                            <div class="flex items-center text-gray-600 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                09:00 - 18:00
+                            </div>
+                        </div>
+                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('organic-farm')">查看詳情</button>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <button class="btn-primary px-8 py-3 rounded-lg font-medium">載入更多</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 訂閱電子報 -->
+    <section id="newsletter" class="py-12 bg-green-600 text-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl mx-auto text-center">
+                <h2 class="text-3xl font-bold mb-4">訂閱永續生活電子報</h2>
+                <p class="mb-6">獲取最新的永續商店資訊、環保生活技巧和特別優惠</p>
+                <div class="flex flex-col md:flex-row gap-2">
+                    <input type="email" placeholder="您的電子郵件" class="flex-1 px-4 py-3 rounded-lg text-gray-800 focus:outline-none">
+                    <button class="bg-white text-green-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition">訂閱</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 頁腳 -->
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">永續商店地圖</h3>
+                    <p class="text-gray-300">幫助消費者找到並支持永續發展的商店，一起為地球盡一份心力。</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">聯絡我們</h3>
+                    <p class="text-gray-300">有任何問題或建議，歡迎與我們聯繫</p>
+                    <p class="text-gray-300">電子郵件：info@sustainablemap.tw</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">關注我們</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white hover:text-green-400 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-white hover:text-green-400 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.066 9.645c.183 4.04-2.83 8.544-8.164 8.544-1.622 0-3.131-.476-4.402-1.291 1.524.18 3.045-.244 4.252-1.189-1.256-.023-2.317-.854-2.684-1.995.451.086.895.061 1.298-.049-1.381-.278-2.335-1.522-2.304-2.853.388.215.83.344 1.301.359-1.279-.855-1.641-2.544-.889-3.835 1.416 1.738 3.533 2.881 5.92 3.001-.419-1.796.944-3.527 2.799-3.527.825 0 1.572.349 2.096.907.654-.128 1.27-.368 1.824-.697-.215.671-.67 1.233-1.263 1.589.581-.07 1.135-.224 1.649-.453-.384.578-.87 1.084-1.433 1.489z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-white hover:text-green-400 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 永續商店地圖 - 版權所有</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 店家詳情彈出視窗 -->
+    <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden flex items-center justify-center modal">
+        <div class="bg-white rounded-xl max-w-4xl w-full mx-4 modal-content">
+            <div id="shop-detail-content" class="relative">
+                <!-- 詳情內容將通過JavaScript動態加載 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 移動端選單切換
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 等待DOM完全加載後再初始化地圖
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化地圖
+            const map = L.map('sustainability-map').setView([25.0330, 121.5654], 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // 添加商店標記
+            const shops = [
+                { id: "eco-goodies", name: "綠好物", lat: 25.0330, lng: 121.5500, type: "家居用品" }, // 綠好物的位置
+                { id: "green-boutique", name: "Green Boutique", lat: 25.0339, lng: 121.5432, type: "服飾" },
+                { id: "no-package", name: "無包裝商店", lat: 25.0378, lng: 121.5679, type: "食品" },
+                { id: "green-cafe", name: "綠色咖啡館", lat: 25.0248, lng: 121.5295, type: "咖啡廳" },
+                { id: "eco-home", name: "環保家居用品店", lat: 25.0141, lng: 121.4652, type: "家居用品" },
+                { id: "second-hand-books", name: "二手書店", lat: 24.1477, lng: 120.6736, type: "二手商店" },
+                { id: "organic-farm", name: "有機農產品店", lat: 22.6273, lng: 120.3014, type: "食品" }
+            ];
+            
+            shops.forEach(shop => {
+                const marker = L.marker([shop.lat, shop.lng]).addTo(map);
+                marker.bindPopup(`<b>${shop.name}</b><br>${shop.type}<br><a href="#" onclick="showShopDetail('${shop.id}'); return false;" class="text-green-600">查看詳情</a>`);
+            });
+        });
+
+        // 類別篩選按鈕
+        const filterButtons = document.querySelectorAll('.tag');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // 移除所有按鈕的 active 類
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // 添加當前按鈕的 active 類
+                this.classList.add('active');
+                // 這裡可以添加篩選邏輯
+            });
+        });
+
+        // 店家詳情資料
+        const shopDetails = {
+            "eco-goodies": {
+                name: "綠好物",
+                type: "家居用品",
+                address: "106台北市大安區信義路四段187之2號",
+                hours: "週一至三、五 11:00-19:00，週四 12:00-19:00，週六日休息",
+                phone: "02 2706 8819",
+                email: "contact@ecogoodies.com.tw",
+                website: "ecogoodies.com.tw",
+                description: "綠好物是一家專注於提供環保、永續生活用品的商店，致力於推廣零廢棄生活方式。",
+                longDescription: "我們提供各種環保替代品，從日常生活用品到個人護理產品，幫助消費者減少塑料使用和環境足跡。我們的產品經過嚴格篩選，確保它們是真正環保且實用的。",
+                sustainability: "我們的使命是讓永續生活變得簡單且可行。我們的產品都經過嚴格篩選，確保它們是真正環保、耐用且實用的。我們優先選擇使用可再生材料、可生物降解或可回收的產品，並與符合道德標準的供應商合作。",
+                tags: ["零廢棄", "環保生活", "可重複使用", "無塑", "永續消費"],
+                lat: 25.0330,
+                lng: 121.5500,
+                collections: [
+                    {
+                        name: "廚房零廢棄系列",
+                        description: "包括可重複使用的食物保鮮袋、蜂蠟保鮮膜、竹製餐具等，幫助您建立一個無塑廚房。"
+                    },
+                    {
+                        name: "個人護理系列",
+                        description: "提供天然成分製成的肥皂、洗髮餅、竹牙刷等，減少塑料包裝和有害化學物質。"
+                    }
+                ]
+            },
+            "green-boutique": {
+                name: "Green Boutique",
+                type: "服飾",
+                address: "106台北市大安區大安路一段51巷23-4號",
+                hours: "12:30 - 21:00",
+                phone: "02 8771 4166",
+                email: "contact@greenboutique.com",
+                description: "Green Boutique 是台北大安區的永續時尚服飾店，我們致力於提供環保、永續的時尚選擇。我們的服飾系列包括由有機棉、回收材料和環保染料製成的衣物，讓您在追求時尚的同時也能對地球友善。",
+                longDescription: "我們與本地和國際設計師合作，確保每件商品都符合我們的永續標準，同時保持時尚和高品質。在 Green Boutique，我們相信時尚和永續可以共存，並且致力於推廣這種理念。",
+                sustainability: "我們的永續理念基於三個核心原則：環保材料、公平貿易和減少浪費。我們所有的服飾都使用環保材料製成，如有機棉、回收聚酯纖維和天然染料。我們確保我們的供應鏈符合公平貿易標準，讓每個參與製作過程的人都能獲得公平的報酬。此外，我們實施了多項減少浪費的措施，包括最小化包裝和舊衣回收計劃。",
+                tags: ["永續時尚", "有機材料", "公平貿易", "環保染料", "減少浪費"],
+                lat: 25.0339,
+                lng: 121.5432,
+                collections: [
+                    {
+                        name: "春夏有機系列",
+                        description: "使用100%有機棉製成的輕盈服飾，適合溫暖季節穿著。色彩來自天然植物染料，展現自然柔和的色調。"
+                    },
+                    {
+                        name: "回收再生系列",
+                        description: "由回收塑料瓶製成的創新面料，打造時尚且環保的服飾。每件衣物都標明了其減少的碳足跡。"
+                    }
+                ],
+                videoId: "dQw4w9WgXcQ" // YouTube 影片 ID
+            },
+            "no-package": {
+                name: "無包裝商店",
+                type: "食品",
+                address: "110台北市信義區松山路123號",
+                hours: "10:00 - 19:00",
+                phone: "02 2765 3321",
+                email: "info@nopackage.tw",
+                description: "專門提供無包裝、散裝商品的永續商店，自備容器購物，減少一次性包裝浪費。",
+                longDescription: "我們的商店提供各種散裝食品、清潔用品和個人護理產品，顧客可以自帶容器購買所需數量，不僅減少包裝浪費，還能避免食物浪費。",
+                sustainability: "我們的目標是減少一次性包裝對環境的影響。通過鼓勵顧客自帶容器，我們每年減少數噸塑料包裝的使用。我們的產品優先選擇本地、有機和公平貿易的選項，進一步減少碳足跡。",
+                tags: ["零廢棄", "無包裝", "有機食品", "本地採購", "減塑生活"],
+                lat: 25.0378,
+                lng: 121.5679
+            },
+            "green-cafe": {
+                name: "綠色咖啡館",
+                type: "咖啡廳",
+                address: "100台北市中正區羅斯福路二段45號",
+                hours: "08:00 - 22:00",
+                phone: "02 2365 8890",
+                email: "hello@greencafe.tw",
+                description: "使用有機咖啡豆和環保餐具的咖啡館，提供素食選項，並支持公平貿易。",
+                longDescription: "我們的咖啡館不僅提供美味的咖啡和食物，還致力於減少環境影響。我們使用可堆肥的餐具，鼓勵顧客自帶杯子，並提供多種植物性食品選擇。",
+                sustainability: "我們的咖啡豆來自公平貿易認證的農場，確保農民獲得公平的報酬。我們的菜單以植物性食品為主，減少碳足跡，並使用當季、本地食材。我們的廚餘進行堆肥，並將咖啡渣提供給當地園丁使用。",
+                tags: ["公平貿易", "有機咖啡", "素食選項", "可堆肥餐具", "零廢棄"],
+                lat: 25.0248,
+                lng: 121.5295
+            },
+            "eco-home": {
+                name: "環保家居用品店",
+                type: "家居用品",
+                address: "220新北市板橋區文化路78號",
+                hours: "11:00 - 20:00",
+                phone: "02 2968 5432",
+                email: "service@ecohome.com.tw",
+                description: "提供環保清潔用品和可重複使用的家居用品，減少家庭生活中的環境足跡。",
+                longDescription: "我們的商店提供各種環保家居用品，從可重複使用的廚房用品到天然清潔產品，幫助消費者建立更永續的生活方式。",
+                sustainability: "我們的產品經過嚴格篩選，確保它們是環保、耐用且對健康無害的。我們優先選擇使用可再生材料、可生物降解或可回收的產品，並提供維修服務延長產品壽命。",
+                tags: ["環保清潔", "可重複使用", "天然材料", "零廢棄家居", "無毒生活"],
+                lat: 25.0141,
+                lng: 121.4652
+            },
+            "second-hand-books": {
+                name: "二手書店",
+                type: "二手商店",
+                address: "403台中市西區公益路155號",
+                hours: "10:00 - 21:00",
+                phone: "04 2328 7766",
+                email: "books@secondhand.com.tw",
+                description: "專門收購和販售二手書籍，延長書籍的生命週期，減少資源浪費。",
+                longDescription: "我們的書店不僅是購買和出售二手書的地方，也是一個社區空間，我們定期舉辦閱讀會和文化活動，促進知識交流和社區連結。",
+                sustainability: "通過二手書交易，我們每年幫助數萬本書找到新主人，減少了紙張生產和廢棄物。我們的店面使用回收材料裝修，並使用再生能源供電。",
+                tags: ["二手書籍", "資源循環", "文化保存", "社區空間", "知識共享"],
+                lat: 24.1477,
+                lng: 120.6736
+            },
+            "organic-farm": {
+                name: "有機農產品店",
+                type: "食品",
+                address: "802高雄市苓雅區四維路99號",
+                hours: "09:00 - 18:00",
+                phone: "07 3345 2211",
+                email: "fresh@organicfarm.com.tw",
+                description: "販售本地有機農產品，支持小農經濟，減少食物里程，提供健康飲食選擇。",
+                longDescription: "我們與台灣各地的小型有機農場合作，提供新鮮、當季的有機蔬果和農產品。我們致力於建立透明的食物供應鏈，讓消費者了解食物的來源。",
+                sustainability: "我們支持生態農業實踐，保護生物多樣性和土壤健康。通過直接與農民合作，我們確保他們獲得公平的報酬，同時減少中間環節和食物里程。我們使用可重複使用或可堆肥的包裝，減少塑料使用。",
+                tags: ["有機農業", "本地食材", "支持小農", "生態保育", "食物正義"],
+                lat: 22.6273,
+                lng: 120.3014
+            }
+        };
+
+        // 顯示店家詳情
+        function showShopDetail(shopId) {
+            const shop = shopDetails[shopId];
+            if (!shop) {
+                alert('此店家詳情尚未建立，敬請期待！');
+                return;
+            }
+
+            // 準備詳情內容
+            let detailHTML = `
+                <div class="shop-detail-header py-12 text-white rounded-t-xl">
+                    <div class="container mx-auto px-4 text-center">
+                        <h1 class="text-3xl md:text-4xl font-bold mb-2">${shop.name}</h1>
+                        <p class="text-lg">${shop.type}</p>
+                    </div>
+                </div>
+                <button id="close-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md z-[1010]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2">
+                            <h2 class="text-2xl font-bold mb-4">關於我們</h2>
+                            <p class="text-gray-700 mb-4">${shop.description}</p>
+                            ${shop.longDescription ? `<p class="text-gray-700 mb-6">${shop.longDescription}</p>` : ''}
+                            
+                            ${shop.sustainability ? `
+                            <h2 class="text-2xl font-bold mb-4">永續理念</h2>
+                            <div class="mb-6">
+                                <p class="text-gray-700 mb-4">${shop.sustainability}</p>
+                                ${shop.tags && shop.tags.length > 0 ? `
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    ${shop.tags.map(tag => `<span class="tag px-3 py-1 rounded-full text-sm">${tag}</span>`).join('')}
+                                </div>
+                                ` : ''}
+                            </div>
+                            ` : ''}
+                            
+                            ${shop.videoId ? `
+                            <h2 class="text-2xl font-bold mb-4">影片介紹</h2>
+                            <div class="video-container mb-6">
+                                <iframe src="https://www.youtube.com/embed/${shop.videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                            ` : ''}
+                            
+                            ${shop.collections && shop.collections.length > 0 ? `
+                            <h2 class="text-2xl font-bold mb-4">最新系列</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                ${shop.collections.map(collection => `
+                                <div class="bg-green-50 rounded-lg p-4">
+                                    <div class="h-32 bg-green-100 rounded-lg flex items-center justify-center mb-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-bold mb-2">${collection.name}</h3>
+                                    <p class="text-gray-600">${collection.description}</p>
+                                </div>
+                                `).join('')}
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="bg-green-50 p-6 rounded-xl">
+                            <h3 class="text-xl font-bold mb-4">商店資訊</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-medium text-gray-700">地址</h4>
+                                    <p class="text-gray-600">${shop.address}</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-700">營業時間</h4>
+                                    <p class="text-gray-600">${shop.hours}</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-700">聯絡方式</h4>
+                                    <p class="text-gray-600">電話: ${shop.phone}</p>
+                                    <p class="text-gray-600">Email: ${shop.email}</p>
+                                    ${shop.website ? `<p class="text-gray-600">網站: ${shop.website}</p>` : ''}
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-700">社群媒體</h4>
+                                    <div class="flex space-x-3 mt-2">
+                                        <a href="#" class="text-green-600 hover:text-green-800">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/>
+                                            </svg>
+                                        </a>
+                                        <a href="#" class="text-green-600 hover:text-green-800">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <h3 class="text-xl font-bold mb-4">位置</h3>
+                                <div class="h-64 bg-gray-200 rounded-lg overflow-hidden shop-map">
+                                    <div id="shop-map-${shopId}" class="h-full w-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 顯示詳情
+            document.getElementById('shop-detail-content').innerHTML = detailHTML;
+            document.getElementById('shop-detail-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // 防止背景滾動
+
+            // 初始化店家地圖
+            setTimeout(() => {
+                const shopMap = L.map(`shop-map-${shopId}`, {
+                    zoomControl: false, // 移除縮放控制項
+                    attributionControl: false // 移除歸因控制項
+                }).setView([shop.lat, shop.lng], 16);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(shopMap);
+                
+                const marker = L.marker([shop.lat, shop.lng]).addTo(shopMap);
+                marker.bindPopup(`<b>${shop.name}</b><br>${shop.address}`).openPopup();
+                
+                // 禁用地圖拖動和縮放，以防止與模態框的滾動衝突
+                shopMap.dragging.disable();
+                shopMap.touchZoom.disable();
+                shopMap.doubleClickZoom.disable();
+                shopMap.scrollWheelZoom.disable();
+            }, 300);
+
+            // 關閉詳情視窗
+            document.getElementById('close-modal').addEventListener('click', function() {
+                document.getElementById('shop-detail-modal').classList.add('hidden');
+                document.body.style.overflow = 'auto'; // 恢復背景滾動
+            });
+
+            // 點擊背景關閉詳情視窗
+            document.getElementById('shop-detail-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                    document.body.style.overflow = 'auto'; // 恢復背景滾動
+                }
+            });
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e0f51700b18282',t:'MTc0Njk1ODk2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
