@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>永續商店地圖 - 首頁</title>
+    <title data-i18n="pageTitle">永續商店地圖 - 首頁</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -108,15 +108,17 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <a href="#" class="text-2xl font-bold text-gray-800">永續商店地圖</a>
+                <a href="#" class="text-2xl font-bold text-gray-800" data-i18n="appName">永續商店地圖</a>
             </div>
-            <div class="hidden md:flex space-x-6">
-                <a href="#" class="text-gray-700 hover:text-green-600 transition">首頁</a>
-                <a href="#map" class="text-gray-700 hover:text-green-600 transition">地圖</a>
-                <a href="#shops" class="text-gray-700 hover:text-green-600 transition">商店列表</a>
-                <a href="#newsletter" class="text-gray-700 hover:text-green-600 transition">訂閱電子報</a>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#" class="text-gray-700 hover:text-green-600 transition" data-i18n="home">首頁</a>
+                <a href="#map" class="text-gray-700 hover:text-green-600 transition" data-i18n="map">地圖</a>
+                <a href="#shops" class="text-gray-700 hover:text-green-600 transition" data-i18n="shopList">商店列表</a>
+                <a href="#newsletter" class="text-gray-700 hover:text-green-600 transition" data-i18n="newsletter">訂閱電子報</a>
+                <button id="language-toggle" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition">English</button>
             </div>
-            <div class="md:hidden">
+            <div class="md:hidden flex items-center">
+                <button id="language-toggle-mobile" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition mr-2">English</button>
                 <button id="menu-toggle" class="text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -125,20 +127,20 @@
             </div>
         </div>
         <div id="mobile-menu" class="hidden md:hidden px-4 py-2 bg-white">
-            <a href="#" class="block py-2 text-gray-700 hover:text-green-600">首頁</a>
-            <a href="#map" class="block py-2 text-gray-700 hover:text-green-600">地圖</a>
-            <a href="#shops" class="block py-2 text-gray-700 hover:text-green-600">商店列表</a>
-            <a href="#newsletter" class="block py-2 text-gray-700 hover:text-green-600">訂閱電子報</a>
+            <a href="#" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="home">首頁</a>
+            <a href="#map" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="map">地圖</a>
+            <a href="#shops" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="shopList">商店列表</a>
+            <a href="#newsletter" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="newsletter">訂閱電子報</a>
         </div>
     </nav>
 
     <section class="hero-section py-20 md:py-32 text-white">
         <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6">探索台灣永續商店</h1>
-            <p class="text-xl max-w-2xl mx-auto mb-8">找到支持環保、公平貿易和永續發展的商店，一起為地球盡一份心力</p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-6" data-i18n="heroTitle">探索台灣永續商店</h1>
+            <p class="text-xl max-w-2xl mx-auto mb-8" data-i18n="heroSubtitle">找到支持環保、公平貿易和永續發展的商店，一起為地球盡一份心力</p>
             <div class="flex flex-col md:flex-row justify-center gap-4">
-                <a href="#map" class="btn-primary px-8 py-3 rounded-lg font-medium">查看地圖</a>
-                <a href="#shops" class="bg-white text-green-600 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition">瀏覽商店列表</a>
+                <a href="#map" class="btn-primary px-8 py-3 rounded-lg font-medium" data-i18n="viewMapBtn">查看地圖</a>
+                <a href="#shops" class="bg-white text-green-600 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition" data-i18n="browseShopsBtn">瀏覽商店列表</a>
             </div>
         </div>
     </section>
@@ -148,9 +150,9 @@
             <div class="max-w-4xl mx-auto">
                 <div class="bg-white rounded-xl shadow-lg p-6">
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold mb-4">搜尋永續商店</h2>
+                        <h2 class="text-2xl font-bold mb-4" data-i18n="searchTitle">搜尋永續商店</h2>
                         <div class="flex">
-                            <input type="text" placeholder="輸入商店名稱或地址..." class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <input type="text" placeholder="" class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" data-i18n="searchPlaceholder">
                             <button class="btn-primary px-6 py-3 rounded-r-lg">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -159,16 +161,16 @@
                         </div>
                     </div>
                     <div>
-                        <h3 class="font-medium mb-3">依類別篩選</h3>
+                        <h3 class="font-medium mb-3" data-i18n="filterCategoryTitle">依類別篩選</h3>
                         <div class="flex flex-wrap gap-2">
-                            <button class="tag px-3 py-1 rounded-full text-sm active">全部</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm">服飾</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm">食品</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm">咖啡廳</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm">家居用品</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm">無包裝商店</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm">二手商店</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm">文創</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm active" data-i18n="filterAll">全部</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterApparel">服飾</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterFood">食品</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterCafe">咖啡廳</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterHomeGoods">家居用品</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterZeroWaste">無包裝商店</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterSecondHand">二手商店</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterCreative">文創</button>
                         </div>
                     </div>
                 </div>
@@ -178,7 +180,7 @@
 
     <section id="map" class="py-12 bg-green-50">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-8">永續商店地圖</h2>
+            <h2 class="text-3xl font-bold text-center mb-8" data-i18n="mapSectionTitle">永續商店地圖</h2>
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div class="map-container">
                     <div id="sustainability-map" class="h-96 md:h-[500px] w-full"></div>
@@ -189,321 +191,11 @@
 
     <section id="shops" class="py-12 bg-white">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-8">永續商店列表</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
-                    <div class="h-48 bg-green-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">綠好物</h3>
-                            <span class="tag px-2 py-1 rounded-full text-xs">家居用品</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">提供環保、永續的生活用品，致力於推廣零廢棄生活方式。</p>
-                        <div class="mb-4">
-                            <div class="flex items-center text-gray-600 text-sm mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                106台北市大安區信義路四段187之2號
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                週一至三、五 11:00-19:00，週四 12:00-19:00
-                            </div>
-                        </div>
-                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('eco-goodies')">查看詳情</button>
-                    </div>
+            <h2 class="text-3xl font-bold text-center mb-8" data-i18n="shopListSectionTitle">永續商店列表</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="shop-cards-container">
                 </div>
-
-                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
-                    <div class="h-48 bg-green-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">Green Boutique</h3>
-                            <span class="tag px-2 py-1 rounded-full text-xs">服飾</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">臺北的永續時尚服飾店，提供環保、有機材料製成的服飾。</p>
-                        <div class="mb-4">
-                            <div class="flex items-center text-gray-600 text-sm mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                106台北市大安區大安路一段51巷23-4號
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                12:30 - 21:00
-                            </div>
-                        </div>
-                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('green-boutique')">查看詳情</button>
-                    </div>
-                </div>
-
-                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
-                    <div class="h-48 bg-green-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">無包裝商店</h3>
-                            <span class="tag px-2 py-1 rounded-full text-xs">食品</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">專門提供無包裝、散裝商品的永續商店，自備容器購物，減少一次性包裝浪費。</p>
-                        <div class="mb-4">
-                            <div class="flex items-center text-gray-600 text-sm mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                110台北市信義區松山路123號
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                10:00 - 19:00
-                            </div>
-                        </div>
-                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('no-package')">查看詳情</button>
-                    </div>
-                </div>
-
-                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
-                    <div class="h-48 bg-green-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.275a1.998 1.998 0 010 2.828l-7.799 7.799a1.998 1.998 0 01-2.828 0L3.05 13.05a1.998 1.998 0 010-2.828l6.12-6.12a1.998 1.998 0 012.828 0l7.799 7.799z" />
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">簡塑慢行 Simplastic</h3>
-                            <span class="tag px-2 py-1 rounded-full text-xs">無包裝商店</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">推廣無包裝、減塑購物，鼓勵自備容器，減少一次性垃圾。</p>
-                        <div class="mb-4">
-                            <div class="flex items-center text-gray-600 text-sm mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                台北市北投區光明路2巷2號
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                週二至週日 12:00-20:00（週一公休）
-                            </div>
-                        </div>
-                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('simplastic-guangming')">查看詳情</button>
-                    </div>
-                </div>
-
-                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
-                    <div class="h-48 bg-green-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">三時生活實驗室</h3>
-                            <span class="tag px-2 py-1 rounded-full text-xs">無包裝商店</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。</p>
-                        <div class="mb-4">
-                            <div class="flex items-center text-gray-600 text-sm mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                台北市中山區松江路97巷3號
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                週一至週日 12:00-20:00
-                            </div>
-                        </div>
-                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('threetime-lab')">查看詳情</button>
-                    </div>
-                </div>
-
-                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
-                    <div class="h-48 bg-green-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5.5c.582 0 1.049.394 1.157.924L14.25 8h2.006c.435 0 .789.364.789.816l-.25 1.75c0 .452-.354.816-.789.816H14.25l-1.157 5.076c-.108.53-.575.924-1.157.924H7.01M7 7v14h10V7H7z" />
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">House of Story Wear 永續百貨</h3>
-                            <span class="tag px-2 py-1 rounded-full text-xs">服飾</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">提供一個融合永續時尚、性別友善、社區交流的多元空間。</p>
-                        <div class="mb-4">
-                            <div class="flex items-center text-gray-600 text-sm mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                台北市大同區迪化街一段32巷1號
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                週二至週日 13:00-21:00（週一公休）
-                            </div>
-                        </div>
-                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('house-of-story-wear')">查看詳情</button>
-                    </div>
-                </div>
-
-                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
-                    <div class="h-48 bg-green-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">Story Wear 零廢時尚</h3>
-                            <span class="tag px-2 py-1 rounded-full text-xs">服飾</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。</p>
-                        <div class="mb-4">
-                            <div class="flex items-center text-gray-600 text-sm mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                台北市大同區迪化街一段32巷1號
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                週二至週日 13:00-20:00（週一公休）
-                            </div>
-                        </div>
-                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('story-wear-zerowaste')">查看詳情</button>
-                    </div>
-                </div>
-
-                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
-                    <div class="h-48 bg-green-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">garden文創選物店</h3>
-                            <span class="tag px-2 py-1 rounded-full text-xs">文創</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">選品強調環保材質、在地生產，降低運輸碳足跡。</p>
-                        <div class="mb-4">
-                            <div class="flex items-center text-gray-600 text-sm mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                台北市大安區永康街31巷9號
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                週一至週日 12:00-20:00
-                            </div>
-                        </div>
-                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('garden-selection')">查看詳情</button>
-                    </div>
-                </div>
-
-                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
-                    <div class="h-48 bg-green-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">心樸市集四維店</h3>
-                            <span class="tag px-2 py-1 rounded-full text-xs">食品</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。</p>
-                        <div class="mb-4">
-                            <div class="flex items-center text-gray-600 text-sm mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                台北市大安區四維路76巷9號
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                週一至週日 10:00-21:00
-                            </div>
-                        </div>
-                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('sinpu-market')">查看詳情</button>
-                    </div>
-                </div>
-
-                <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
-                    <div class="h-48 bg-green-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.275a1.998 1.998 0 010 2.828l-7.799 7.799a1.998 1.998 0 01-2.828 0L3.05 13.05a1.998 1.998 0 010-2.828l6.12-6.12a1.998 1.998 0 012.828 0l7.799 7.799z" />
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">簡塑慢行 Simplastic (北投中正店)</h3>
-                            <span class="tag px-2 py-1 rounded-full text-xs">無包裝商店</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">販售五穀雜糧、堅果果乾零食及香料；各式環保生活小物、沐浴清潔用品。</p>
-                        <div class="mb-4">
-                            <div class="flex items-center text-gray-600 text-sm mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                台北市北投區中正街49巷35號
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                週一 10:00-13:00, 14:30-19:00; 週二 10:00-13:00, 14:30-19:00; 週三 14:00-21:00; 週四 10:00-13:00, 14:30-19:00; 週五 10:00-13:00, 14:30-19:00; 週六 10:00-13:00, 14:30-19:00
-                            </div>
-                        </div>
-                        <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('simplastic-beitou')">查看詳情</button>
-                    </div>
-                </div>
-
-            </div>
             <div class="text-center mt-8">
-                <button class="btn-primary px-8 py-3 rounded-lg font-medium">載入更多</button>
+                <button class="btn-primary px-8 py-3 rounded-lg font-medium" data-i18n="loadMoreBtn">載入更多</button>
             </div>
         </div>
     </section>
@@ -511,11 +203,11 @@
     <section id="newsletter" class="py-12 bg-green-600 text-white">
         <div class="container mx-auto px-4">
             <div class="max-w-2xl mx-auto text-center">
-                <h2 class="text-3xl font-bold mb-4">訂閱永續生活電子報</h2>
-                <p class="mb-6">獲取最新的永續商店資訊、環保生活技巧和特別優惠</p>
+                <h2 class="text-3xl font-bold mb-4" data-i18n="newsletterTitle">訂閱永續生活電子報</h2>
+                <p class="mb-6" data-i18n="newsletterSubtitle">獲取最新的永續商店資訊、環保生活技巧和特別優惠</p>
                 <div class="flex flex-col md:flex-row gap-2">
-                    <input type="email" placeholder="您的電子郵件" class="flex-1 px-4 py-3 rounded-lg text-gray-800 focus:outline-none">
-                    <button class="bg-white text-green-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition">訂閱</button>
+                    <input type="email" placeholder="" class="flex-1 px-4 py-3 rounded-lg text-gray-800 focus:outline-none" data-i18n="newsletterPlaceholder">
+                    <button class="bg-white text-green-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition" data-i18n="subscribeBtn">訂閱</button>
                 </div>
             </div>
         </div>
@@ -525,16 +217,16 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                    <h3 class="text-xl font-bold mb-4">永續商店地圖</h3>
-                    <p class="text-gray-300">幫助消費者找到並支持永續發展的商店，一起為地球盡一份心力。</p>
+                    <h3 class="text-xl font-bold mb-4" data-i18n="footerAppName">永續商店地圖</h3>
+                    <p class="text-gray-300" data-i18n="footerAppDescription">幫助消費者找到並支持永續發展的商店，一起為地球盡一份心力。</p>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold mb-4">聯絡我們</h3>
-                    <p class="text-gray-300">有任何問題或建議，歡迎與我們聯繫</p>
-                    <p class="text-gray-300">電子郵件：info@sustainablemap.tw</p>
+                    <h3 class="text-xl font-bold mb-4" data-i18n="contactUsTitle">聯絡我們</h3>
+                    <p class="text-gray-300" data-i18n="contactUsText">有任何問題或建議，歡迎與我們聯繫</p>
+                    <p class="text-gray-300" data-i18n="contactUsEmail">電子郵件：info@sustainablemap.tw</p>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold mb-4">關注我們</h3>
+                    <h3 class="text-xl font-bold mb-4" data-i18n="followUsTitle">關注我們</h3>
                     <div class="flex space-x-4">
                         <a href="#" class="text-white hover:text-green-400 transition">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -555,7 +247,7 @@
                 </div>
             </div>
             <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
-                <p>© 2023 永續商店地圖 - 版權所有</p>
+                <p data-i18n="copyright">© 2023 永續商店地圖 - 版權所有</p>
             </div>
         </div>
     </footer>
@@ -567,246 +259,489 @@
         </div>
     </div>
 
+    <div id="custom-message-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[2000] hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 shadow-xl max-w-sm mx-auto text-center">
+            <p id="message-modal-text" class="text-gray-800 text-lg mb-4"></p>
+            <button id="close-message-modal" class="btn-primary px-6 py-2 rounded-lg font-medium" data-i18n="okButton">確定</button>
+        </div>
+    </div>
+
     <script>
-        // 移動端選單切換
+        // Language translation data
+        const translations = {
+            'zh-TW': {
+                pageTitle: '永續商店地圖 - 首頁',
+                appName: '永續商店地圖',
+                home: '首頁',
+                map: '地圖',
+                shopList: '商店列表',
+                newsletter: '訂閱電子報',
+                languageToggle: 'English',
+                heroTitle: '探索台灣永續商店',
+                heroSubtitle: '找到支持環保、公平貿易和永續發展的商店，一起為地球盡一份心力',
+                viewMapBtn: '查看地圖',
+                browseShopsBtn: '瀏覽商店列表',
+                searchTitle: '搜尋永續商店',
+                searchPlaceholder: '輸入商店名稱或地址...',
+                filterCategoryTitle: '依類別篩選',
+                filterAll: '全部',
+                filterApparel: '服飾',
+                filterFood: '食品',
+                filterCafe: '咖啡廳',
+                filterHomeGoods: '家居用品',
+                filterZeroWaste: '無包裝商店',
+                filterSecondHand: '二手商店',
+                filterCreative: '文創',
+                mapSectionTitle: '永續商店地圖',
+                shopListSectionTitle: '永續商店列表',
+                viewDetailsBtn: '查看詳情',
+                loadMoreBtn: '載入更多',
+                newsletterTitle: '訂閱永續生活電子報',
+                newsletterSubtitle: '獲取最新的永續商店資訊、環保生活技巧和特別優惠',
+                newsletterPlaceholder: '您的電子郵件',
+                subscribeBtn: '訂閱',
+                footerAppName: '永續商店地圖',
+                footerAppDescription: '幫助消費者找到並支持永續發展的商店，一起為地球盡一份心力。',
+                contactUsTitle: '聯絡我們',
+                contactUsText: '有任何問題或建議，歡迎與我們聯繫',
+                contactUsEmail: '電子郵件：info@sustainablemap.tw',
+                followUsTitle: '關注我們',
+                copyright: '© 2023 永續商店地圖 - 版權所有',
+                modalAboutUs: '關於我們',
+                modalSustainability: '永續理念',
+                modalVideoIntro: '影片介紹',
+                modalLatestCollections: '最新系列',
+                modalShopInfo: '商店資訊',
+                modalAddress: '地址',
+                modalOpeningHours: '營業時間',
+                modalContactInfo: '聯絡方式',
+                modalPhone: '電話',
+                modalEmail: 'Email',
+                modalWebsite: '網站',
+                modalSocialMedia: '社群媒體',
+                modalLocation: '位置',
+                modalProductRecs: '永續產品推薦 ✨',
+                generateSuggestionsBtn: '生成產品建議',
+                generatingSuggestions: '生成中...',
+                generatingMessage: '正在為您生成永續產品建議...',
+                generationFailed: '抱歉，未能生成產品建議。請稍後再試。',
+                generationError: '生成產品建議時發生錯誤。請檢查網路連線或稍後再試。',
+                clickToGenerate: '點擊上方按鈕獲取永續產品建議',
+                shopDetailsNotAvailable: '此店家詳情尚未建立，敬請期待！',
+                okButton: '確定',
+                notProvided: '未提供'
+            },
+            'en': {
+                pageTitle: 'Sustainable Store Map - Home',
+                appName: 'Sustainable Store Map',
+                home: 'Home',
+                map: 'Map',
+                shopList: 'Shop List',
+                newsletter: 'Newsletter',
+                languageToggle: '繁體中文',
+                heroTitle: 'Explore Taiwan\'s Sustainable Stores',
+                heroSubtitle: 'Find stores that support environmental protection, fair trade, and sustainable development, and contribute to the Earth together.',
+                viewMapBtn: 'View Map',
+                browseShopsBtn: 'Browse Shop List',
+                searchTitle: 'Search Sustainable Stores',
+                searchPlaceholder: 'Enter store name or address...',
+                filterCategoryTitle: 'Filter by Category',
+                filterAll: 'All',
+                filterApparel: 'Apparel',
+                filterFood: 'Food',
+                filterCafe: 'Cafe',
+                filterHomeGoods: 'Home Goods',
+                filterZeroWaste: 'Zero-Waste Stores',
+                filterSecondHand: 'Second-hand Stores',
+                filterCreative: 'Creative & Cultural',
+                mapSectionTitle: 'Sustainable Store Map',
+                shopListSectionTitle: 'Sustainable Shop List',
+                viewDetailsBtn: 'View Details',
+                loadMoreBtn: 'Load More',
+                newsletterTitle: 'Subscribe to Sustainable Living Newsletter',
+                newsletterSubtitle: 'Get the latest sustainable store information, eco-friendly living tips, and special offers',
+                newsletterPlaceholder: 'Your email',
+                subscribeBtn: 'Subscribe',
+                footerAppName: 'Sustainable Store Map',
+                footerAppDescription: 'Helping consumers find and support sustainable development stores, contributing to the Earth together.',
+                contactUsTitle: 'Contact Us',
+                contactUsText: 'For any questions or suggestions, please contact us',
+                contactUsEmail: 'Email: info@sustainablemap.tw',
+                followUsTitle: 'Follow Us',
+                copyright: '© 2023 Sustainable Store Map - All Rights Reserved',
+                modalAboutUs: 'About Us',
+                modalSustainability: 'Sustainability Philosophy',
+                modalVideoIntro: 'Video Introduction',
+                modalLatestCollections: 'Latest Collections',
+                modalShopInfo: 'Store Information',
+                modalAddress: 'Address',
+                modalOpeningHours: 'Opening Hours',
+                modalContactInfo: 'Contact Info',
+                modalPhone: 'Phone',
+                modalEmail: 'Email',
+                modalWebsite: 'Website',
+                modalSocialMedia: 'Social Media',
+                modalLocation: 'Location',
+                modalProductRecs: 'Sustainable Product Recommendations ✨',
+                generateSuggestionsBtn: 'Generate Product Suggestions',
+                generatingSuggestions: 'Generating...',
+                generatingMessage: 'Generating sustainable product suggestions for you...',
+                generationFailed: 'Sorry, failed to generate product suggestions. Please try again later.',
+                generationError: 'An error occurred while generating product suggestions. Please check your internet connection or try again later.',
+                clickToGenerate: 'Click the button above to get sustainable product suggestions',
+                shopDetailsNotAvailable: 'Shop details not yet available, please look forward to it!',
+                okButton: 'OK',
+                notProvided: 'Not provided'
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || 'zh-TW'; // Load from localStorage or default to Traditional Chinese
+
+        // Shop data, now with bilingual fields for translatable content
+        const shopDetails = {
+            "eco-goodies": {
+                name: { 'zh-TW': "綠好物", 'en': "Eco Goodies" },
+                type: { 'zh-TW': "家居用品", 'en': "Home Goods" },
+                address: { 'zh-TW': "106台北市大安區信義路四段187之2號", 'en': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan" },
+                hours: { 'zh-TW': "週一至三、五 11:00-19:00，週四 12:00-19:00，週六日休息", 'en': "Mon-Wed, Fri 11:00-19:00, Thu 12:00-19:00, Closed Sat-Sun" },
+                phone: "02 2706 8819",
+                email: "contact@ecogoodies.com.tw",
+                website: "ecogoodies.com.tw",
+                description: { 'zh-TW': "綠好物是一家專注於提供環保、永續生活用品的商店，致力於推廣零廢棄生活方式。", 'en': "Eco Goodies specializes in eco-friendly and sustainable home products, promoting a zero-waste lifestyle." },
+                longDescription: { 'zh-TW': "我們提供各種環保替代品，從日常生活用品到個人護理產品，幫助消費者減少塑料使用和環境足跡。我們的產品經過嚴格篩選，確保它們是真正環保且實用的。", 'en': "We offer a wide range of eco-friendly alternatives, from daily necessities to personal care products, helping consumers reduce plastic use and environmental footprint. Our products are rigorously screened to ensure they are truly eco-friendly and practical." },
+                sustainability: { 'zh-TW': "我們的使命是讓永續生活變得簡單且可行。我們的產品都經過嚴格篩選，確保它們是真正環保、耐用且實用的。我們優先選擇使用可再生材料、可生物降解或可回收的產品，並與符合道德標準的供應商合作。", 'en': "Our mission is to make sustainable living simple and achievable. Our products are rigorously screened to ensure they are truly eco-friendly, durable, and practical. We prioritize products made from renewable, biodegradable, or recyclable materials, and partner with ethically compliant suppliers." },
+                tags: { 'zh-TW': ["零廢棄", "環保生活", "可重複使用", "無塑", "永續消費"], 'en': ["Zero-Waste", "Eco-friendly Living", "Reusable", "Plastic-Free", "Sustainable Consumption"] },
+                lat: 25.0330,
+                lng: 121.5500,
+                collections: [
+                    {
+                        name: { 'zh-TW': "廚房零廢棄系列", 'en': "Zero-Waste Kitchen Collection" },
+                        description: { 'zh-TW': "包括可重複使用的食物保鮮袋、蜂蠟保鮮膜、竹製餐具等，幫助您建立一個無塑廚房。", 'en': "Includes reusable food storage bags, beeswax wraps, bamboo utensils, etc., to help you create a plastic-free kitchen." }
+                    },
+                    {
+                        name: { 'zh-TW': "個人護理系列", 'en': "Personal Care Collection" },
+                        description: { 'zh-TW': "提供天然成分製成的肥皂、洗髮餅、竹牙刷等，減少塑料包裝和有害化學物質。", 'en': "Offers soaps, shampoo bars, bamboo toothbrushes made from natural ingredients, reducing plastic packaging and harmful chemicals." }
+                    }
+                ]
+            },
+            "green-boutique": {
+                name: { 'zh-TW': "Green Boutique", 'en': "Green Boutique" },
+                type: { 'zh-TW': "服飾", 'en': "Apparel" },
+                address: { 'zh-TW': "106台北市大安區大安路一段51巷23-4號", 'en': "No. 23-4, Ln. 51, Sec. 1, Da’an Rd., Da’an Dist., Taipei City 106, Taiwan" },
+                hours: { 'zh-TW': "12:30 - 21:00", 'en': "12:30 PM - 9:00 PM" },
+                phone: "02 8771 4166",
+                email: "contact@greenboutique.com",
+                website: "greenboutique.com",
+                description: { 'zh-TW': "Green Boutique 是台北大安區的永續時尚服飾店，我們致力於提供環保、永續的時尚選擇。我們的服飾系列包括由有機棉、回收材料和環保染料製成的衣物，讓您在追求時尚的同時也能對地球友善。", 'en': "Green Boutique is a sustainable fashion store in Taipei's Da'an District, committed to offering eco-friendly and sustainable fashion choices. Our apparel collection features clothing made from organic cotton, recycled materials, and eco-friendly dyes, allowing you to be stylish while being kind to the Earth." },
+                longDescription: { 'zh-TW': "我們與本地和國際設計師合作，確保每件商品都符合我們的永續標準，同時保持時尚和高品質。在 Green Boutique，我們相信時尚和永續可以共存，並且致力於推廣這種理念。", 'en': "We collaborate with local and international designers to ensure every item meets our sustainability standards, while maintaining style and high quality. At Green Boutique, we believe fashion and sustainability can coexist, and we are committed to promoting this philosophy." },
+                sustainability: { 'zh-TW': "我們的永續理念基於三個核心原則：環保材料、公平貿易和減少浪費。我們所有的服飾都使用環保材料製成，如有機棉、回收聚酯纖維和天然染料。我們確保我們的供應鏈符合公平貿易標準，讓每個參與製作過程的人都能獲得公平的報酬。此外，我們實施了多項減少浪費的措施，包括最小化包裝和舊衣回收計劃。", 'en': "Our sustainability philosophy is based on three core principles: eco-friendly materials, fair trade, and waste reduction. All our apparel is made from sustainable materials like organic cotton, recycled polyester, and natural dyes. We ensure our supply chain adheres to fair trade standards, ensuring fair compensation for everyone involved in the production process. Additionally, we implement various waste reduction measures, including minimal packaging and clothing recycling programs." },
+                tags: { 'zh-TW': ["永續時尚", "有機材料", "公平貿易", "環保染料", "減少浪費"], 'en': ["Sustainable Fashion", "Organic Materials", "Fair Trade", "Eco-friendly Dyes", "Waste Reduction"] },
+                lat: 25.0339,
+                lng: 121.5432,
+                collections: [
+                    {
+                        name: { 'zh-TW': "春夏有機系列", 'en': "Spring/Summer Organic Collection" },
+                        description: { 'zh-TW': "使用100%有機棉製成的輕盈服飾，適合溫暖季節穿著。色彩來自天然植物染料，展現自然柔和的色調。", 'en': "Lightweight apparel made from 100% organic cotton, perfect for warm seasons. Colors derived from natural plant dyes, showcasing soft, natural hues." }
+                    },
+                    {
+                        name: { 'zh-TW': "回收再生系列", 'en': "Recycled & Upcycled Collection" },
+                        description: { 'zh-TW': "由回收塑料瓶製成的創新面料，打造時尚且環保的服飾。每件衣物都標明了其減少的碳足跡。", 'en': "Innovative fabrics made from recycled plastic bottles, creating stylish and eco-friendly apparel. Each garment indicates its reduced carbon footprint." }
+                    }
+                ],
+                videoId: "dQw4w9WgXcQ" // YouTube 影片 ID
+            },
+            "no-package": {
+                name: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store" },
+                type: { 'zh-TW': "食品", 'en': "Food" },
+                address: { 'zh-TW': "110台北市信義區松山路123號", 'en': "No. 123, Songshan Rd., Xinyi Dist., Taipei City 110, Taiwan" },
+                hours: { 'zh-TW': "10:00 - 19:00", 'en': "10:00 AM - 7:00 PM" },
+                phone: "02 2765 3321",
+                email: "info@nopackage.tw",
+                website: "nopackage.tw",
+                description: { 'zh-TW': "專門提供無包裝、散裝商品的永續商店，自備容器購物，減少一次性包裝浪費。", 'en': "A sustainable store specializing in unpackaged, bulk goods, encouraging customers to bring their own containers to reduce single-use packaging waste." },
+                longDescription: { 'zh-TW': "我們的商店提供各種散裝食品、清潔用品和個人護理產品，顧客可以自帶容器購買所需數量，不僅減少包裝浪費，還能避免食物浪費。", 'en': "Our store offers a variety of bulk foods, cleaning supplies, and personal care products. Customers can bring their own containers to purchase desired quantities, not only reducing packaging waste but also preventing food waste." },
+                sustainability: { 'zh-TW': "我們的目標是減少一次性包裝對環境的影響。通過鼓勵顧客自帶容器，我們每年減少數噸塑料包裝的使用。我們的產品優先選擇本地、有機和公平貿易的選項，進一步減少碳足跡。", 'en': "Our goal is to minimize the environmental impact of single-use packaging. By encouraging customers to bring their own containers, we reduce tons of plastic packaging use annually. Our products prioritize local, organic, and fair trade options, further reducing our carbon footprint." },
+                tags: { 'zh-TW': ["零廢棄", "無包裝", "有機食品", "本地採購", "減塑生活"], 'en': ["Zero-Waste", "Unpackaged", "Organic Food", "Local Sourcing", "Plastic-Free Living"] },
+                lat: 25.0378,
+                lng: 121.5679
+            },
+            "simplastic-guangming": {
+                name: { 'zh-TW': "簡塑慢行 Simplastic", 'en': "Simplastic - Guangming Branch" },
+                type: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store" },
+                address: { 'zh-TW': "台北市北投區光明路2巷2號", 'en': "No. 2, Ln. 2, Guangming Rd., Beitou Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週二至週日 12:00-20:00（週一公休）", 'en': "Tue-Sun 12:00-20:00 (Closed Mon)" },
+                phone: "02 2891 1234",
+                email: "info@simplastic.tw",
+                website: "simplastic.tw",
+                description: { 'zh-TW': "推廣無包裝、減塑購物，鼓勵自備容器，減少一次性垃圾。", 'en': "Promoting unpackaged, plastic-reducing shopping, encouraging customers to bring their own containers to minimize single-use waste." },
+                longDescription: { 'zh-TW': "創辦人希望讓消費者能輕鬆實踐減塑生活，減少浪費，守護環境。店內提供多樣化的無包裝穀物、堅果、果乾、清潔用品及環保生活用品，讓永續消費成為日常。", 'en': "The founder hopes to make plastic-reducing living easy and accessible for consumers, reducing waste and protecting the environment. The store offers a diverse range of unpackaged grains, nuts, dried fruits, cleaning supplies, and eco-friendly daily necessities, making sustainable consumption a part of everyday life." },
+                sustainability: { 'zh-TW': "推廣無包裝、減塑購物，鼓勵自備容器，減少一次性垃圾。", 'en': "Promoting unpackaged, plastic-reducing shopping, encouraging customers to bring their own containers to minimize single-use waste." },
+                tags: { 'zh-TW': ["無包裝", "減塑", "環保生活", "零廢棄"], 'en': ["Unpackaged", "Plastic-Free", "Eco-friendly Living", "Zero-Waste"] },
+                lat: 25.1378,
+                lng: 121.5034
+            },
+            "threetime-lab": {
+                name: { 'zh-TW': "三時生活實驗室", 'en': "Threetime Lab" },
+                type: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store" },
+                address: { 'zh-TW': "台北市中山區松江路97巷3號", 'en': "No. 3, Ln. 97, Songjiang Rd., Zhongshan Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週一至週日 12:00-20:00", 'en': "Mon-Sun 12:00-20:00" },
+                phone: "02 2507 5678",
+                email: "info@threetimelab.tw",
+                website: "threetimelab.tw",
+                description: { 'zh-TW': "所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。", 'en': "All products emphasize reusability and unpackaged options, promoting plastic reduction and conscious consumption." },
+                longDescription: { 'zh-TW': "希望透過商店讓消費者能「為想要的世界投票」，實踐永續生活。店內販售裸裝食品、環保餐具、竹牙刷、布衛生棉等友善環境生活用品，提倡綠色消費理念。", 'en': "Aims to empower consumers to 'vote for the world they want' through conscious shopping and sustainable living. The store offers bulk foods, eco-friendly utensils, bamboo toothbrushes, reusable sanitary pads, and other environmentally friendly daily necessities, advocating a green consumption philosophy." },
+                sustainability: { 'zh-TW': "所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。", 'en': "All products emphasize reusability and unpackaged options, promoting plastic reduction and conscious consumption." },
+                tags: { 'zh-TW': ["無包裝", "減塑", "有意識消費", "環保餐具", "裸裝食品"], 'en': ["Unpackaged", "Plastic-Free", "Conscious Consumption", "Eco-friendly Utensils", "Bulk Foods"] },
+                lat: 25.0506,
+                lng: 121.5343
+            },
+            "house-of-story-wear": {
+                name: { 'zh-TW': "House of Story Wear 永續百貨", 'en': "House of Story Wear Sustainable Department Store" },
+                type: { 'zh-TW': "服飾", 'en': "Apparel" },
+                address: { 'zh-TW': "台北市大同區迪化街一段32巷1號", 'en': "No. 1, Ln. 32, Sec. 1, Dihua St., Datong Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週二至週日 13:00-21:00（週一公休）", 'en': "Tue-Sun 13:00-21:00 (Closed Mon)" },
+                phone: "02 2555 9876",
+                email: "info@storywear.tw",
+                website: "storywear.tw",
+                description: { 'zh-TW': "提供一個融合永續時尚、性別友善、社區交流的多元空間，推廣循環經濟、服飾回收再利用。", 'en': "Offers a versatile space integrating sustainable fashion, gender-friendly concepts, and community interaction, promoting circular economy and clothing recycling." },
+                longDescription: { 'zh-TW': "這裡不僅是永續時尚的選物店，更是一個社區交流的平台，融合了永續時尚、性別友善和文化交流。店內有永續時尚服飾、回收布料商品、二手選物，還有咖啡飲品供您休憩。", 'en': "More than just a sustainable fashion boutique, it's a community hub blending sustainable fashion, gender-friendly principles, and cultural exchange. The store features sustainable apparel, recycled fabric products, curated second-hand items, and offers coffee and beverages for relaxation." },
+                sustainability: { 'zh-TW': "推廣循環經濟、服飾回收再利用、支持本地小品牌。", 'en': "Promoting circular economy, clothing recycling and reuse, and supporting local independent brands." },
+                tags: { 'zh-TW': ["永續時尚", "循環經濟", "服飾回收", "二手選物", "咖啡"], 'en': ["Sustainable Fashion", "Circular Economy", "Clothing Recycling", "Second-hand Curated", "Coffee"] },
+                lat: 25.054418,
+                lng: 121.510162
+            },
+            "story-wear-zerowaste": {
+                name: { 'zh-TW': "Story Wear 零廢時尚", 'en': "Story Wear Zero-Waste Fashion" },
+                type: { 'zh-TW': "服飾", 'en': "Apparel" },
+                address: { 'zh-TW': "台北市大同區迪化街一段32巷1號", 'en': "No. 1, Ln. 32, Sec. 1, Dihua St., Datong Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週二至週日 13:00-20:00（週一公休）", 'en': "Tue-Sun 13:00-20:00 (Closed Mon)" },
+                phone: "02 2555 9876",
+                email: "info@storywear.tw",
+                website: "storywear.tw",
+                description: { 'zh-TW': "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。", 'en': "Made from 100% recycled fabrics, promoting zero-waste fashion and reducing textile waste." },
+                longDescription: { 'zh-TW': "創辦人希望改變時尚產業的高耗能與高污染現況，實踐永續時尚。我們將回收牛仔布、剩布等廢棄紡織品，透過設計巧思轉化為獨特的服飾與配件，賦予舊布料新生命。", 'en': "The founder aims to transform the high-energy consumption and pollution status of the fashion industry, practicing sustainable fashion. We transform discarded textiles like recycled denim and leftover fabrics into unique apparel and accessories through creative design, giving new life to old materials." },
+                sustainability: { 'zh-TW': "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。", 'en': "Made from 100% recycled fabrics, promoting zero-waste fashion and reducing textile waste." },
+                tags: { 'zh-TW': ["零廢時尚", "回收布料", "紡織廢棄物", "永續時尚", "二手改造"], 'en': ["Zero-Waste Fashion", "Recycled Fabrics", "Textile Waste", "Sustainable Fashion", "Upcycling"] },
+                lat: 25.054418,
+                lng: 121.510162
+            },
+            "garden-selection": {
+                name: { 'zh-TW': "garden文創選物店", 'en': "garden Creative & Cultural Select Shop" },
+                type: { 'zh-TW': "文創", 'en': "Creative & Cultural" },
+                address: { 'zh-TW': "台北市大安區永康街31巷9號", 'en': "No. 9, Ln. 31, Yongkang St., Da’an Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週一至週日 12:00-20:00", 'en': "Mon-Sun 12:00-20:00" },
+                phone: "02 2391 5678",
+                email: "info@gardenselection.tw",
+                website: "gardenselection.tw",
+                description: { 'zh-TW': "選品強調環保材質、在地生產，降低運輸碳足跡，推廣台灣設計與永續生活美學。", 'en': "Curated items emphasize eco-friendly materials and local production to reduce transportation carbon footprint, promoting Taiwanese design and sustainable living aesthetics." },
+                longDescription: { 'zh-TW': "我們精選來自台灣本地設計師的文創商品，以及使用環保材質製作的生活雜貨。希望透過這些獨具匠心的選品，將台灣的設計能量與永續生活美學推廣給更多人。", 'en': "We carefully select creative and cultural products from local Taiwanese designers, as well as daily necessities made from eco-friendly materials. Through these unique selections, we hope to promote Taiwan's design prowess and sustainable living aesthetics to a wider audience." },
+                sustainability: { 'zh-TW': "選品強調環保材質、在地生產，降低運輸碳足跡。", 'en': "Curated items emphasize eco-friendly materials and local production to reduce transportation carbon footprint." },
+                tags: { 'zh-TW': ["文創", "環保材質", "在地生產", "永續生活美學", "設計選物"], 'en': ["Creative & Cultural", "Eco-friendly Materials", "Local Production", "Sustainable Living Aesthetics", "Curated Design"] },
+                lat: 25.0315,
+                lng: 121.5298
+            },
+            "sinpu-market": {
+                name: { 'zh-TW': "心樸市集四維店", 'en': "Sinpu Market Siwei Branch" },
+                type: { 'zh-TW': "食品", 'en': "Food" },
+                address: { 'zh-TW': "台北市大安區四維路76巷9號", 'en': "No. 9, Ln. 76, Siwei Rd., Da’an Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週一至週日 10:00-21:00", 'en': "Mon-Sun 10:00-21:00" },
+                phone: "02 2701 1234",
+                email: "info@sinpumarket.tw",
+                website: "sinpumarket.tw",
+                description: { 'zh-TW': "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。", 'en': "Supports organic farming, reduces pesticide use, and promotes local ingredients to minimize carbon footprint." },
+                longDescription: { 'zh-TW': "心樸市集致力於提供健康又友善環境的產品。我們嚴選有機食品、友善環境生活用品，並積極與在地小農合作，讓消費者能輕鬆購得新鮮、安心的食材，同時支持永續農業發展。", 'en': "Sinpu Market is committed to providing healthy and environmentally friendly products. We carefully select organic foods and eco-friendly daily necessities, and actively collaborate with local small farmers, allowing consumers to easily purchase fresh, safe ingredients while supporting sustainable agricultural development." },
+                sustainability: { 'zh-TW': "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。", 'en': "Supports organic farming, reduces pesticide use, and promotes local ingredients to minimize carbon footprint." },
+                tags: { 'zh-TW': ["有機食品", "在地小農", "友善環境", "健康飲食", "無毒生活"], 'en': ["Organic Food", "Local Farmers", "Eco-friendly", "Healthy Eating", "Non-toxic Living"] },
+                lat: 25.0336,
+                lng: 121.5540
+            },
+            "simplastic-beitou": {
+                name: { 'zh-TW': "簡塑慢行 Simplastic (北投中正店)", 'en': "Simplastic - Beitou Zhongzheng Branch" },
+                type: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store" },
+                address: { 'zh-TW': "台北市北投區中正街49巷35號", 'en': "No. 35, Ln. 49, Zhongzheng St., Beitou Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週一 10:00-13:00, 14:30-19:00; 週二 10:00-13:00, 14:30-19:00; 週三 14:00-21:00; 週四 10:00-13:00, 14:30-19:00; 週五 10:00-13:00, 14:30-19:00; 週六 10:00-13:00, 14:30-19:00", 'en': "Mon 10:00-13:00, 14:30-19:00; Tue 10:00-13:00, 14:30-19:00; Wed 14:00-21:00; Thu 10:00-13:00, 14:30-19:00; Fri 10:00-13:00, 14:30-19:00; Sat 10:00-13:00, 14:30-19:00" },
+                phone: "02 2898 5678",
+                email: "beitou@simplastic.tw",
+                website: "simplastic.tw",
+                description: { 'zh-TW': "販售五穀雜糧、堅果果乾零食及香料；各式環保生活小物、沐浴清潔用品。", 'en': "Sells grains, nuts, dried fruits, snacks, and spices; various eco-friendly daily necessities, bath, and cleaning products." },
+                longDescription: { 'zh-TW': "簡塑慢行北投中正店是您實踐零廢棄生活的理想選擇。我們提供多種無包裝的食品和清潔用品，鼓勵顧客自備容器，共同減少一次性包裝的浪費。這裡不僅是購物空間，更是推廣永續理念的社群中心。", 'en': "Simplastic Beitou Zhongzheng Branch is your ideal choice for practicing a zero-waste lifestyle. We offer a variety of unpackaged foods and cleaning supplies, encouraging customers to bring their own containers to collectively reduce single-use packaging waste. This is not just a shopping space, but also a community hub promoting sustainable concepts." },
+                sustainability: { 'zh-TW': "透過提供無包裝商品，鼓勵自備容器，減少一次性垃圾，實踐減塑生活。", 'en': "By offering unpackaged goods, we encourage bringing your own containers, reducing single-use waste, and practicing a plastic-free lifestyle." },
+                tags: { 'zh-TW': ["無包裝", "減塑", "環保生活", "零廢棄", "在地小農"], 'en': ["Unpackaged", "Plastic-Free", "Eco-friendly Living", "Zero-Waste", "Local Farmers"] },
+                lat: 25.1370,
+                lng: 121.5020
+            }
+        };
+
+        // Shop list data (for map markers and initial card rendering)
+        const shops = [
+            { id: "eco-goodies", lat: 25.0330, lng: 121.5500 },
+            { id: "green-boutique", lat: 25.0339, lng: 121.5432 },
+            { id: "no-package", lat: 25.0378, lng: 121.5679 },
+            { id: "simplastic-guangming", lat: 25.1378, lng: 121.5034 },
+            { id: "threetime-lab", lat: 25.0506, lng: 121.5343 },
+            { id: "house-of-story-wear", lat: 25.054418, lng: 121.510162 },
+            { id: "story-wear-zerowaste", lat: 25.054418, lng: 121.510162 },
+            { id: "garden-selection", lat: 25.0315, lng: 121.5298 },
+            { id: "sinpu-market", lat: 25.0336, lng: 121.5540 },
+            { id: "simplastic-beitou", lat: 25.1370, lng: 121.5020 }
+        ];
+
+        // Function to set the language
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang); // Save language preference
+
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+
+            // Update language toggle button text
+            const langToggleBtn = document.getElementById('language-toggle');
+            const langToggleBtnMobile = document.getElementById('language-toggle-mobile');
+            if (lang === 'zh-TW') {
+                langToggleBtn.textContent = translations['zh-TW'].languageToggle; // English
+                langToggleBtnMobile.textContent = translations['zh-TW'].languageToggle; // English
+                document.documentElement.lang = 'zh-TW';
+            } else {
+                langToggleBtn.textContent = translations['en'].languageToggle; // 繁體中文
+                langToggleBtnMobile.textContent = translations['en'].languageToggle; // 繁體中文
+                document.documentElement.lang = 'en';
+            }
+
+            // Re-render shop cards to update language
+            renderShopCards();
+
+            // If a shop detail modal is open, re-render its content
+            const shopDetailModal = document.getElementById('shop-detail-modal');
+            if (!shopDetailModal.classList.contains('hidden')) {
+                const currentShopId = shopDetailModal.dataset.shopId; // Get the ID of the currently open shop
+                if (currentShopId) {
+                    // Re-call showShopDetail to refresh content and map popup
+                    showShopDetail(currentShopId); 
+                }
+            }
+        }
+
+        // Function to render shop cards
+        function renderShopCards() {
+            const shopCardsContainer = document.getElementById('shop-cards-container');
+            shopCardsContainer.innerHTML = ''; // Clear existing cards
+
+            shops.forEach(shopData => {
+                const shop = shopDetails[shopData.id];
+                if (!shop) return; // Skip if no detail data
+
+                const cardHTML = `
+                    <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
+                        <div class="h-48 bg-green-100 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold">${shop.name[currentLang]}</h3>
+                                <span class="tag px-2 py-1 rounded-full text-xs">${shop.type[currentLang]}</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">${shop.description[currentLang]}</p>
+                            <div class="mb-4">
+                                <div class="flex items-center text-gray-600 text-sm mb-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    ${shop.address[currentLang]}
+                                </div>
+                                <div class="flex items-center text-gray-600 text-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    ${shop.hours[currentLang]}
+                                </div>
+                            </div>
+                            <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('${shopData.id}')" data-i18n="viewDetailsBtn">${translations[currentLang].viewDetailsBtn}</button>
+                        </div>
+                    </div>
+                `;
+                shopCardsContainer.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
+
+        // Mobile menu toggle
         document.getElementById('menu-toggle').addEventListener('click', function() {
             const mobileMenu = document.getElementById('mobile-menu');
             mobileMenu.classList.toggle('hidden');
         });
 
-        // 等待DOM完全加載後再初始化地圖
+        // Initialize map after DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化地圖
+            // Initialize map
             const map = L.map('sustainability-map').setView([25.0330, 121.5654], 13);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
             
-            // 添加商店標記
-            const shops = [
-                { id: "eco-goodies", name: "綠好物", lat: 25.0330, lng: 121.5500, type: "家居用品" }, // 綠好物的位置
-                { id: "green-boutique", name: "Green Boutique", lat: 25.0339, lng: 121.5432, type: "服飾" },
-                { id: "no-package", name: "無包裝商店", lat: 25.0378, lng: 121.5679, type: "食品" },
-                // 新增或替換的商店
-                { id: "simplastic-guangming", name: "簡塑慢行 Simplastic", lat: 25.1378, lng: 121.5034, type: "無包裝商店" },
-                { id: "threetime-lab", name: "三時生活實驗室", lat: 25.0506, lng: 121.5343, type: "無包裝商店" },
-                { id: "house-of-story-wear", name: "House of Story Wear 永續百貨", lat: 25.054418, lng: 121.510162, type: "服飾" },
-                { id: "story-wear-zerowaste", name: "Story Wear 零廢時尚", lat: 25.054418, lng: 121.510162, type: "服飾" },
-                { id: "garden-selection", name: "garden文創選物店", lat: 25.0315, lng: 121.5298, type: "文創" },
-                { id: "sinpu-market", name: "心樸市集四維店", lat: 25.0336, lng: 121.5540, type: "食品" },
-                { id: "simplastic-beitou", name: "簡塑慢行 Simplastic (北投中正店)", lat: 25.1370, lng: 121.5020, type: "無包裝商店" }
-            ];
-            
-            shops.forEach(shop => {
-                const marker = L.marker([shop.lat, shop.lng]).addTo(map);
-                marker.bindPopup(`<b>${shop.name}</b><br>${shop.type}<br><a href="#" onclick="showShopDetail('${shop.id}'); return false;" class="text-green-600">查看詳情</a>`);
+            // Add shop markers
+            shops.forEach(shopData => {
+                const shop = shopDetails[shopData.id];
+                if (!shop) return;
+                const marker = L.marker([shopData.lat, shopData.lng]).addTo(map);
+                // Updated popup content to include address
+                marker.bindPopup(`<b>${shop.name[currentLang]}</b><br>${shop.type[currentLang]}<br>${shop.address[currentLang]}<br><a href="#" onclick="showShopDetail('${shopData.id}'); return false;" class="text-green-600">${translations[currentLang].viewDetailsBtn}</a>`);
             });
+
+            // Initial language setup
+            setLanguage(currentLang);
         });
 
-        // 類別篩選按鈕
+        // Language toggle button event listeners
+        document.getElementById('language-toggle').addEventListener('click', function() {
+            setLanguage(currentLang === 'zh-TW' ? 'en' : 'zh-TW');
+        });
+        document.getElementById('language-toggle-mobile').addEventListener('click', function() {
+            setLanguage(currentLang === 'zh-TW' ? 'en' : 'zh-TW');
+        });
+
+
+        // Category filter buttons (logic not implemented yet)
         const filterButtons = document.querySelectorAll('.tag');
         filterButtons.forEach(button => {
             button.addEventListener('click', function() {
-                // 移除所有按鈕的 active 類
+                // Remove active class from all buttons
                 filterButtons.forEach(btn => btn.classList.remove('active'));
-                // 添加當前按鈕的 active 類
+                // Add active class to the current button
                 this.classList.add('active');
-                // 這裡可以添加篩選邏輯
+                // Filtering logic can be added here
             });
         });
 
-        // 店家詳情資料
-        const shopDetails = {
-            "eco-goodies": {
-                name: "綠好物",
-                type: "家居用品",
-                address: "106台北市大安區信義路四段187之2號",
-                hours: "週一至三、五 11:00-19:00，週四 12:00-19:00，週六日休息",
-                phone: "02 2706 8819",
-                email: "contact@ecogoodies.com.tw",
-                website: "ecogoodies.com.tw",
-                description: "綠好物是一家專注於提供環保、永續生活用品的商店，致力於推廣零廢棄生活方式。",
-                longDescription: "我們提供各種環保替代品，從日常生活用品到個人護理產品，幫助消費者減少塑料使用和環境足跡。我們的產品經過嚴格篩選，確保它們是真正環保且實用的。",
-                sustainability: "我們的使命是讓永續生活變得簡單且可行。我們的產品都經過嚴格篩選，確保它們是真正環保、耐用且實用的。我們優先選擇使用可再生材料、可生物降解或可回收的產品，並與符合道德標準的供應商合作。",
-                tags: ["零廢棄", "環保生活", "可重複使用", "無塑", "永續消費"],
-                lat: 25.0330,
-                lng: 121.5500,
-                collections: [
-                    {
-                        name: "廚房零廢棄系列",
-                        description: "包括可重複使用的食物保鮮袋、蜂蠟保鮮膜、竹製餐具等，幫助您建立一個無塑廚房。"
-                    },
-                    {
-                        name: "個人護理系列",
-                        description: "提供天然成分製成的肥皂、洗髮餅、竹牙刷等，減少塑料包裝和有害化學物質。"
-                    }
-                ]
-            },
-            "green-boutique": {
-                name: "Green Boutique",
-                type: "服飾",
-                address: "106台北市大安區大安路一段51巷23-4號",
-                hours: "12:30 - 21:00",
-                phone: "02 8771 4166",
-                email: "contact@greenboutique.com",
-                website: "greenboutique.com",
-                description: "Green Boutique 是台北大安區的永續時尚服飾店，我們致力於提供環保、永續的時尚選擇。我們的服飾系列包括由有機棉、回收材料和環保染料製成的衣物，讓您在追求時尚的同時也能對地球友善。",
-                longDescription: "我們與本地和國際設計師合作，確保每件商品都符合我們的永續標準，同時保持時尚和高品質。在 Green Boutique，我們相信時尚和永續可以共存，並且致力於推廣這種理念。",
-                sustainability: "我們的永續理念基於三個核心原則：環保材料、公平貿易和減少浪費。我們所有的服飾都使用環保材料製成，如有機棉、回收聚酯纖維和天然染料。我們確保我們的供應鏈符合公平貿易標準，讓每個參與製作過程的人都能獲得公平的報酬。此外，我們實施了多項減少浪費的措施，包括最小化包裝和舊衣回收計劃。",
-                tags: ["永續時尚", "有機材料", "公平貿易", "環保染料", "減少浪費"],
-                lat: 25.0339,
-                lng: 121.5432,
-                collections: [
-                    {
-                        name: "春夏有機系列",
-                        description: "使用100%有機棉製成的輕盈服飾，適合溫暖季節穿著。色彩來自天然植物染料，展現自然柔和的色調。"
-                    },
-                    {
-                        name: "回收再生系列",
-                        description: "由回收塑料瓶製成的創新面料，打造時尚且環保的服飾。每件衣物都標明了其減少的碳足跡。"
-                    }
-                ],
-                videoId: "dQw4w9WgXcQ" // YouTube 影片 ID
-            },
-            "no-package": {
-                name: "無包裝商店",
-                type: "食品",
-                address: "110台北市信義區松山路123號",
-                hours: "10:00 - 19:00",
-                phone: "02 2765 3321",
-                email: "info@nopackage.tw",
-                website: "nopackage.tw",
-                description: "專門提供無包裝、散裝商品的永續商店，自備容器購物，減少一次性包裝浪費。",
-                longDescription: "我們的商店提供各種散裝食品、清潔用品和個人護理產品，顧客可以自帶容器購買所需數量，不僅減少包裝浪費，還能避免食物浪費。",
-                sustainability: "我們的目標是減少一次性包裝對環境的影響。通過鼓勵顧客自帶容器，我們每年減少數噸塑料包裝的使用。我們的產品優先選擇本地、有機和公平貿易的選項，進一步減少碳足跡。",
-                tags: ["零廢棄", "無包裝", "有機食品", "本地採購", "減塑生活"],
-                lat: 25.0378,
-                lng: 121.5679
-            },
-            // 新增或替換的商店詳情資料
-            "simplastic-guangming": {
-                name: "簡塑慢行 Simplastic",
-                type: "無包裝商店",
-                address: "台北市北投區光明路2巷2號",
-                hours: "週二至週日 12:00-20:00（週一公休）",
-                phone: "02 2891 1234", // 假設電話
-                email: "info@simplastic.tw", // 假設Email
-                website: "simplastic.tw", // 假設網站
-                description: "推廣無包裝、減塑購物，鼓勵自備容器，減少一次性垃圾。",
-                longDescription: "創辦人希望讓消費者能輕鬆實踐減塑生活，減少浪費，守護環境。店內提供多樣化的無包裝穀物、堅果、果乾、清潔用品及環保生活用品，讓永續消費成為日常。",
-                sustainability: "推廣無包裝、減塑購物，鼓勵自備容器，減少一次性垃圾。",
-                tags: ["無包裝", "減塑", "環保生活", "零廢棄"],
-                lat: 25.1378,
-                lng: 121.5034
-            },
-            "threetime-lab": {
-                name: "三時生活實驗室",
-                type: "無包裝商店",
-                address: "台北市中山區松江路97巷3號",
-                hours: "週一至週日 12:00-20:00",
-                phone: "02 2507 5678", // 假設電話
-                email: "info@threetimelab.tw", // 假設Email
-                website: "threetimelab.tw", // 假設網站
-                description: "所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。",
-                longDescription: "希望透過商店讓消費者能「為想要的世界投票」，實踐永續生活。店內販售裸裝食品、環保餐具、竹牙刷、布衛生棉等友善環境生活用品，提倡綠色消費理念。",
-                sustainability: "所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。",
-                tags: ["無包裝", "減塑", "有意識消費", "環保餐具", "裸裝食品"],
-                lat: 25.0506,
-                lng: 121.5343
-            },
-            "house-of-story-wear": {
-                name: "House of Story Wear 永續百貨",
-                type: "服飾",
-                address: "台北市大同區迪化街一段32巷1號",
-                hours: "週二至週日 13:00-21:00（週一公休）",
-                phone: "02 2555 9876", // 假設電話
-                email: "info@storywear.tw", // 假設Email
-                website: "storywear.tw", // 假設網站
-                description: "提供一個融合永續時尚、性別友善、社區交流的多元空間，推廣循環經濟、服飾回收再利用。",
-                longDescription: "這裡不僅是永續時尚的選物店，更是一個社區交流的平台，融合了永續時尚、性別友善和文化交流。店內有永續時尚服飾、回收布料商品、二手選物，還有咖啡飲品供您休憩。",
-                sustainability: "推廣循環經濟、服飾回收再利用、支持本地小品牌。",
-                tags: ["永續時尚", "循環經濟", "服飾回收", "二手選物", "咖啡"],
-                lat: 25.054418,
-                lng: 121.510162
-            },
-            "story-wear-zerowaste": {
-                name: "Story Wear 零廢時尚",
-                type: "服飾",
-                address: "台北市大同區迪化街一段32巷1號",
-                hours: "週二至週日 13:00-20:00（週一公休）",
-                phone: "02 2555 9876", // 同House of Story Wear
-                email: "info@storywear.tw", // 同House of Story Wear
-                website: "storywear.tw", // 同House of Story Wear
-                description: "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。",
-                longDescription: "創辦人希望改變時尚產業的高耗能與高污染現況，實踐永續時尚。我們將回收牛仔布、剩布等廢棄紡織品，透過設計巧思轉化為獨特的服飾與配件，賦予舊布料新生命。",
-                sustainability: "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。",
-                tags: ["零廢時尚", "回收布料", "紡織廢棄物", "永續時尚", "二手改造"],
-                lat: 25.054418,
-                lng: 121.510162
-            },
-            "garden-selection": {
-                name: "garden文創選物店",
-                type: "文創",
-                address: "台北市大安區永康街31巷9號",
-                hours: "週一至週日 12:00-20:00",
-                phone: "02 2391 5678", // 假設電話
-                email: "info@gardenselection.tw", // 假設Email
-                website: "gardenselection.tw", // 假設網站
-                description: "選品強調環保材質、在地生產，降低運輸碳足跡，推廣台灣設計與永續生活美學。",
-                longDescription: "我們精選來自台灣本地設計師的文創商品，以及使用環保材質製作的生活雜貨。希望透過這些獨具匠心的選品，將台灣的設計能量與永續生活美學推廣給更多人。",
-                sustainability: "選品強調環保材質、在地生產，降低運輸碳足跡。",
-                tags: ["文創", "環保材質", "在地生產", "永續生活美學", "設計選物"],
-                lat: 25.0315,
-                lng: 121.5298
-            },
-            "sinpu-market": {
-                name: "心樸市集四維店",
-                type: "食品",
-                address: "台北市大安區四維路76巷9號",
-                hours: "週一至週日 10:00-21:00",
-                phone: "02 2701 1234", // 假設電話
-                email: "info@sinpumarket.tw", // 假設Email
-                website: "sinpumarket.tw", // 假設網站
-                description: "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。",
-                longDescription: "心樸市集致力於提供健康又友善環境的產品。我們嚴選有機食品、友善環境生活用品，並積極與在地小農合作，讓消費者能輕鬆購得新鮮、安心的食材，同時支持永續農業發展。",
-                sustainability: "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。",
-                tags: ["有機食品", "在地小農", "友善環境", "健康飲食", "無毒生活"],
-                lat: 25.0336,
-                lng: 121.5540
-            },
-            "simplastic-beitou": {
-                name: "簡塑慢行 Simplastic (北投中正店)",
-                type: "無包裝商店",
-                address: "台北市北投區中正街49巷35號",
-                hours: "週一 10:00-13:00, 14:30-19:00; 週二 10:00-13:00, 14:30-19:00; 週三 14:00-21:00; 週四 10:00-13:00, 14:30-19:00; 週五 10:00-13:00, 14:30-19:00; 週六 10:00-13:00, 14:30-19:00",
-                phone: "02 2898 5678", // 假設電話
-                email: "beitou@simplastic.tw", // 假設Email
-                website: "simplastic.tw", // 假設網站
-                description: "販售五穀雜糧、堅果果乾零食及香料；各式環保生活小物、沐浴清潔用品。",
-                longDescription: "簡塑慢行北投中正店是您實踐零廢棄生活的理想選擇。我們提供多種無包裝的食品和清潔用品，鼓勵顧客自備容器，共同減少一次性包裝的浪費。這裡不僅是購物空間，更是推廣永續理念的社群中心。",
-                sustainability: "透過提供無包裝商品，鼓勵自備容器，減少一次性垃圾，實踐減塑生活。",
-                tags: ["無包裝", "減塑", "環保生活", "零廢棄", "在地小農"],
-                lat: 25.1370,
-                lng: 121.5020
-            }
-        };
-
-        // 顯示店家詳情
+        // Display shop details
         function showShopDetail(shopId) {
             const shop = shopDetails[shopId];
             if (!shop) {
-                // 使用自定義訊息框替代 alert
-                showMessageModal('此店家詳情尚未建立，敬請期待！');
+                showMessageModal(translations[currentLang].shopDetailsNotAvailable);
                 return;
             }
 
-            // 準備詳情內容
+            // Store the shopId in the modal for language switching
+            document.getElementById('shop-detail-modal').dataset.shopId = shopId;
+
+            // Prepare detail content
             let detailHTML = `
                 <div class="shop-detail-header py-12 text-white rounded-t-xl">
                     <div class="container mx-auto px-4 text-center">
-                        <h1 class="text-3xl md:text-4xl font-bold mb-2">${shop.name}</h1>
-                        <p class="text-lg">${shop.type}</p>
+                        <h1 class="text-3xl md:text-4xl font-bold mb-2">${shop.name[currentLang]}</h1>
+                        <p class="text-lg">${shop.type[currentLang]}</p>
                     </div>
                 </div>
                 <button id="close-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md z-[1010]">
@@ -817,31 +752,31 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div class="lg:col-span-2">
-                            <h2 class="text-2xl font-bold mb-4">關於我們</h2>
-                            <p class="text-gray-700 mb-4">${shop.description}</p>
-                            ${shop.longDescription ? `<p class="text-gray-700 mb-6">${shop.longDescription}</p>` : ''}
+                            <h2 class="text-2xl font-bold mb-4" data-i18n-dynamic="modalAboutUs">${translations[currentLang].modalAboutUs}</h2>
+                            <p class="text-gray-700 mb-4">${shop.description[currentLang]}</p>
+                            ${shop.longDescription ? `<p class="text-gray-700 mb-6">${shop.longDescription[currentLang]}</p>` : ''}
                             
                             ${shop.sustainability ? `
-                            <h2 class="text-2xl font-bold mb-4">永續理念</h2>
+                            <h2 class="text-2xl font-bold mb-4" data-i18n-dynamic="modalSustainability">${translations[currentLang].modalSustainability}</h2>
                             <div class="mb-6">
-                                <p class="text-gray-700 mb-4">${shop.sustainability}</p>
-                                ${shop.tags && shop.tags.length > 0 ? `
+                                <p class="text-gray-700 mb-4">${shop.sustainability[currentLang]}</p>
+                                ${shop.tags && shop.tags[currentLang] && shop.tags[currentLang].length > 0 ? `
                                 <div class="flex flex-wrap gap-2 mb-4">
-                                    ${shop.tags.map(tag => `<span class="tag px-3 py-1 rounded-full text-sm">${tag}</span>`).join('')}
+                                    ${shop.tags[currentLang].map(tag => `<span class="tag px-3 py-1 rounded-full text-sm">${tag}</span>`).join('')}
                                 </div>
                                 ` : ''}
                             </div>
                             ` : ''}
                             
                             ${shop.videoId ? `
-                            <h2 class="text-2xl font-bold mb-4">影片介紹</h2>
+                            <h2 class="text-2xl font-bold mb-4" data-i18n-dynamic="modalVideoIntro">${translations[currentLang].modalVideoIntro}</h2>
                             <div class="video-container mb-6">
                                 <iframe src="https://www.youtube.com/embed/${shop.videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                             </div>
                             ` : ''}
                             
                             ${shop.collections && shop.collections.length > 0 ? `
-                            <h2 class="text-2xl font-bold mb-4">最新系列</h2>
+                            <h2 class="text-2xl font-bold mb-4" data-i18n-dynamic="modalLatestCollections">${translations[currentLang].modalLatestCollections}</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                 ${shop.collections.map(collection => `
                                 <div class="bg-green-50 rounded-lg p-4">
@@ -850,42 +785,42 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-lg font-bold mb-2">${collection.name}</h3>
-                                    <p class="text-gray-600">${collection.description}</p>
+                                    <h3 class="text-lg font-bold mb-2">${collection.name[currentLang]}</h3>
+                                    <p class="text-gray-600">${collection.description[currentLang]}</p>
                                 </div>
                                 `).join('')}
                             </div>
                             ` : ''}
 
-                            <h2 class="text-2xl font-bold mb-4">永續產品推薦 ✨</h2>
+                            <h2 class="text-2xl font-bold mb-4" data-i18n-dynamic="modalProductRecs">${translations[currentLang].modalProductRecs}</h2>
                             <button id="generate-product-suggestions" class="btn-primary px-6 py-3 rounded-lg font-medium mb-4 flex items-center justify-center">
-                                <span id="generate-button-text">生成產品建議</span>
+                                <span id="generate-button-text" data-i18n-dynamic="generateSuggestionsBtn">${translations[currentLang].generateSuggestionsBtn}</span>
                                 <div id="generate-button-spinner" class="loader hidden ml-2"></div>
                             </button>
-                            <div id="product-suggestions-output" class="bg-green-50 p-4 rounded-lg text-gray-700 min-h-[80px] flex items-center justify-center text-center">
-                                點擊上方按鈕獲取永續產品建議
+                            <div id="product-suggestions-output" class="bg-green-50 p-4 rounded-lg text-gray-700 min-h-[80px] flex items-center justify-center text-center" data-i18n-dynamic="clickToGenerate">
+                                ${translations[currentLang].clickToGenerate}
                             </div>
                         </div>
                         
                         <div class="bg-green-50 p-6 rounded-xl">
-                            <h3 class="text-xl font-bold mb-4">商店資訊</h3>
+                            <h3 class="text-xl font-bold mb-4" data-i18n-dynamic="modalShopInfo">${translations[currentLang].modalShopInfo}</h3>
                             <div class="space-y-4">
                                 <div>
-                                    <h4 class="font-medium text-gray-700">地址</h4>
-                                    <p class="text-gray-600">${shop.address}</p>
+                                    <h4 class="font-medium text-gray-700" data-i18n-dynamic="modalAddress">${translations[currentLang].modalAddress}</h4>
+                                    <p class="text-gray-600">${shop.address[currentLang]}</p>
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-700">營業時間</h4>
-                                    <p class="text-gray-600">${shop.hours}</p>
+                                    <h4 class="font-medium text-gray-700" data-i18n-dynamic="modalOpeningHours">${translations[currentLang].modalOpeningHours}</h4>
+                                    <p class="text-gray-600">${shop.hours[currentLang]}</p>
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-700">聯絡方式</h4>
-                                    <p class="text-gray-600">電話: ${shop.phone || '未提供'}</p>
-                                    <p class="text-gray-600">Email: ${shop.email || '未提供'}</p>
-                                    ${shop.website ? `<p class="text-gray-600">網站: <a href="https://${shop.website}" target="_blank" class="text-green-600 hover:underline">${shop.website}</a></p>` : ''}
+                                    <h4 class="font-medium text-gray-700" data-i18n-dynamic="modalContactInfo">${translations[currentLang].modalContactInfo}</h4>
+                                    <p class="text-gray-600" data-i18n-dynamic="modalPhone">${translations[currentLang].modalPhone}: ${shop.phone || translations[currentLang].notProvided}</p>
+                                    <p class="text-gray-600" data-i18n-dynamic="modalEmail">${translations[currentLang].modalEmail}: ${shop.email || translations[currentLang].notProvided}</p>
+                                    ${shop.website ? `<p class="text-gray-600" data-i18n-dynamic="modalWebsite">${translations[currentLang].modalWebsite}: <a href="https://${shop.website}" target="_blank" class="text-green-600 hover:underline">${shop.website}</a></p>` : ''}
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-700">社群媒體</h4>
+                                    <h4 class="font-medium text-gray-700" data-i18n-dynamic="modalSocialMedia">${translations[currentLang].modalSocialMedia}</h4>
                                     <div class="flex space-x-3 mt-2">
                                         <a href="#" class="text-green-600 hover:text-green-800">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -894,14 +829,15 @@
                                         </a>
                                         <a href="#" class="text-green-600 hover:text-green-800">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.066 9.645c.183 4.04-2.83 8.544-8.164 8.544-1.622 0-3.131-.476-4.402-1.291 1.524.18 3.045-.244 4.252-1.189-1.256-.023-2.317-.854-2.684-1.995.451.086.895.061 1.298-.049-1.381-.278-2.335-1.522-2.304-2.853.388.215.83.344 1.301.359-1.279-.855-1.641-2.544-.889-3.835 1.416 1.738 3.533 2.881 5.92 3.001-.419-1.796.944-3.527 2.799-3.527.825 0 1.572.349 2.096.907.654-.128 1.27-.368 1.824-.697-.215.671-.67 1.233-1.263 1.589.581-.07 1.135-.224 1.649-.453-.384.578-.87 1.084-1.433 1.489z"/>
-                            </svg>
-                        </a>
-                    </div>
+                                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                            </svg>
+                                        </a>
                                     </div>
+                                </div>
+                            </div>
                             
                             <div class="mt-6">
-                                <h3 class="text-xl font-bold mb-4">位置</h3>
+                                <h3 class="text-xl font-bold mb-4" data-i18n-dynamic="modalLocation">${translations[currentLang].modalLocation}</h3>
                                 <div class="h-64 bg-gray-200 rounded-lg overflow-hidden shop-map">
                                     <div id="shop-map-${shopId}" class="h-full w-full"></div>
                                 </div>
@@ -911,16 +847,16 @@
                 </div>
             `;
 
-            // 顯示詳情
+            // Display details
             document.getElementById('shop-detail-content').innerHTML = detailHTML;
             document.getElementById('shop-detail-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; // 防止背景滾動
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
 
-            // 初始化店家地圖
+            // Initialize shop map
             setTimeout(() => {
                 const shopMap = L.map(`shop-map-${shopId}`, {
-                    zoomControl: false, // 移除縮放控制項
-                    attributionControl: false // 移除歸因控制項
+                    zoomControl: false, // Remove zoom controls
+                    attributionControl: false // Remove attribution controls
                 }).setView([shop.lat, shop.lng], 16);
                 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -928,50 +864,51 @@
                 }).addTo(shopMap);
                 
                 const marker = L.marker([shop.lat, shop.lng]).addTo(shopMap);
-                marker.bindPopup(`<b>${shop.name}</b><br>${shop.address}`).openPopup();
+                marker.bindPopup(`<b>${shop.name[currentLang]}</b><br>${shop.address[currentLang]}`).openPopup();
                 
-                // 禁用地圖拖動和縮放，以防止與模態框的滾動衝突
+                // Disable map dragging and zooming to prevent conflict with modal scrolling
                 shopMap.dragging.disable();
                 shopMap.touchZoom.disable();
                 shopMap.doubleClickZoom.disable();
                 shopMap.scrollWheelZoom.disable();
             }, 300);
 
-            // 關閉詳情視窗
+            // Close detail window
             document.getElementById('close-modal').addEventListener('click', function() {
                 document.getElementById('shop-detail-modal').classList.add('hidden');
-                document.body.style.overflow = 'auto'; // 恢復背景滾動
+                document.body.style.overflow = 'auto'; // Restore background scrolling
             });
 
-            // 點擊背景關閉詳情視窗
+            // Click background to close detail window
             document.getElementById('shop-detail-modal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     this.classList.add('hidden');
-                    document.body.style.overflow = 'auto'; // 恢復背景滾動
+                    document.body.style.overflow = 'auto'; // Restore background scrolling
                 }
             });
 
-            // 監聽生成產品建議按鈕
+            // Listen for generate product suggestions button
             document.getElementById('generate-product-suggestions').addEventListener('click', async function() {
                 const outputDiv = document.getElementById('product-suggestions-output');
                 const generateButtonText = document.getElementById('generate-button-text');
                 const generateButtonSpinner = document.getElementById('generate-button-spinner');
 
-                // 顯示載入狀態
-                generateButtonText.textContent = '生成中...';
+                // Show loading state
+                generateButtonText.textContent = translations[currentLang].generatingSuggestions;
                 generateButtonSpinner.classList.remove('hidden');
-                this.disabled = true; // 禁用按鈕防止重複點擊
-                outputDiv.innerHTML = '<div class="text-center">正在為您生成永續產品建議...</div>';
+                this.disabled = true; // Disable button to prevent multiple clicks
+                outputDiv.innerHTML = `<div class="text-center">${translations[currentLang].generatingMessage}</div>`;
 
                 try {
-                    // 構建 LLM 提示
-                    let prompt = `請根據一家名為「${shop.name}」的永續商店，其主要類型為「${shop.type}」，並致力於「${shop.sustainability || shop.description}」，列出5個建議的永續產品，每個產品附上簡短說明。請以條列式呈現，例如：\n- 產品名稱：簡短說明\n- 產品名稱：簡短說明`;
+                    // Build LLM prompt based on current language
+                    let promptLang = currentLang === 'zh-TW' ? '繁體中文' : 'English';
+                    let prompt = `請根據一家名為「${shop.name[currentLang]}」的永續商店，其主要類型為「${shop.type[currentLang]}」，並致力於「${shop.sustainability[currentLang] || shop.description[currentLang]}」，列出5個建議的永續產品，每個產品附上簡短說明。請以條列式呈現，例如：\n- 產品名稱：簡短說明\n請以${promptLang}回應。`;
 
-                    // 呼叫 Gemini API
+                    // Call Gemini API
                     let chatHistory = [];
                     chatHistory.push({ role: "user", parts: [{ text: prompt }] });
                     const payload = { contents: chatHistory };
-                    const apiKey = ""; // Canvas 將在運行時自動提供 API 金鑰
+                    const apiKey = ""; // Canvas will automatically provide the API key at runtime
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                     const response = await fetch(apiUrl, {
@@ -985,7 +922,7 @@
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
                         const text = result.candidates[0].content.parts[0].text;
-                        // 將生成的文本轉換為 HTML 列表
+                        // Convert generated text to HTML list
                         const htmlContent = text.split('\n').map(line => {
                             if (line.trim().startsWith('-')) {
                                 return `<li class="mb-1">${line.trim().substring(1).trim()}</li>`;
@@ -994,35 +931,29 @@
                         }).filter(Boolean).join('');
                         outputDiv.innerHTML = `<ul class="list-disc list-inside text-left">${htmlContent}</ul>`;
                     } else {
-                        outputDiv.innerHTML = '<div class="text-red-500">抱歉，未能生成產品建議。請稍後再試。</div>';
+                        outputDiv.innerHTML = `<div class="text-red-500">${translations[currentLang].generationFailed}</div>`;
                         console.error('Gemini API response structure unexpected:', result);
                     }
                 } catch (error) {
-                    outputDiv.innerHTML = '<div class="text-red-500">生成產品建議時發生錯誤。請檢查網路連線或稍後再試。</div>';
+                    outputDiv.innerHTML = `<div class="text-red-500">${translations[currentLang].generationError}</div>`;
                     console.error('Error calling Gemini API:', error);
                 } finally {
-                    // 恢復按鈕狀態
-                    generateButtonText.textContent = '生成產品建議';
+                    // Restore button state
+                    generateButtonText.textContent = translations[currentLang].generateSuggestionsBtn;
                     generateButtonSpinner.classList.add('hidden');
                     this.disabled = false;
                 }
             });
         }
 
-        // 自定義訊息框函數 (替代 alert)
+        // Custom message box function (replaces alert)
         function showMessageModal(message) {
-            const modalHtml = `
-                <div id="custom-message-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[2000] flex items-center justify-center">
-                    <div class="bg-white rounded-lg p-6 shadow-xl max-w-sm mx-auto text-center">
-                        <p class="text-gray-800 text-lg mb-4">${message}</p>
-                        <button id="close-message-modal" class="btn-primary px-6 py-2 rounded-lg font-medium">確定</button>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const messageModal = document.getElementById('custom-message-modal');
+            document.getElementById('message-modal-text').textContent = message;
+            messageModal.classList.remove('hidden');
 
             document.getElementById('close-message-modal').addEventListener('click', function() {
-                document.getElementById('custom-message-modal').remove();
+                messageModal.classList.add('hidden');
             });
         }
     </script>
