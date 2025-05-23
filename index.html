@@ -128,10 +128,24 @@
                 <a href="#map" class="text-gray-700 hover:text-green-600 transition" data-i18n="map">地圖</a>
                 <a href="#shops" class="text-gray-700 hover:text-green-600 transition" data-i18n="shopList">商店列表</a>
                 <a href="#newsletter" class="text-gray-700 hover:text-green-600 transition" data-i18n="newsletter">訂閱電子報</a>
-                <button id="language-toggle" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition">English</button>
+                <select id="language-select" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition cursor-pointer">
+                    <option value="zh-TW" data-i18n="langChinese">繁體中文</option>
+                    <option value="en" data-i18n="langEnglish">English</option>
+                    <option value="fr" data-i18n="langFrench">Français</option>
+                    <option value="de" data-i18n="langGerman">Deutsch</option>
+                    <option value="es" data-i18n="langSpanish">Español</option>
+                    <option value="la" data-i18n="langLatin">Latin</option>
+                </select>
             </div>
             <div class="md:hidden flex items-center">
-                <button id="language-toggle-mobile" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition mr-2">English</button>
+                <select id="language-select-mobile" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition cursor-pointer mr-2">
+                    <option value="zh-TW" data-i18n="langChinese">繁體中文</option>
+                    <option value="en" data-i18n="langEnglish">English</option>
+                    <option value="fr" data-i18n="langFrench">Français</option>
+                    <option value="de" data-i18n="langGerman">Deutsch</option>
+                    <option value="es" data-i18n="langSpanish">Español</option>
+                    <option value="la" data-i18n="langLatin">Latin</option>
+                </select>
                 <button id="menu-toggle" class="text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -289,7 +303,12 @@
                 map: '地圖',
                 shopList: '商店列表',
                 newsletter: '訂閱電子報',
-                languageToggle: 'English',
+                langChinese: '繁體中文', // 新增語言選項的翻譯鍵
+                langEnglish: 'English', // 新增語言選項的翻譯鍵
+                langFrench: 'Français', // 新增語言選項的翻譯鍵
+                langGerman: 'Deutsch', // 新增語言選項的翻譯鍵
+                langSpanish: 'Español', // 新增語言選項的翻譯鍵
+                langLatin: 'Latin', // 新增語言選項的翻譯鍵
                 heroTitle: '探索台灣永續商店',
                 heroSubtitle: '找到支持環保、公平貿易和永續發展的商店，一起為地球盡一份心力',
                 viewMapBtn: '查看地圖',
@@ -344,7 +363,12 @@
                 map: 'Map',
                 shopList: 'Shop List',
                 newsletter: 'Newsletter',
-                languageToggle: '繁體中文',
+                langChinese: '繁體中文',
+                langEnglish: 'English',
+                langFrench: 'Français',
+                langGerman: 'Deutsch',
+                langSpanish: 'Español',
+                langLatin: 'Latin',
                 heroTitle: 'Explore Taiwan\'s Sustainable Stores',
                 heroSubtitle: 'Find stores that support environmental protection, fair trade, and sustainable development, and contribute to the Earth together.',
                 viewMapBtn: 'View Map',
@@ -391,6 +415,250 @@
                 shopDetailsNotAvailable: 'Shop details not yet available, please look forward to it!',
                 okButton: 'OK',
                 notProvided: 'Not provided'
+            },
+            // 法語翻譯 (Français)
+            'fr': {
+                pageTitle: 'Carte des Magasins Durables - Accueil',
+                appName: 'Carte des Magasins Durables',
+                home: 'Accueil',
+                map: 'Carte',
+                shopList: 'Liste des Magasins',
+                newsletter: 'Newsletter',
+                langChinese: '繁體中文',
+                langEnglish: 'English',
+                langFrench: 'Français',
+                langGerman: 'Deutsch',
+                langSpanish: 'Español',
+                langLatin: 'Latin',
+                heroTitle: 'Explorez les Magasins Durables de Taïwan',
+                heroSubtitle: 'Trouvez des magasins qui soutiennent la protection de l\'environnement, le commerce équitable et le développement durable, et contribuez ensemble à la Terre.',
+                viewMapBtn: 'Voir la Carte',
+                browseShopsBtn: 'Parcourir la Liste des Magasins',
+                searchTitle: 'Rechercher des Magasins Durables',
+                searchPlaceholder: 'Entrez le nom du magasin ou l\'adresse...',
+                filterCategoryTitle: 'Filtrer par Catégorie',
+                filterAll: 'Tout',
+                filterApparel: 'Vêtements',
+                filterFood: 'Alimentation',
+                filterCafe: 'Café',
+                filterHomeGoods: 'Articles Ménagers',
+                filterZeroWaste: 'Magasins Zéro Déchet',
+                filterSecondHand: 'Magasins d\'Occasion',
+                filterCreative: 'Créatif & Culturel',
+                mapSectionTitle: 'Carte des Magasins Durables',
+                shopListSectionTitle: 'Liste des Magasins Durables',
+                viewDetailsBtn: 'Voir les Détails',
+                loadMoreBtn: 'Charger Plus',
+                newsletterTitle: 'Abonnez-vous à la Newsletter Vie Durable',
+                newsletterSubtitle: 'Recevez les dernières informations sur les magasins durables, des conseils de vie écologique et des offres spéciales',
+                newsletterPlaceholder: 'Votre e-mail',
+                subscribeBtn: 'S\'abonner',
+                footerAppName: 'Carte des Magasins Durables',
+                footerAppDescription: 'Aider les consommateurs à trouver et à soutenir les magasins de développement durable, contribuant ensemble à la Terre.',
+                contactUsTitle: 'Nous Contacter',
+                contactUsText: 'Pour toute question ou suggestion, veuillez nous contacter',
+                contactUsEmail: 'E-mail: info@sustainablemap.tw',
+                followUsTitle: 'Suivez-nous',
+                copyright: '© 2023 Carte des Magasins Durables - Tous Droits Réservés',
+                modalAboutUs: 'À Propos de Nous',
+                modalSustainability: 'Philosophie de Durabilité',
+                modalVideoIntro: 'Introduction Vidéo',
+                modalLatestCollections: 'Dernières Collections',
+                modalShopInfo: 'Informations sur le Magasin',
+                modalAddress: 'Adresse',
+                modalOpeningHours: 'Heures d\'Ouverture',
+                modalContactInfo: 'Coordonnées',
+                modalPhone: 'Téléphone',
+                modalEmail: 'E-mail',
+                modalWebsite: 'Site Web',
+                modalSocialMedia: 'Réseaux Sociaux',
+                modalLocation: 'Localisation',
+                shopDetailsNotAvailable: 'Les détails du magasin ne sont pas encore disponibles, veuillez patienter !',
+                okButton: 'OK',
+                notProvided: 'Non fourni'
+            },
+            // 德語翻譯 (Deutsch)
+            'de': {
+                pageTitle: 'Karte der Nachhaltigen Geschäfte - Startseite',
+                appName: 'Karte der Nachhaltigen Geschäfte',
+                home: 'Startseite',
+                map: 'Karte',
+                shopList: 'Geschäftsliste',
+                newsletter: 'Newsletter',
+                langChinese: '繁體中文',
+                langEnglish: 'English',
+                langFrench: 'Français',
+                langGerman: 'Deutsch',
+                langSpanish: 'Español',
+                langLatin: 'Latin',
+                heroTitle: 'Entdecken Sie Taiwans Nachhaltige Geschäfte',
+                heroSubtitle: 'Finden Sie Geschäfte, die Umweltschutz, fairen Handel und nachhaltige Entwicklung unterstützen, und tragen Sie gemeinsam zum Wohl der Erde bei.',
+                viewMapBtn: 'Karte Ansehen',
+                browseShopsBtn: 'Geschäftsliste Durchsuchen',
+                searchTitle: 'Nach Nachhaltigen Geschäften Suchen',
+                searchPlaceholder: 'Geschäftsname oder Adresse eingeben...',
+                filterCategoryTitle: 'Nach Kategorie Filtern',
+                filterAll: 'Alle',
+                filterApparel: 'Bekleidung',
+                filterFood: 'Lebensmittel',
+                filterCafe: 'Café',
+                filterHomeGoods: 'Haushaltswaren',
+                filterZeroWaste: 'Unverpackt-Läden',
+                filterSecondHand: 'Second-Hand-Läden',
+                filterCreative: 'Kreatives & Kulturelles',
+                mapSectionTitle: 'Karte der Nachhaltigen Geschäfte',
+                shopListSectionTitle: 'Liste der Nachhaltigen Geschäfte',
+                viewDetailsBtn: 'Details Ansehen',
+                loadMoreBtn: 'Mehr Laden',
+                newsletterTitle: 'Nachhaltiger Leben Newsletter Abonnieren',
+                newsletterSubtitle: 'Erhalten Sie die neuesten Informationen zu nachhaltigen Geschäften, umweltfreundliche Lebenstipps und Sonderangebote',
+                newsletterPlaceholder: 'Ihre E-Mail-Adresse',
+                subscribeBtn: 'Abonnieren',
+                footerAppName: 'Karte der Nachhaltigen Geschäfte',
+                footerAppDescription: 'Verbrauchern helfen, nachhaltige Entwicklungsgeschäfte zu finden und zu unterstützen, gemeinsam zur Erde beitragen.',
+                contactUsTitle: 'Kontaktieren Sie Uns',
+                contactUsText: 'Bei Fragen oder Anregungen kontaktieren Sie uns bitte',
+                contactUsEmail: 'E-Mail: info@sustainablemap.tw',
+                followUsTitle: 'Folgen Sie Uns',
+                copyright: '© 2023 Karte der Nachhaltigen Geschäfte - Alle Rechte Vorbehalten',
+                modalAboutUs: 'Über Uns',
+                modalSustainability: 'Nachhaltigkeitsphilosophie',
+                modalVideoIntro: 'Video-Einführung',
+                modalLatestCollections: 'Neueste Kollektionen',
+                modalShopInfo: 'Geschäftsinformationen',
+                modalAddress: 'Adresse',
+                modalOpeningHours: 'Öffnungszeiten',
+                modalContactInfo: 'Kontaktinformationen',
+                modalPhone: 'Telefon',
+                modalEmail: 'E-Mail',
+                modalWebsite: 'Webseite',
+                modalSocialMedia: 'Soziale Medien',
+                modalLocation: 'Standort',
+                shopDetailsNotAvailable: 'Geschäftsdetails noch nicht verfügbar, bitte freuen Sie sich darauf!',
+                okButton: 'OK',
+                notProvided: 'Nicht angegeben'
+            },
+            // 西班牙語翻譯 (Español)
+            'es': {
+                pageTitle: 'Mapa de Tiendas Sostenibles - Inicio',
+                appName: 'Mapa de Tiendas Sostenibles',
+                home: 'Inicio',
+                map: 'Mapa',
+                shopList: 'Lista de Tiendas',
+                newsletter: 'Boletín',
+                langChinese: '繁體中文',
+                langEnglish: 'English',
+                langFrench: 'Français',
+                langGerman: 'Deutsch',
+                langSpanish: 'Español',
+                langLatin: 'Latin',
+                heroTitle: 'Explora las Tiendas Sostenibles de Taiwán',
+                heroSubtitle: 'Encuentra tiendas que apoyan la protección del medio ambiente, el comercio justo y el desarrollo sostenible, y contribuye junto a la Tierra.',
+                viewMapBtn: 'Ver Mapa',
+                browseShopsBtn: 'Explorar Lista de Tiendas',
+                searchTitle: 'Buscar Tiendas Sostenibles',
+                searchPlaceholder: 'Introduce el nombre o la dirección de la tienda...',
+                filterCategoryTitle: 'Filtrar por Categoría',
+                filterAll: 'Todo',
+                filterApparel: 'Ropa',
+                filterFood: 'Comida',
+                filterCafe: 'Cafetería',
+                filterHomeGoods: 'Artículos para el Hogar',
+                filterZeroWaste: 'Tiendas de Cero Residuos',
+                filterSecondHand: 'Tiendas de Segunda Mano',
+                filterCreative: 'Creativo y Cultural',
+                mapSectionTitle: 'Mapa de Tiendas Sostenibles',
+                shopListSectionTitle: 'Lista de Tiendas Sostenibles',
+                viewDetailsBtn: 'Ver Detalles',
+                loadMoreBtn: 'Cargar Más',
+                newsletterTitle: 'Suscríbete al Boletín de Vida Sostenible',
+                newsletterSubtitle: 'Recibe la última información sobre tiendas sostenibles, consejos de vida ecológica y ofertas especiales',
+                newsletterPlaceholder: 'Tu correo electrónico',
+                subscribeBtn: 'Suscribirse',
+                footerAppName: 'Mapa de Tiendas Sostenibles',
+                footerAppDescription: 'Ayudando a los consumidores a encontrar y apoyar tiendas de desarrollo sostenible, contribuyendo juntos a la Tierra.',
+                contactUsTitle: 'Contáctanos',
+                contactUsText: 'Para cualquier pregunta o sugerencia, por favor contáctanos',
+                contactUsEmail: 'Correo electrónico: info@sustainablemap.tw',
+                followUsTitle: 'Síguenos',
+                copyright: '© 2023 Mapa de Tiendas Sostenibles - Todos los Derechos Reservados',
+                modalAboutUs: 'Sobre Nosotros',
+                modalSustainability: 'Filosofía de Sostenibilidad',
+                modalVideoIntro: 'Introducción en Video',
+                modalLatestCollections: 'Últimas Colecciones',
+                modalShopInfo: 'Información de la Tienda',
+                modalAddress: 'Dirección',
+                modalOpeningHours: 'Horario de Apertura',
+                modalContactInfo: 'Información de Contacto',
+                modalPhone: 'Teléfono',
+                modalEmail: 'Correo electrónico',
+                modalWebsite: 'Sitio web',
+                modalSocialMedia: 'Redes Sociales',
+                modalLocation: 'Ubicación',
+                shopDetailsNotAvailable: 'Los detalles de la tienda aún no están disponibles, ¡espéralos con ansias!',
+                okButton: 'OK',
+                notProvided: 'No proporcionado'
+            },
+            // 拉丁語翻譯 (Latin) - 請注意，拉丁語可能沒有直接的現代詞彙，這裡僅作示範，可能需要更精確的翻譯
+            'la': {
+                pageTitle: 'Tabula Copiarum Sustentabilium - Pagina Prima',
+                appName: 'Tabula Copiarum Sustentabilium',
+                home: 'Pagina Prima',
+                map: 'Tabula',
+                shopList: 'Index Copiarum',
+                newsletter: 'Epistula Nuntia',
+                langChinese: '繁體中文',
+                langEnglish: 'English',
+                langFrench: 'Français',
+                langGerman: 'Deutsch',
+                langSpanish: 'Español',
+                langLatin: 'Latin',
+                heroTitle: 'Explora Copias Sustentabiles Taiwaniae',
+                heroSubtitle: 'Reperi copias quae tutelam naturae, commercium aequum, progressionemque sustentabilem adiuvant, et una pro Terra opera da.',
+                viewMapBtn: 'Vide Tabulam',
+                browseShopsBtn: 'Percurrere Indicem Copiarum',
+                searchTitle: 'Quaerere Copias Sustentabiles',
+                searchPlaceholder: 'Intra nomen copiae vel inscriptionem...',
+                filterCategoryTitle: 'Per Categoriem Filtra',
+                filterAll: 'Omnia',
+                filterApparel: 'Vestimenta',
+                filterFood: 'Cibi',
+                filterCafe: 'Taberna Coffeae',
+                filterHomeGoods: 'Res Domesticae',
+                filterZeroWaste: 'Copiae Sine Vaste',
+                filterSecondHand: 'Copiae Secundae Manus',
+                filterCreative: 'Creativum et Culturale',
+                mapSectionTitle: 'Tabula Copiarum Sustentabilium',
+                shopListSectionTitle: 'Index Copiarum Sustentabilium',
+                viewDetailsBtn: 'Vide Singula',
+                loadMoreBtn: 'Plura Carica',
+                newsletterTitle: 'Subscribere Epistulae Nuntiae Vitae Sustentabilis',
+                newsletterSubtitle: 'Accipe recentissimas informationes de copiia sustentabilibus, consilia vitae naturae amicae, et oblationes speciales',
+                newsletterPlaceholder: 'Tua epistula electronica',
+                subscribeBtn: 'Subscribere',
+                footerAppName: 'Tabula Copiarum Sustentabilium',
+                footerAppDescription: 'Adiuvare consumptores ut copias progressionis sustentabilis inveniant et sustineant, una pro Terra cooperantes.',
+                contactUsTitle: 'Contacta Nos',
+                contactUsText: 'Pro quibusvis quaestionibus vel suggestionibus, quaeso nos contacta',
+                contactUsEmail: 'Epistula electronica: info@sustainablemap.tw',
+                followUsTitle: 'Sequere Nos',
+                copyright: '© 2023 Tabula Copiarum Sustentabilium - Omnia Iura Reservata',
+                modalAboutUs: 'De Nobis',
+                modalSustainability: 'Philosophia Sustentabilitatis',
+                modalVideoIntro: 'Introductio Video',
+                modalLatestCollections: 'Novissimae Collectiones',
+                modalShopInfo: 'Informatio Copiae',
+                modalAddress: 'Inscriptio',
+                modalOpeningHours: 'Horae Aperturae',
+                modalContactInfo: 'Contacta Informatio',
+                modalPhone: 'Telephonum',
+                modalEmail: 'Epistula electronica',
+                modalWebsite: 'Situs Interretialis',
+                modalSocialMedia: 'Media Socialia',
+                modalLocation: 'Locus',
+                shopDetailsNotAvailable: 'Singula copiae nondum praesto sunt, quaeso exspecta!',
+                okButton: 'Bene',
+                notProvided: 'Non provisum'
             }
         };
 
@@ -399,158 +667,158 @@
         // Shop data, now with bilingual fields for translatable content
         const shopDetails = {
             "eco-goodies": {
-                name: { 'zh-TW': "綠好物", 'en': "Eco Goodies" },
-                type: { 'zh-TW': "家居用品", 'en': "Home Goods" },
-                address: { 'zh-TW': "106台北市大安區信義路四段187之2號", 'en': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan" },
-                hours: { 'zh-TW': "週一至三、五 11:00-19:00，週四 12:00-19:00，週六日休息", 'en': "Mon-Wed, Fri 11:00-19:00, Thu 12:00-19:00, Closed Sat-Sun" },
+                name: { 'zh-TW': "綠好物", 'en': "Eco Goodies", 'fr': "Eco Goodies", 'de': "Eco Goodies", 'es': "Eco Goodies", 'la': "Eco Goodies" },
+                type: { 'zh-TW': "家居用品", 'en': "Home Goods", 'fr': "Articles Ménagers", 'de': "Haushaltswaren", 'es': "Artículos para el Hogar", 'la': "Res Domesticae" },
+                address: { 'zh-TW': "106台北市大安區信義路四段187之2號", 'en': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan", 'fr': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan", 'de': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan", 'es': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan", 'la': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan" },
+                hours: { 'zh-TW': "週一至三、五 11:00-19:00，週四 12:00-19:00，週六日休息", 'en': "Mon-Wed, Fri 11:00-19:00, Thu 12:00-19:00, Closed Sat-Sun", 'fr': "Lun-Mer, Ven 11:00-19:00, Jeu 12:00-19:00, Fermé Sam-Dim", 'de': "Mo-Mi, Fr 11:00-19:00, Do 12:00-19:00, Sa-So geschlossen", 'es': "Lun-Mié, Vie 11:00-19:00, Jue 12:00-19:00, Cerrado Sáb-Dom", 'la': "Lun-Mer, Ven 11:00-19:00, Iov 12:00-19:00, Clausum Sat-Sol" },
                 phone: "02 2706 8819",
                 email: "contact@ecogoodies.com.tw",
                 website: "ecogoodies.com.tw",
-                description: { 'zh-TW': "綠好物是一家專注於提供環保、永續生活用品的商店，致力於推廣零廢棄生活方式。", 'en': "Eco Goodies specializes in eco-friendly and sustainable home products, promoting a zero-waste lifestyle." },
-                longDescription: { 'zh-TW': "我們提供各種環保替代品，從日常生活用品到個人護理產品，幫助消費者減少塑料使用和環境足跡。我們的產品經過嚴格篩選，確保它們是真正環保且實用的。", 'en': "We offer a wide range of eco-friendly alternatives, from daily necessities to personal care products, helping consumers reduce plastic use and environmental footprint. Our products are rigorously screened to ensure they are truly eco-friendly and practical." },
-                sustainability: { 'zh-TW': "我們的使命是讓永續生活變得簡單且可行。我們的產品都經過嚴格篩選，確保它們是真正環保、耐用且實用的。我們優先選擇使用可再生材料、可生物降解或可回收的產品，並與符合道德標準的供應商合作。", 'en': "Our mission is to make sustainable living simple and achievable. Our products are rigorously screened to ensure they are truly eco-friendly, durable, and practical. We prioritize products made from renewable, biodegradable, or recyclable materials, and partner with ethically compliant suppliers." },
-                tags: { 'zh-TW': ["零廢棄", "環保生活", "可重複使用", "無塑", "永續消費"], 'en': ["Zero-Waste", "Eco-friendly Living", "Reusable", "Plastic-Free", "Sustainable Consumption"] },
+                description: { 'zh-TW': "綠好物是一家專注於提供環保、永續生活用品的商店，致力於推廣零廢棄生活方式。", 'en': "Eco Goodies specializes in eco-friendly and sustainable home products, promoting a zero-waste lifestyle.", 'fr': "Eco Goodies est un magasin spécialisé dans les produits écologiques et durables pour la maison, promouvant un mode de vie zéro déchet.", 'de': "Eco Goodies ist ein Geschäft, das sich auf umweltfreundliche und nachhaltige Haushaltsprodukte spezialisiert hat und einen Zero-Waste-Lebensstil fördert.", 'es': "Eco Goodies se especializa en productos para el hogar ecológicos y sostenibles, promoviendo un estilo de vida de cero residuos.", 'la': "Eco Goodies copia est quae ad res domesticas oecologicas et sustinebiles spectat, vitam sine vastitate promovens." },
+                longDescription: { 'zh-TW': "我們提供各種環保替代品，從日常生活用品到個人護理產品，幫助消費者減少塑料使用和環境足跡。我們的產品經過嚴格篩選，確保它們是真正環保且實用的。", 'en': "We offer a wide range of eco-friendly alternatives, from daily necessities to personal care products, helping consumers reduce plastic use and environmental footprint. Our products are rigorously screened to ensure they are truly eco-friendly and practical.", 'fr': "Nous offrons une large gamme d'alternatives écologiques, des nécessités quotidiennes aux produits de soins personnels, aidant les consommateurs à réduire l'utilisation du plastique et leur empreinte environnementale. Nos produits sont rigoureusement sélectionnés pour s'assurer qu'ils sont vraiment écologiques et pratiques.", 'de': "Wir bieten eine breite Palette umweltfreundlicher Alternativen, von alltäglichen Notwendigkeiten bis hin zu Körperpflegeprodukten, die Verbrauchern helfen, den Plastikverbrauch und den ökologischen Fußabdruck zu reduzieren. Unsere Produkte werden streng geprüft, um sicherzustellen, dass sie wirklich umweltfreundlich und praktisch sind.", 'es': "Ofrecemos una amplia gama de alternativas ecológicas, desde necesidades diarias hasta productos de cuidado personal, ayudando a los consumidores a reducir el uso de plástico y la huella ambiental. Nuestros productos son rigurosamente seleccionados para garantizar que son verdaderamente ecológicos y prácticos.", 'la': "Varias res oecologicae offerimus, a quotidianis necessitatibus ad curam personalem, adiuvantes consumptores ad usum plastici et vestigium environmentalem reducere. Nostra producta diligenter examinantur ut vere oecologica et utilia sint." },
+                sustainability: { 'zh-TW': "我們的使命是讓永續生活變得簡單且可行。我們的產品都經過嚴格篩選，確保它們是真正環保、耐用且實用的。我們優先選擇使用可再生材料、可生物降解或可回收的產品，並與符合道德標準的供應商合作。", 'en': "Our mission is to make sustainable living simple and achievable. Our products are rigorously screened to ensure they are truly eco-friendly, durable, and practical. We prioritize products made from renewable, biodegradable, or recyclable materials, and partner with ethically compliant suppliers.", 'fr': "Notre mission est de rendre la vie durable simple et réalisable. Nos produits sont rigoureusement sélectionnés pour s'assurer qu'ils sont vraiment écologiques, durables et pratiques. Nous privilégions les produits fabriqués à partir de matériaux renouvelables, biodégradables ou recyclables, et nous collaborons avec des fournisseurs conformes à l'éthique.", 'de': "Unsere Mission ist es, nachhaltiges Leben einfach und erreichbar zu machen. Unsere Produkte werden streng geprüft, um sicherzustellen, dass sie wirklich umweltfreundlich, langlebig und praktisch sind. Wir bevorzugen Produkte aus erneuerbaren, biologisch abbaubaren oder recycelbaren Materialien und arbeiten mit ethisch einwandfreien Lieferanten zusammen.", 'es': "Nuestra misión es hacer que la vida sostenible sea simple y alcanzable. Nuestros productos son rigurosamente seleccionados para garantizar que son verdaderamente ecológicos, duraderos y prácticos. Priorizamos productos hechos de materiales renovables, biodegradables o reciclables, y nos asociamos con proveedores éticamente conformes.", 'la': "Nostra missio est vitam sustentabilem simplicem et possibilem facere. Nostra producta diligenter examinantur ut vere oecologica, durabilia, et utilia sint. Prioritatem damus productis ex materiis renovabilibus, biodegradabilibus, vel recycabilibus factis, et cum commeatuum praebitoribus ethice conformibus cooperamur." },
+                tags: { 'zh-TW': ["零廢棄", "環保生活", "可重複使用", "無塑", "永續消費"], 'en': ["Zero-Waste", "Eco-friendly Living", "Reusable", "Plastic-Free", "Sustainable Consumption"], 'fr': ["Zéro Déchet", "Vie Écologique", "Réutilisable", "Sans Plastique", "Consommation Durable"], 'de': ["Zero Waste", "Umweltfreundliches Leben", "Wiederverwendbar", "Plastikfrei", "Nachhaltiger Konsum"], 'es': ["Cero Residuos", "Vida Ecológica", "Reutilizable", "Sin Plástico", "Consumo Sostenible"], 'la': ["Sine Vaste", "Vita Oecologica", "Reutilizabile", "Sine Plastico", "Consumptio Sustentabilis"] },
                 lat: 25.0330,
                 lng: 121.5500,
                 collections: [
                     {
-                        name: { 'zh-TW': "廚房零廢棄系列", 'en': "Zero-Waste Kitchen Collection" },
-                        description: { 'zh-TW': "包括可重複使用的食物保鮮袋、蜂蠟保鮮膜、竹製餐具等，幫助您建立一個無塑廚房。", 'en': "Includes reusable food storage bags, beeswax wraps, bamboo utensils, etc., to help you create a plastic-free kitchen." }
+                        name: { 'zh-TW': "廚房零廢棄系列", 'en': "Zero-Waste Kitchen Collection", 'fr': "Collection Cuisine Zéro Déchet", 'de': "Zero-Waste Küchenkollektion", 'es': "Colección Cocina Cero Residuos", 'la': "Collectio Culinae Sine Vaste" },
+                        description: { 'zh-TW': "包括可重複使用的食物保鮮袋、蜂蠟保鮮膜、竹製餐具等，幫助您建立一個無塑廚房。", 'en': "Includes reusable food storage bags, beeswax wraps, bamboo utensils, etc., to help you create a plastic-free kitchen.", 'fr': "Comprend des sacs de conservation alimentaire réutilisables, des emballages en cire d'abeille, des ustensiles en bambou, etc., pour vous aider à créer une cuisine sans plastique.", 'de': "Umfasst wiederverwendbare Lebensmittelbeutel, Bienenwachstücher, Bambusutensilien usw., um Ihnen zu helfen, eine plastikfreie Küche zu schaffen.", 'es': "Incluye bolsas de almacenamiento de alimentos reutilizables, envoltorios de cera de abeja, utensilios de bambú, etc., para ayudarte a crear una cocina sin plástico.", 'la': "Sacculos cibi reutilizabiles, cerae apium involumenta, utensilia bambuina, etc., comprehendit, ut culinam sine plastico crees." }
                     },
                     {
-                        name: { 'zh-TW': "個人護理系列", 'en': "Personal Care Collection" },
-                        description: { 'zh-TW': "提供天然成分製成的肥皂、洗髮餅、竹牙刷等，減少塑料包裝和有害化學物質。", 'en': "Offers soaps, shampoo bars, bamboo toothbrushes made from natural ingredients, reducing plastic packaging and harmful chemicals." }
+                        name: { 'zh-TW': "個人護理系列", 'en': "Personal Care Collection", 'fr': "Collection Soins Personnels", 'de': "Körperpflegekollektion", 'es': "Colección Cuidado Personal", 'la': "Collectio Curae Personalis" },
+                        description: { 'zh-TW': "提供天然成分製成的肥皂、洗髮餅、竹牙刷等，減少塑料包裝和有害化學物質。", 'en': "Offers soaps, shampoo bars, bamboo toothbrushes made from natural ingredients, reducing plastic packaging and harmful chemicals.", 'fr': "Propose des savons, des shampoings solides, des brosses à dents en bambou fabriqués à partir d'ingrédients naturels, réduisant les emballages plastiques et les produits chimiques nocifs.", 'de': "Bietet Seifen, Shampoo-Bars, Bambuszahnbürsten aus natürlichen Inhaltsstoffen an, die Plastikverpackungen und schädliche Chemikalien reduzieren.", 'es': "Ofrece jabones, champús sólidos, cepillos de dientes de bambú hechos con ingredientes naturales, reduciendo los envases de plástico y los productos químicos nocivos.", 'la': "Saponem, capilli lavacra, dentifricula bambuina ex ingredientibus naturalibus facta praebet, reducens sarcinas plasticas et chemica nociva." }
                     }
                 ]
             },
             "green-boutique": {
-                name: { 'zh-TW': "Green Boutique", 'en': "Green Boutique" },
-                type: { 'zh-TW': "服飾", 'en': "Apparel" },
-                address: { 'zh-TW': "106台北市大安區大安路一段51巷23-4號", 'en': "No. 23-4, Ln. 51, Sec. 1, Da’an Rd., Da’an Dist., Taipei City 106, Taiwan" },
-                hours: { 'zh-TW': "12:30 - 21:00", 'en': "12:30 PM - 9:00 PM" },
+                name: { 'zh-TW': "Green Boutique", 'en': "Green Boutique", 'fr': "Green Boutique", 'de': "Green Boutique", 'es': "Green Boutique", 'la': "Green Boutique" },
+                type: { 'zh-TW': "服飾", 'en': "Apparel", 'fr': "Vêtements", 'de': "Bekleidung", 'es': "Ropa", 'la': "Vestimenta" },
+                address: { 'zh-TW': "106台北市大安區大安路一段51巷23-4號", 'en': "No. 23-4, Ln. 51, Sec. 1, Da’an Rd., Da’an Dist., Taipei City 106, Taiwan", 'fr': "No. 23-4, Ln. 51, Sec. 1, Da’an Rd., Da’an Dist., Taipei City 106, Taiwan", 'de': "No. 23-4, Ln. 51, Sec. 1, Da’an Rd., Da’an Dist., Taipei City 106, Taiwan", 'es': "No. 23-4, Ln. 51, Sec. 1, Da’an Rd., Da’an Dist., Taipei City 106, Taiwan", 'la': "No. 23-4, Ln. 51, Sec. 1, Da’an Rd., Da’an Dist., Taipei City 106, Taiwan" },
+                hours: { 'zh-TW': "12:30 - 21:00", 'en': "12:30 PM - 9:00 PM", 'fr': "12:30 - 21:00", 'de': "12:30 - 21:00", 'es': "12:30 - 21:00", 'la': "12:30 - 21:00" },
                 phone: "02 8771 4166",
                 email: "contact@greenboutique.com",
                 website: "greenboutique.com",
-                description: { 'zh-TW': "Green Boutique 是台北大安區的永續時尚服飾店，我們致力於提供環保、永續的時尚選擇。我們的服飾系列包括由有機棉、回收材料和環保染料製成的衣物，讓您在追求時尚的同時也能對地球友善。", 'en': "Green Boutique is a sustainable fashion store in Taipei's Da'an District, committed to offering eco-friendly and sustainable fashion choices. Our apparel collection features clothing made from organic cotton, recycled materials, and eco-friendly dyes, allowing you to be stylish while being kind to the Earth." },
-                longDescription: { 'zh-TW': "我們與本地和國際設計師合作，確保每件商品都符合我們的永續標準，同時保持時尚和高品質。在 Green Boutique，我們相信時尚和永續可以共存，並且致力於推廣這種理念。", 'en': "We collaborate with local and international designers to ensure every item meets our sustainability standards, while maintaining style and high quality. At Green Boutique, we believe fashion and sustainability can coexist, and we are committed to promoting this philosophy." },
-                sustainability: { 'zh-TW': "我們的永續理念基於三個核心原則：環保材料、公平貿易和減少浪費。我們所有的服飾都使用環保材料製成，如有機棉、回收聚酯纖維和天然染料。我們確保我們的供應鏈符合公平貿易標準，讓每個參與製作過程的人都能獲得公平的報酬。此外，我們實施了多項減少浪費的措施，包括最小化包裝和舊衣回收計劃。", 'en': "Our sustainability philosophy is based on three core principles: eco-friendly materials, fair trade, and waste reduction. All our apparel is made from sustainable materials like organic cotton, recycled polyester, and natural dyes. We ensure our supply chain adheres to fair trade standards, ensuring fair compensation for everyone involved in the production process. Additionally, we implement various waste reduction measures, including minimal packaging and clothing recycling programs." },
-                tags: { 'zh-TW': ["永續時尚", "有機材料", "公平貿易", "環保染料", "減少浪費"], 'en': ["Sustainable Fashion", "Organic Materials", "Fair Trade", "Eco-friendly Dyes", "Waste Reduction"] },
+                description: { 'zh-TW': "Green Boutique 是台北大安區的永續時尚服飾店，我們致力於提供環保、永續的時尚選擇。我們的服飾系列包括由有機棉、回收材料和環保染料製成的衣物，讓您在追求時尚的同時也能對地球友善。", 'en': "Green Boutique is a sustainable fashion store in Taipei's Da'an District, committed to offering eco-friendly and sustainable fashion choices. Our apparel collection features clothing made from organic cotton, recycled materials, and eco-friendly dyes, allowing you to be stylish while being kind to the Earth.", 'fr': "Green Boutique est un magasin de mode durable dans le district de Da'an à Taipei, engagé à offrir des choix de mode écologiques et durables. Notre collection de vêtements comprend des vêtements fabriqués à partir de coton biologique, de matériaux recyclés et de teintures écologiques, vous permettant d'être élégant tout en étant respectueux de la Terre.", 'de': "Green Boutique ist ein nachhaltiges Modegeschäft im Da'an Distrikt von Taipeh, das sich der Bereitstellung umweltfreundlicher und nachhaltiger Modeoptionen verschrieben hat. Unsere Bekleidungskollektion umfasst Kleidung aus Bio-Baumwolle, recycelten Materialien und umweltfreundlichen Farbstoffen, sodass Sie stilvoll sein können, während Sie die Erde schonen.", 'es': "Green Boutique es una tienda de moda sostenible en el distrito de Da'an de Taipei, comprometida a ofrecer opciones de moda ecológicas y sostenibles. Nuestra colección de ropa presenta prendas hechas de algodón orgánico, materiales reciclados y tintes ecológicos, lo que le permite estar a la moda mientras es amable con la Tierra.", 'la': "Green Boutique copia est vestimentorum sustinebilium in districtu Da'an Taipei, quae electiones vestimentorum oecologicarum et sustinebilium praebere studet. Nostra collectio vestimentorum includit vestes ex bombace organico, materiis recycabilibus, et tincturis oecologicis factas, permittens te elegantem esse dum Terrae amicam serves." },
+                longDescription: { 'zh-TW': "我們與本地和國際設計師合作，確保每件商品都符合我們的永續標準，同時保持時尚和高品質。在 Green Boutique，我們相信時尚和永續可以共存，並且致力於推廣這種理念。", 'en': "We collaborate with local and international designers to ensure every item meets our sustainability standards, while maintaining style and high quality. At Green Boutique, we believe fashion and sustainability can coexist, and we are committed to promoting this philosophy.", 'fr': "Nous collaborons avec des designers locaux et internationaux pour nous assurer que chaque article répond à nos normes de durabilité, tout en conservant style et haute qualité. Chez Green Boutique, nous croyons que la mode et la durabilité peuvent coexister, et nous nous engageons à promouvoir cette philosophie.", 'de': "Wir arbeiten mit lokalen und internationalen Designern zusammen, um sicherzustellen, dass jeder Artikel unseren Nachhaltigkeitsstandards entspricht, während Stil und hohe Qualität erhalten bleiben. Bei Green Boutique glauben wir, dass Mode und Nachhaltigkeit koexistieren können, und wir setzen uns dafür ein, diese Philosophie zu fördern.", 'es': "Colaboramos con diseñadores locales e internacionales para garantizar que cada artículo cumpla con nuestros estándares de sostenibilidad, manteniendo el estilo y la alta calidad. En Green Boutique, creemos que la moda y la sostenibilidad pueden coexistir, y estamos comprometidos a promover esta filosofía.", 'la': "Cum designatoribus localibus et internationalibus cooperamur ut omnia opera nostra signa sustentabilitatis adimpleant, dum elegantia et qualitas alta retinentur. Apud Green Boutique, credimus modum et sustentabilitatem coexistere posse, et hanc philosophiam promovere studemus." },
+                sustainability: { 'zh-TW': "我們的永續理念基於三個核心原則：環保材料、公平貿易和減少浪費。我們所有的服飾都使用環保材料製成，如有機棉、回收聚酯纖維和天然染料。我們確保我們的供應鏈符合公平貿易標準，讓每個參與製作過程的人都能獲得公平的報酬。此外，我們實施了多項減少浪費的措施，包括最小化包裝和舊衣回收計劃。", 'en': "Our sustainability philosophy is based on three core principles: eco-friendly materials, fair trade, and waste reduction. All our apparel is made from sustainable materials like organic cotton, recycled polyester, and natural dyes. We ensure our supply chain adheres to fair trade standards, ensuring fair compensation for everyone involved in the production process. Additionally, we implement various waste reduction measures, including minimal packaging and clothing recycling programs.", 'fr': "Notre philosophie de durabilité repose sur trois principes fondamentaux : les matériaux écologiques, le commerce équitable et la réduction des déchets. Tous nos vêtements sont fabriqués à partir de matériaux durables comme le coton biologique, le polyester recyclé et les teintures naturelles. Nous veillons à ce que notre chaîne d'approvisionnement respecte les normes du commerce équitable, garantissant une rémunération équitable pour toutes les personnes impliquées dans le processus de production. De plus, nous mettons en œuvre diverses mesures de réduction des déchets, y compris un emballage minimal et des programmes de recyclage de vêtements.", 'de': "Unsere Nachhaltigkeitsphilosophie basiert auf drei Kernprinzipien: umweltfreundliche Materialien, fairer Handel und Abfallreduzierung. Alle unsere Kleidungsstücke werden aus nachhaltigen Materialien wie Bio-Baumwolle, recyceltem Polyester und Naturfarbstoffen hergestellt. Wir stellen sicher, dass unsere Lieferkette den Fair-Trade-Standards entspricht, um eine gerechte Vergütung für alle am Produktionsprozess Beteiligten zu gewährleisten. Darüber hinaus setzen wir verschiedene Maßnahmen zur Abfallreduzierung um, einschließlich minimaler Verpackung und Kleiderrecyclingprogrammen.", 'es': "Nuestra filosofía de sostenibilidad se basa en tres principios fundamentales: materiales ecológicos, comercio justo y reducción de residuos. Toda nuestra ropa está hecha de materiales sostenibles como algodón orgánico, poliéster reciclado y tintes naturales. Nos aseguramos de que nuestra cadena de suministro cumpla con los estándares de comercio justo, garantizando una compensación justa para todos los involucrados en el proceso de producción. Además, implementamos varias medidas de reducción de residuos, incluyendo un embalaje mínimo y programas de reciclaje de ropa.", 'la': "Nostra philosophia sustentabilitatis tribus principiis fundamentalibus nititur: materiis oecologicis, commercio aequo, et vastitatis reductione. Omnia nostra vestimenta ex materiis sustinebilibus fiunt, sicut bombace organico, polyester recycabilibus, et tincturis naturalibus. Curamus ut catena nostra suppeditatoria signa commercii aequi observet, ut omnes in processu productionis implicati aequam remunerationem accipiant. Praeterea, varias mensuras vastitatis reductionis implementamus, inter quas minima sarcina et programmae vestimentorum recycabilium." },
+                tags: { 'zh-TW': ["永續時尚", "有機材料", "公平貿易", "環保染料", "減少浪費"], 'en': ["Sustainable Fashion", "Organic Materials", "Fair Trade", "Eco-friendly Dyes", "Waste Reduction"], 'fr': ["Mode Durable", "Matériaux Biologiques", "Commerce Équitable", "Teintures Écologiques", "Réduction des Déchets"], 'de': ["Nachhaltige Mode", "Bio-Materialien", "Fairer Handel", "Umweltfreundliche Farbstoffe", "Abfallreduzierung"], 'es': ["Moda Sostenible", "Materiales Orgánicos", "Comercio Justo", "Tintes Ecológicos", "Reducción de Residuos"], 'la': ["Modus Sustentabilis", "Materiae Organicae", "Commercium Aequum", "Tincturae Oecologicae", "Vastitatis Reductio"] },
                 lat: 25.0339,
                 lng: 121.5432,
                 collections: [
                     {
-                        name: { 'zh-TW': "春夏有機系列", 'en': "Spring/Summer Organic Collection" },
-                        description: { 'zh-TW': "使用100%有機棉製成的輕盈服飾，適合溫暖季節穿著。色彩來自天然植物染料，展現自然柔和的色調。", 'en': "Lightweight apparel made from 100% organic cotton, perfect for warm seasons. Colors derived from natural plant dyes, showcasing soft, natural hues." }
+                        name: { 'zh-TW': "春夏有機系列", 'en': "Spring/Summer Organic Collection", 'fr': "Collection Biologique Printemps/Été", 'de': "Frühjahr/Sommer Bio-Kollektion", 'es': "Colección Orgánica Primavera/Verano", 'la': "Collectio Organica Veris/Aestatis" },
+                        description: { 'zh-TW': "使用100%有機棉製成的輕盈服飾，適合溫暖季節穿著。色彩來自天然植物染料，展現自然柔和的色調。", 'en': "Lightweight apparel made from 100% organic cotton, perfect for warm seasons. Colors derived from natural plant dyes, showcasing soft, natural hues.", 'fr': "Vêtements légers fabriqués à partir de 100% coton biologique, parfaits pour les saisons chaudes. Les couleurs proviennent de teintures végétales naturelles, présentant des teintes douces et naturelles.", 'de': "Leichte Bekleidung aus 100% Bio-Baumwolle, perfekt für warme Jahreszeiten. Farben stammen aus natürlichen Pflanzenfarbstoffen, die sanfte, natürliche Farbtöne zeigen.", 'es': "Prendas ligeras hechas de algodón 100% orgánico, perfectas para las estaciones cálidas. Los colores provienen de tintes vegetales naturales, mostrando tonos suaves y naturales.", 'la': "Vestimenta levis ex 100% bombace organico facta, perfecta ad tempora calida. Colores ex tincturis plantarum naturalium derivati, ostendentes colores molles et naturales." }
                     },
                     {
-                        name: { 'zh-TW': "回收再生系列", 'en': "Recycled & Upcycled Collection" },
-                        description: { 'zh-TW': "由回收塑料瓶製成的創新面料，打造時尚且環保的服飾。每件衣物都標明了其減少的碳足跡。", 'en': "Innovative fabrics made from recycled plastic bottles, creating stylish and eco-friendly apparel. Each garment indicates its reduced carbon footprint." }
+                        name: { 'zh-TW': "回收再生系列", 'en': "Recycled & Upcycled Collection", 'fr': "Collection Recyclée & Upcyclée", 'de': "Recycelte & Upgecycelte Kollektion", 'es': "Colección Reciclada y Upcycled", 'la': "Collectio Recycabilis et Upcyclata" },
+                        description: { 'zh-TW': "由回收塑料瓶製成的創新面料，打造時尚且環保的服飾。每件衣物都標明了其減少的碳足跡。", 'en': "Innovative fabrics made from recycled plastic bottles, creating stylish and eco-friendly apparel. Each garment indicates its reduced carbon footprint.", 'fr': "Tissus innovants fabriqués à partir de bouteilles en plastique recyclées, créant des vêtements élégants et écologiques. Chaque vêtement indique sa réduction d'empreinte carbone.", 'de': "Innovative Stoffe aus recycelten Plastikflaschen, die stilvolle und umweltfreundliche Bekleidung schaffen. Jedes Kleidungsstück gibt seinen reduzierten CO2-Fußabdruck an.", 'es': "Tejidos innovadores hechos de botellas de plástico recicladas, creando ropa elegante y ecológica. Cada prenda indica su huella de carbono reducida.", 'la': "Textilia innovativa ex utribus plasticis recycabilibus facta, vestimenta elegantia et oecologica creantia. Quaelibet vestis vestigium carbonis reductum indicat." }
                     }
                 ],
                 videoId: "dQw4w9WgXcQ" // YouTube 影片 ID
             },
             "no-package": {
-                name: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store" },
-                type: { 'zh-TW': "食品", 'en': "Food" },
-                address: { 'zh-TW': "110台北市信義區松山路123號", 'en': "No. 123, Songshan Rd., Xinyi Dist., Taipei City 110, Taiwan" },
-                hours: { 'zh-TW': "10:00 - 19:00", 'en': "10:00 AM - 7:00 PM" },
+                name: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store", 'fr': "Magasin Zéro Déchet", 'de': "Unverpackt-Laden", 'es': "Tienda de Cero Residuos", 'la': "Copia Sine Sarcina" },
+                type: { 'zh-TW': "食品", 'en': "Food", 'fr': "Alimentation", 'de': "Lebensmittel", 'es': "Comida", 'la': "Cibi" },
+                address: { 'zh-TW': "110台北市信義區松山路123號", 'en': "No. 123, Songshan Rd., Xinyi Dist., Taipei City 110, Taiwan", 'fr': "No. 123, Songshan Rd., Xinyi Dist., Taipei City 110, Taiwan", 'de': "No. 123, Songshan Rd., Xinyi Dist., Taipei City 110, Taiwan", 'es': "No. 123, Songshan Rd., Xinyi Dist., Taipei City 110, Taiwan", 'la': "No. 123, Songshan Rd., Xinyi Dist., Taipei City 110, Taiwan" },
+                hours: { 'zh-TW': "10:00 - 19:00", 'en': "10:00 AM - 7:00 PM", 'fr': "10:00 - 19:00", 'de': "10:00 - 19:00", 'es': "10:00 - 19:00", 'la': "10:00 - 19:00" },
                 phone: "02 2765 3321",
                 email: "info@nopackage.tw",
                 website: "nopackage.tw",
-                description: { 'zh-TW': "專門提供無包裝、散裝商品的永續商店，自備容器購物，減少一次性包裝浪費。", 'en': "A sustainable store specializing in unpackaged, bulk goods, encouraging customers to bring their own containers to reduce single-use packaging waste." },
-                longDescription: { 'zh-TW': "我們的商店提供各種散裝食品、清潔用品和個人護理產品，顧客可以自帶容器購買所需數量，不僅減少包裝浪費，還能避免食物浪費。", 'en': "Our store offers a variety of bulk foods, cleaning supplies, and personal care products. Customers can bring their own containers to purchase desired quantities, not only reducing packaging waste but also preventing food waste." },
-                sustainability: { 'zh-TW': "我們的目標是減少一次性包裝對環境的影響。通過鼓勵顧客自帶容器，我們每年減少數噸塑料包裝的使用。我們的產品優先選擇本地、有機和公平貿易的選項，進一步減少碳足跡。", 'en': "Our goal is to minimize the environmental impact of single-use packaging. By encouraging customers to bring their own containers, we reduce tons of plastic packaging use annually. Our products prioritize local, organic, and fair trade options, further reducing our carbon footprint." },
-                tags: { 'zh-TW': ["零廢棄", "無包裝", "有機食品", "本地採購", "減塑生活"], 'en': ["Zero-Waste", "Unpackaged", "Organic Food", "Local Sourcing", "Plastic-Free Living"] },
+                description: { 'zh-TW': "專門提供無包裝、散裝商品的永續商店，自備容器購物，減少一次性包裝浪費。", 'en': "A sustainable store specializing in unpackaged, bulk goods, encouraging customers to bring their own containers to reduce single-use packaging waste.", 'fr': "Un magasin durable spécialisé dans les produits en vrac et non emballés, encourageant les clients à apporter leurs propres contenants pour réduire les déchets d'emballage à usage unique.", 'de': "Ein nachhaltiges Geschäft, das sich auf unverpackte Schüttgüter spezialisiert hat und Kunden dazu ermutigt, eigene Behälter mitzubringen, um Einwegverpackungsabfälle zu reduzieren.", 'es': "Una tienda sostenible especializada en productos a granel sin envasar, que anima a los clientes a traer sus propios envases para reducir los residuos de envases de un solo uso.", 'la': "Copia sustinebilis quae in bonis sine sarcina, in mole specializatur, clientes ad proprios receptacula afferendos hortans ad vastitatem sarcinae unius usus reducendam." },
+                longDescription: { 'zh-TW': "我們的商店提供各種散裝食品、清潔用品和個人護理產品，顧客可以自帶容器購買所需數量，不僅減少包裝浪費，還能避免食物浪費。", 'en': "Our store offers a variety of bulk foods, cleaning supplies, and personal care products. Customers can bring their own containers to purchase desired quantities, not only reducing packaging waste but also preventing food waste.", 'fr': "Notre magasin propose une variété d'aliments en vrac, de produits de nettoyage et de produits de soins personnels. Les clients peuvent apporter leurs propres contenants pour acheter les quantités désirées, réduisant ainsi non seulement les déchets d'emballage, mais aussi le gaspillage alimentaire.", 'de': "Unser Geschäft bietet eine Vielzahl von unverpackten Lebensmitteln, Reinigungsmitteln und Körperpflegeprodukten an. Kunden können ihre eigenen Behälter mitbringen, um die gewünschten Mengen zu kaufen, wodurch nicht nur Verpackungsabfälle reduziert, sondern auch Lebensmittelverschwendung vermieden wird.", 'es': "Nuestra tienda ofrece una variedad de alimentos a granel, productos de limpieza y productos de cuidado personal. Los clientes pueden traer sus propios envases para comprar las cantidades deseadas, no solo reduciendo los residuos de envases, sino también evitando el desperdicio de alimentos.", 'la': "Nostra copia varias res cibarias in mole, res purgatorias, et res curae personalis praebet. Clientes proprios receptacula afferant ut quantitates desideratas emant, non solum vastitatem sarcinae reducentes, sed etiam vastitatem ciborum praevenientes." },
+                sustainability: { 'zh-TW': "我們的目標是減少一次性包裝對環境的影響。通過鼓勵顧客自帶容器，我們每年減少數噸塑料包裝的使用。我們的產品優先選擇本地、有機和公平貿易的選項，進一步減少碳足跡。", 'en': "Our goal is to minimize the environmental impact of single-use packaging. By encouraging customers to bring their own containers, we reduce tons of plastic packaging use annually. Our products prioritize local, organic, and fair trade options, further reducing our carbon footprint.", 'fr': "Notre objectif est de minimiser l'impact environnemental des emballages à usage unique. En encourageant les clients à apporter leurs propres contenants, nous réduisons chaque année des tonnes d'utilisation d'emballages plastiques. Nos produits privilégient les options locales, biologiques et équitables, réduisant ainsi davantage notre empreinte carbone.", 'de': "Unser Ziel ist es, die Umweltauswirkungen von Einwegverpackungen zu minimieren. Indem wir Kunden dazu ermutigen, eigene Behälter mitzubringen, reduzieren wir jährlich Tonnen von Plastikverpackungen. Unsere Produkte bevorzugen lokale, biologische und fair gehandelte Optionen, wodurch unser CO2-Fußabdruck weiter reduziert wird.", 'es': "Nuestro objetivo es minimizar el impacto ambiental de los envases de un solo uso. Al animar a los clientes a traer sus propios envases, reducimos toneladas de uso de envases de plástico anualmente. Nuestros productos priorizan opciones locales, orgánicas y de comercio justo, reduciendo aún más nuestra huella de carbono.", 'la': "Nostrum propositum est impactum environmentalem sarcinae unius usus minuere. Clientes ad proprios receptacula afferendos hortantes, tonnas usus sarcinae plasticae quotannis reducemus. Nostra producta optiones locales, organicas, et commercii aequi prioritatem habent, ulterius vestigium carbonis reducentes." },
+                tags: { 'zh-TW': ["零廢棄", "無包裝", "有機食品", "本地採購", "減塑生活"], 'en': ["Zero-Waste", "Unpackaged", "Organic Food", "Local Sourcing", "Plastic-Free Living"], 'fr': ["Zéro Déchet", "Non Emballé", "Aliments Biologiques", "Approvisionnement Local", "Vie Sans Plastique"], 'de': ["Zero Waste", "Unverpackt", "Bio-Lebensmittel", "Lokale Beschaffung", "Plastikfreies Leben"], 'es': ["Cero Residuos", "Sin Envasar", "Alimentos Orgánicos", "Abastecimiento Local", "Vida Sin Plástico"], 'la': ["Sine Vaste", "Sine Sarcina", "Cibi Organici", "Locales Emptio", "Vita Sine Plastico"] },
                 lat: 25.0378,
                 lng: 121.5679
             },
             "threetime-lab": {
-                name: { 'zh-TW': "三時生活實驗室", 'en': "Threetime Lab" },
-                type: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store" },
-                address: { 'zh-TW': "台北市中山區松江路97巷3號", 'en': "No. 3, Ln. 97, Songjiang Rd., Zhongshan Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "每日 11:00 - 20:00", 'en': "Daily 11:00 AM - 8:00 PM" },
+                name: { 'zh-TW': "三時生活實驗室", 'en': "Threetime Lab", 'fr': "Threetime Lab", 'de': "Threetime Lab", 'es': "Threetime Lab", 'la': "Threetime Lab" },
+                type: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store", 'fr': "Magasin Zéro Déchet", 'de': "Unverpackt-Laden", 'es': "Tienda de Cero Residuos", 'la': "Copia Sine Sarcina" },
+                address: { 'zh-TW': "台北市中山區松江路97巷3號", 'en': "No. 3, Ln. 97, Songjiang Rd., Zhongshan Dist., Taipei City, Taiwan", 'fr': "No. 3, Ln. 97, Songjiang Rd., Zhongshan Dist., Taipei City, Taiwan", 'de': "No. 3, Ln. 97, Songjiang Rd., Zhongshan Dist., Taipei City, Taiwan", 'es': "No. 3, Ln. 97, Songjiang Rd., Zhongshan Dist., Taipei City, Taiwan", 'la': "No. 3, Ln. 97, Songjiang Rd., Zhongshan Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "每日 11:00 - 20:00", 'en': "Daily 11:00 AM - 8:00 PM", 'fr': "Tous les jours 11:00 - 20:00", 'de': "Täglich 11:00 - 20:00 Uhr", 'es': "Diario 11:00 - 20:00", 'la': "Cotidie 11:00 - 20:00" },
                 phone: "02 2507 5678",
                 email: "info@threetimelab.tw",
                 website: "threetimelab.tw",
-                description: { 'zh-TW': "所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。", 'en': "All products emphasize reusability and unpackaged options, promoting plastic reduction and conscious consumption." },
-                longDescription: { 'zh-TW': "希望透過商店讓消費者能「為想要的世界投票」，實踐永續生活。店內販售裸裝食品、環保餐具、竹牙刷、布衛生棉等友善環境生活用品，提倡綠色消費理念。", 'en': "Aims to empower consumers to 'vote for the world they want' through conscious shopping and sustainable living. The store offers bulk foods, eco-friendly utensils, bamboo toothbrushes, reusable sanitary pads, and other environmentally friendly daily necessities, advocating a green consumption philosophy." },
-                sustainability: { 'zh-TW': "所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。", 'en': "All products emphasize reusability and unpackaged options, promoting plastic reduction and conscious consumption." },
-                tags: { 'zh-TW': ["無包裝", "減塑", "有意識消費", "環保餐具", "裸裝食品"], 'en': ["Unpackaged", "Plastic-Free", "Conscious Consumption", "Eco-friendly Utensils", "Bulk Foods"] },
+                description: { 'zh-TW': "所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。", 'en': "All products emphasize reusability and unpackaged options, promoting plastic reduction and conscious consumption.", 'fr': "Tous les produits mettent l'accent sur la réutilisabilité et les options non emballées, promouvant la réduction du plastique et la consommation consciente.", 'de': "Alle Produkte betonen Wiederverwendbarkeit und unverpackte Optionen, fördern die Plastikreduzierung und bewussten Konsum.", 'es': "Todos los productos enfatizan la reutilización y las opciones sin envasar, promoviendo la reducción de plástico y el consumo consciente.", 'la': "Omnia producta reutilitatem et optiones sine sarcina extollunt, reductionem plastici et consumptionem conscientem promoventes." },
+                longDescription: { 'zh-TW': "希望透過商店讓消費者能「為想要的世界投票」，實踐永續生活。店內販售裸裝食品、環保餐具、竹牙刷、布衛生棉等友善環境生活用品，提倡綠色消費理念。", 'en': "Aims to empower consumers to 'vote for the world they want' through conscious shopping and sustainable living. The store offers bulk foods, eco-friendly utensils, bamboo toothbrushes, reusable sanitary pads, and other environmentally friendly daily necessities, advocating a green consumption philosophy.", 'fr': "Vise à donner aux consommateurs le pouvoir de 'voter pour le monde qu'ils veulent' grâce à des achats conscients et à un mode de vie durable. Le magasin propose des aliments en vrac, des ustensiles écologiques, des brosses à dents en bambou, des serviettes hygiéniques réutilisables et d'autres nécessités quotidiennes respectueuses de l'environnement, prônant une philosophie de consommation verte.", 'de': "Ziel ist es, Verbraucher durch bewusstes Einkaufen und nachhaltiges Leben zu befähigen, 'für die Welt zu stimmen, die sie wollen'. Das Geschäft bietet unverpackte Lebensmittel, umweltfreundliche Utensilien, Bambuszahnbürsten, wiederverwendbare Binden und andere umweltfreundliche Dinge des täglichen Bedarfs an, die eine grüne Konsumphilosophie befürworten.", 'es': "Tiene como objetivo empoderar a los consumidores para que 'voten por el mundo que quieren' a través de compras conscientes y una vida sostenible. La tienda ofrece alimentos a granel, utensilios ecológicos, cepillos de dientes de bambú, compresas sanitarias reutilizables y otras necesidades diarias respetuosas con el medio ambiente, abogando por una filosofía de consumo verde.", 'la': "Propositum est consumptores 'suffragari pro mundo quem volunt' per emptiones conscientes et vitam sustentabilem. Copia praebet cibos in mole, utensilia oecologica, dentifricula bambuina, lintea sanitatis reutilizabilia, et alias necessitates quotidianas naturae amicas, philosophiam consumptionis viridis advocans." },
+                sustainability: { 'zh-TW': "所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。", 'en': "All products emphasize reusability and unpackaged options, promoting plastic reduction and conscious consumption.", 'fr': "Tous les produits mettent l'accent sur la réutilisabilité et les options non emballées, promouvant la réduction du plastique et la consommation consciente.", 'de': "Alle Produkte betonen Wiederverwendbarkeit und unverpackte Optionen, fördern die Plastikreduzierung und bewussten Konsum.", 'es': "Todos los productos enfatizan la reutilización y las opciones sin envasar, promoviendo la reducción de plástico y el consumo consciente.", 'la': "Omnia producta reutilitatem et optiones sine sarcina extollunt, reductionem plastici et consumptionem conscientem promoventes." },
+                tags: { 'zh-TW': ["無包裝", "減塑", "有意識消費", "環保餐具", "裸裝食品"], 'en': ["Unpackaged", "Plastic-Free", "Conscious Consumption", "Eco-friendly Utensils", "Bulk Foods"], 'fr': ["Non Emballé", "Sans Plastique", "Consommation Consciente", "Ustensiles Écologiques", "Aliments en Vrac"], 'de': ["Unverpackt", "Plastikfrei", "Bewusster Konsum", "Umweltfreundliche Utensilien", "Unverpackte Lebensmittel"], 'es': ["Sin Envasar", "Sin Plástico", "Consumo Consciente", "Utensilios Ecológicos", "Alimentos a Granel"], 'la': ["Sine Sarcina", "Sine Plastico", "Consumptio Conscientis", "Utensilia Oecologica", "Cibi in Mole"] },
                 lat: 25.0506,
                 lng: 121.5343
             },
             "house-of-story-wear": {
-                name: { 'zh-TW': "House of Story Wear 永續百貨", 'en': "House of Story Wear Sustainable Department Store" },
-                type: { 'zh-TW': "服飾", 'en': "Apparel" },
-                address: { 'zh-TW': "台北市大同區西寧北路65-67號", 'en': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "週二至週日 11:00 - 19:00（週一公休）", 'en': "Tue-Sun 11:00 AM - 7:00 PM (Closed Mon)" },
+                name: { 'zh-TW': "House of Story Wear 永續百貨", 'en': "House of Story Wear Sustainable Department Store", 'fr': "House of Story Wear Grand Magasin Durable", 'de': "House of Story Wear Nachhaltiges Kaufhaus", 'es': "House of Story Wear Grandes Almacenes Sostenibles", 'la': "House of Story Wear Copia Sustentabilis" },
+                type: { 'zh-TW': "服飾", 'en': "Apparel", 'fr': "Vêtements", 'de': "Bekleidung", 'es': "Ropa", 'la': "Vestimenta" },
+                address: { 'zh-TW': "台北市大同區西寧北路65-67號", 'en': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan", 'fr': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan", 'de': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan", 'es': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan", 'la': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週二至週日 11:00 - 19:00（週一公休）", 'en': "Tue-Sun 11:00 AM - 7:00 PM (Closed Mon)", 'fr': "Mar-Dim 11:00 - 19:00 (Fermé Lun)", 'de': "Di-So 11:00 - 19:00 Uhr (Mo geschlossen)", 'es': "Mar-Dom 11:00 - 19:00 (Cerrado Lun)", 'la': "Mar-Sol 11:00 - 19:00 (Clausum Lun)" },
                 phone: "02 2555 9876",
                 email: "info@storywear.tw",
                 website: "storywear.tw",
-                description: { 'zh-TW': "提供一個融合永續時尚、性別友善、社區交流的多元空間，推廣循環經濟、服飾回收再利用。", 'en': "Offers a versatile space integrating sustainable fashion, gender-friendly concepts, and community interaction, promoting circular economy and clothing recycling." },
-                longDescription: { 'zh-TW': "這裡不僅是永續時尚的選物店，更是一個社區交流的平台，融合了永續時尚、性別友善和文化交流。店內有永續時尚服飾、回收布料商品、二手選物，還有咖啡飲品供您休憩。", 'en': "More than just a sustainable fashion boutique, it's a community hub blending sustainable fashion, gender-friendly principles, and cultural exchange. The store features sustainable apparel, recycled fabric products, curated second-hand items, and offers coffee and beverages for relaxation." },
-                sustainability: { 'zh-TW': "推廣循環經濟、服飾回收再利用、支持本地小品牌。", 'en': "Promoting circular economy, clothing recycling and reuse, and supporting local independent brands." },
-                tags: { 'zh-TW': ["永續時尚", "循環經濟", "服飾回收", "二手選物", "咖啡"], 'en': ["Sustainable Fashion", "Circular Economy", "Clothing Recycling", "Second-hand Curated", "Coffee"] },
+                description: { 'zh-TW': "提供一個融合永續時尚、性別友善、社區交流的多元空間，推廣循環經濟、服飾回收再利用。", 'en': "Offers a versatile space integrating sustainable fashion, gender-friendly concepts, and community interaction, promoting circular economy and clothing recycling.", 'fr': "Offre un espace polyvalent intégrant la mode durable, les concepts respectueux du genre et l'interaction communautaire, promouvant l'économie circulaire et le recyclage des vêtements.", 'de': "Bietet einen vielseitigen Raum, der nachhaltige Mode, geschlechterfreundliche Konzepte und Gemeinschaftsinteraktion integriert und Kreislaufwirtschaft sowie Kleiderrecycling fördert.", 'es': "Ofrece un espacio versátil que integra moda sostenible, conceptos de género amigables e interacción comunitaria, promoviendo la economía circular y el reciclaje de ropa.", 'la': "Spatium versatile praebet, modum sustentabilem, conceptus sexum amicos, et interactionem communitariam integrans, oeconomiam circularem et vestimentorum recycationem promovens." },
+                longDescription: { 'zh-TW': "這裡不僅是永續時尚的選物店，更是一個社區交流的平台，融合了永續時尚、性別友善和文化交流。店內有永續時尚服飾、回收布料商品、二手選物，還有咖啡飲品供您休憩。", 'en': "More than just a sustainable fashion boutique, it's a community hub blending sustainable fashion, gender-friendly principles, and cultural exchange. The store features sustainable apparel, recycled fabric products, curated second-hand items, and offers coffee and beverages for relaxation.", 'fr': "Plus qu'une simple boutique de mode durable, c'est un centre communautaire mêlant mode durable, principes respectueux du genre et échange culturel. Le magasin propose des vêtements durables, des produits en tissu recyclé, des articles d'occasion sélectionnés, et offre du café et des boissons pour la détente.", 'de': "Mehr als nur eine nachhaltige Modeboutique, es ist ein Gemeinschaftszentrum, das nachhaltige Mode, geschlechterfreundliche Prinzipien und kulturellen Austausch miteinander verbindet. Das Geschäft bietet nachhaltige Bekleidung, Produkte aus recyceltem Stoff, kuratierte Second-Hand-Artikel und bietet Kaffee und Getränke zur Entspannung an.", 'es': "Más que una simple boutique de moda sostenible, es un centro comunitario que combina moda sostenible, principios de género amigables e intercambio cultural. La tienda ofrece ropa sostenible, productos de tela reciclada, artículos de segunda mano seleccionados y ofrece café y bebidas para relajarse.", 'la': "Non solum copia vestimentorum sustinebilium, sed etiam centrum communitarium est, modum sustentabilem, principia sexum amica, et commutationem culturalem miscens. Copia praebet vestimenta sustinebilia, producta ex textili recycabili, res secundae manus selectas, et coffeam et potiones ad relaxationem offert." },
+                sustainability: { 'zh-TW': "推廣循環經濟、服飾回收再利用、支持本地小品牌。", 'en': "Promoting circular economy, clothing recycling and reuse, and supporting local independent brands.", 'fr': "Promotion de l'économie circulaire, du recyclage et de la réutilisation des vêtements, et soutien aux petites marques locales.", 'de': "Förderung der Kreislaufwirtschaft, des Kleiderrecyclings und der Wiederverwendung sowie Unterstützung lokaler unabhängiger Marken.", 'es': "Promoción de la economía circular, el reciclaje y la reutilización de ropa, y apoyo a marcas locales independientes.", 'la': "Oeconomiam circularem, vestimentorum recycationem et reutilitatem promovens, et parvas marcas locales sustinens." },
+                tags: { 'zh-TW': ["永續時尚", "循環經濟", "服飾回收", "二手選物", "咖啡"], 'en': ["Sustainable Fashion", "Circular Economy", "Clothing Recycling", "Second-hand Curated", "Coffee"], 'fr': ["Mode Durable", "Économie Circulaire", "Recyclage de Vêtements", "Articles d'Occasion Sélectionnés", "Café"], 'de': ["Nachhaltige Mode", "Kreislaufwirtschaft", "Kleiderrecycling", "Second-Hand-Kuratiert", "Kaffee"], 'es': ["Moda Sostenible", "Economía Circular", "Reciclaje de Ropa", "Artículos de Segunda Mano Curados", "Café"], 'la': ["Modus Sustentabilis", "Oeconomia Circularis", "Vestimentorum Recycatio", "Res Secundae Manus Curatae", "Coffea"] },
                 lat: 25.0538,
                 lng: 121.5097
             },
             "story-wear-zerowaste": {
-                name: { 'zh-TW': "Story Wear 零廢時尚", 'en': "Story Wear Zero-Waste Fashion" },
-                type: { 'zh-TW': "服飾", 'en': "Apparel" },
-                address: { 'zh-TW': "台北市大同區西寧北路65-67號", 'en': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "週二至週日 13:00 - 20:00（週一公休）", 'en': "Tue-Sun 1:00 PM - 8:00 PM (Closed Mon)" },
+                name: { 'zh-TW': "Story Wear 零廢時尚", 'en': "Story Wear Zero-Waste Fashion", 'fr': "Story Wear Mode Zéro Déchet", 'de': "Story Wear Zero-Waste Mode", 'es': "Story Wear Moda Cero Residuos", 'la': "Story Wear Modus Sine Vaste" },
+                type: { 'zh-TW': "服飾", 'en': "Apparel", 'fr': "Vêtements", 'de': "Bekleidung", 'es': "Ropa", 'la': "Vestimenta" },
+                address: { 'zh-TW': "台北市大同區西寧北路65-67號", 'en': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan", 'fr': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan", 'de': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan", 'es': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan", 'la': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週二至週日 13:00 - 20:00（週一公休）", 'en': "Tue-Sun 1:00 PM - 8:00 PM (Closed Mon)", 'fr': "Mar-Dim 13:00 - 20:00 (Fermé Lun)", 'de': "Di-So 13:00 - 20:00 Uhr (Mo geschlossen)", 'es': "Mar-Dom 13:00 - 20:00 (Cerrado Lun)", 'la': "Mar-Sol 13:00 - 20:00 (Clausum Lun)" },
                 phone: "02 2555 9876",
                 email: "info@storywear.tw",
                 website: "storywear.tw",
-                description: { 'zh-TW': "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。", 'en': "Made from 100% recycled fabrics, promoting zero-waste fashion and reducing textile waste." },
-                longDescription: { 'zh-TW': "創辦人希望改變時尚產業的高耗能與高污染現況，實踐永續時尚。我們將回收牛仔布、剩布等廢棄紡織品，透過設計巧思轉化為獨特的服飾與配件，賦予舊布料新生命。", 'en': "The founder aims to transform the high-energy consumption and pollution status of the fashion industry, practicing sustainable fashion. We transform discarded textiles like recycled denim and leftover fabrics into unique apparel and accessories through creative design, giving new life to old materials." },
-                sustainability: { 'zh-TW': "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。", 'en': "Made from 100% recycled fabrics, promoting zero-waste fashion and reducing textile waste." },
-                tags: { 'zh-TW': ["零廢時尚", "回收布料", "紡織廢棄物", "永續時尚", "二手改造"], 'en': ["Zero-Waste Fashion", "Recycled Fabrics", "Textile Waste", "Sustainable Fashion", "Upcycling"] },
+                description: { 'zh-TW': "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。", 'en': "Made from 100% recycled fabrics, promoting zero-waste fashion and reducing textile waste.", 'fr': "Fabriqué à partir de tissus 100% recyclés, promouvant la mode zéro déchet et réduisant les déchets textiles.", 'de': "Hergestellt aus 100% recycelten Stoffen, fördert Zero-Waste-Mode und reduziert Textilabfälle.", 'es': "Hecho de telas 100% recicladas, promoviendo la moda de cero residuos y reduciendo los residuos textiles.", 'la': "Ex 100% textilibus recycabilibus facta, modum sine vastitate promovens et vastitatem textilis reducens." },
+                longDescription: { 'zh-TW': "創辦人希望改變時尚產業的高耗能與高污染現況，實踐永續時尚。我們將回收牛仔布、剩布等廢棄紡織品，透過設計巧思轉化為獨特的服飾與配件，賦予舊布料新生命。", 'en': "The founder aims to transform the high-energy consumption and pollution status of the fashion industry, practicing sustainable fashion. We transform discarded textiles like recycled denim and leftover fabrics into unique apparel and accessories through creative design, giving new life to old materials.", 'fr': "Le fondateur vise à transformer le statut de forte consommation d'énergie et de pollution de l'industrie de la mode, en pratiquant la mode durable. Nous transformons les textiles mis au rebut comme le denim recyclé et les tissus restants en vêtements et accessoires uniques grâce à une conception créative, donnant une nouvelle vie aux anciens matériaux.", 'de': "Der Gründer möchte den hohen Energieverbrauch und die Umweltverschmutzung in der Modebranche ändern und nachhaltige Mode praktizieren. Wir verwandeln ausrangierte Textilien wie recycelten Denim und Stoffreste durch kreatives Design in einzigartige Bekleidung und Accessoires und verleihen alten Materialien neues Leben.", 'es': "El fundador tiene como objetivo transformar el estado de alto consumo de energía y contaminación de la industria de la moda, practicando la moda sostenible. Transformamos textiles desechados como mezclilla reciclada y telas sobrantes en prendas y accesorios únicos a través de un diseño creativo, dando nueva vida a los materiales antiguos.", 'la': "Fundator propositum habet statum industriae modi altae energiae consumptionis et pollutionis mutare, modum sustentabilem exercens. Textilia reiecta sicut denim recycabile et textilia residua in vestimenta et accessoria unica per consilium creativum convertimus, vitam novam materiis veteribus dando." },
+                sustainability: { 'zh-TW': "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。", 'en': "Made from 100% recycled fabrics, promoting zero-waste fashion and reducing textile waste.", 'fr': "Fabriqué à partir de tissus 100% recyclés, promouvant la mode zéro déchet et réduisant les déchets textiles.", 'de': "Hergestellt aus 100% recycelten Stoffen, fördert Zero-Waste-Mode und reduziert Textilabfälle.", 'es': "Hecho de telas 100% recicladas, promoviendo la moda de cero residuos y reduciendo los residuos textiles.", 'la': "Ex 100% textilibus recycabilibus facta, modum sine vastitate promovens et vastitatem textilis reducens." },
+                tags: { 'zh-TW': ["零廢時尚", "回收布料", "紡織廢棄物", "永續時尚", "二手改造"], 'en': ["Zero-Waste Fashion", "Recycled Fabrics", "Textile Waste", "Sustainable Fashion", "Upcycling"], 'fr': ["Mode Zéro Déchet", "Tissus Recyclés", "Déchets Textiles", "Mode Durable", "Upcycling"], 'de': ["Zero-Waste-Mode", "Recycelte Stoffe", "Textilabfälle", "Nachhaltige Mode", "Upcycling"], 'es': ["Moda Cero Residuos", "Telas Recicladas", "Residuos Textiles", "Moda Sostenible", "Upcycling"], 'la': ["Modus Sine Vaste", "Textilia Recycabilia", "Vastitas Textilis", "Modus Sustentabilis", "Upcycling"] },
                 lat: 25.0538,
                 lng: 121.5097
             },
             "garden-selection": {
-                name: { 'zh-TW': "garden文創選物店", 'en': "garden Creative & Cultural Select Shop" },
-                type: { 'zh-TW': "文創", 'en': "Creative & Cultural" },
-                address: { 'zh-TW': "台北市大安區永康街43-1號", 'en': "No. 43-1, Yongkang St., Da’an Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "每日 14:00 - 19:00", 'en': "Daily 2:00 PM - 7:00 PM" },
+                name: { 'zh-TW': "garden文創選物店", 'en': "garden Creative & Cultural Select Shop", 'fr': "garden Boutique de Sélection Créative & Culturelle", 'de': "garden Kreativ- & Kultur-Auswahlgeschäft", 'es': "garden Tienda de Selección Creativa y Cultural", 'la': "garden Copia Selecta Creativa et Culturalis" },
+                type: { 'zh-TW': "文創", 'en': "Creative & Cultural", 'fr': "Créatif & Culturel", 'de': "Kreatives & Kulturelles", 'es': "Creativo y Cultural", 'la': "Creativum et Culturale" },
+                address: { 'zh-TW': "台北市大安區永康街43-1號", 'en': "No. 43-1, Yongkang St., Da’an Dist., Taipei City, Taiwan", 'fr': "No. 43-1, Yongkang St., Da’an Dist., Taipei City, Taiwan", 'de': "No. 43-1, Yongkang St., Da’an Dist., Taipei City, Taiwan", 'es': "No. 43-1, Yongkang St., Da’an Dist., Taipei City, Taiwan", 'la': "No. 43-1, Yongkang St., Da’an Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "每日 14:00 - 19:00", 'en': "Daily 2:00 PM - 7:00 PM", 'fr': "Tous les jours 14:00 - 19:00", 'de': "Täglich 14:00 - 19:00 Uhr", 'es': "Diario 14:00 - 19:00", 'la': "Cotidie 14:00 - 19:00" },
                 phone: "02 2341 9953", // 從搜尋結果更新
                 email: "info@gardenselection.tw",
                 website: "gardenselection.tw",
-                description: { 'zh-TW': "選品強調環保材質、在地生產，降低運輸碳足跡，推廣台灣設計與永續生活美學。", 'en': "Curated items emphasize eco-friendly materials and local production to reduce transportation carbon footprint, promoting Taiwanese design and sustainable living aesthetics." },
-                longDescription: { 'zh-TW': "我們精選來自台灣本地設計師的文創商品，以及使用環保材質製作的生活雜貨。希望透過這些獨具匠心的選品，將台灣的設計能量與永續生活美學推廣給更多人。", 'en': "We carefully select creative and cultural products from local Taiwanese designers, as well as daily necessities made from eco-friendly materials. Through these unique selections, we hope to promote Taiwan's design prowess and sustainable living aesthetics to a wider audience." },
-                sustainability: { 'zh-TW': "選品強調環保材質、在地生產，降低運輸碳足跡。", 'en': "Curated items emphasize eco-friendly materials and local production to reduce transportation carbon footprint." },
-                tags: { 'zh-TW': ["文創", "環保材質", "在地生產", "永續生活美學", "設計選物"], 'en': ["Creative & Cultural", "Eco-friendly Materials", "Local Production", "Sustainable Living Aesthetics", "Curated Design"] },
+                description: { 'zh-TW': "選品強調環保材質、在地生產，降低運輸碳足跡，推廣台灣設計與永續生活美學。", 'en': "Curated items emphasize eco-friendly materials and local production to reduce transportation carbon footprint, promoting Taiwanese design and sustainable living aesthetics.", 'fr': "Les articles sélectionnés mettent l'accent sur les matériaux écologiques et la production locale pour réduire l'empreinte carbone du transport, promouvant le design taïwanais et l'esthétique de vie durable.", 'de': "Kuratierte Artikel betonen umweltfreundliche Materialien und lokale Produktion, um den CO2-Fußabdruck des Transports zu reduzieren und taiwanesisches Design sowie nachhaltige Lebensästhetik zu fördern.", 'es': "Los artículos seleccionados enfatizan los materiales ecológicos y la producción local para reducir la huella de carbono del transporte, promoviendo el diseño taiwanés y la estética de vida sostenible.", 'la': "Res selectae materias oecologicas et productionem localem extollunt ad vestigium carbonis transporti reducere, designum Taiwanense et aestheticam vitae sustentabilis promoventes." },
+                longDescription: { 'zh-TW': "我們精選來自台灣本地設計師的文創商品，以及使用環保材質製作的生活雜貨。希望透過這些獨具匠心的選品，將台灣的設計能量與永續生活美學推廣給更多人。", 'en': "We carefully select creative and cultural products from local Taiwanese designers, as well as daily necessities made from eco-friendly materials. Through these unique selections, we hope to promote Taiwan's design prowess and sustainable living aesthetics to a wider audience.", 'fr': "Nous sélectionnons soigneusement des produits créatifs et culturels de designers taïwanais locaux, ainsi que des nécessités quotidiennes fabriquées à partir de matériaux écologiques. Grâce à ces sélections uniques, nous espérons promouvoir la puissance du design de Taïwan et l'esthétique de vie durable auprès d'un public plus large.", 'de': "Wir wählen sorgfältig kreative und kulturelle Produkte von lokalen taiwanesischen Designern sowie alltägliche Notwendigkeiten aus umweltfreundlichen Materialien aus. Durch diese einzigartigen Auswahlen hoffen wir, Taiwans Designkompetenz und nachhaltige Lebensästhetik einem breiteren Publikum zugänglich zu machen.", 'es': "Seleccionamos cuidadosamente productos creativos y culturales de diseñadores taiwaneses locales, así como necesidades diarias hechas de materiales ecológicos. A través de estas selecciones únicas, esperamos promover la destreza del diseño de Taiwán y la estética de vida sostenible a una audiencia más amplia.", 'la': "Diligenter eligimus producta creativa et culturalia a designatoribus Taiwanensibus localibus, necnon necessitates quotidianas ex materiis oecologicis factas. Per has selectiones unicas, potentiam designi Taiwanensis et aestheticam vitae sustentabilis ad plures homines promovere speramus." },
+                sustainability: { 'zh-TW': "選品強調環保材質、在地生產，降低運輸碳足跡。", 'en': "Curated items emphasize eco-friendly materials and local production to reduce transportation carbon footprint.", 'fr': "Les articles sélectionnés mettent l'accent sur les matériaux écologiques et la production locale pour réduire l'empreinte carbone du transport.", 'de': "Kuratierte Artikel betonen umweltfreundliche Materialien und lokale Produktion, um den CO2-Fußabdruck des Transports zu reduzieren.", 'es': "Los artículos seleccionados enfatizan los materiales ecológicos y la producción local para reducir la huella de carbono del transporte.", 'la': "Res selectae materias oecologicas et productionem localem extollunt ad vestigium carbonis transporti reducere." },
+                tags: { 'zh-TW': ["文創", "環保材質", "在地生產", "永續生活美學", "設計選物"], 'en': ["Creative & Cultural", "Eco-friendly Materials", "Local Production", "Sustainable Living Aesthetics", "Curated Design"], 'fr': ["Créatif & Culturel", "Matériaux Écologiques", "Production Locale", "Esthétique de Vie Durable", "Sélection de Design"], 'de': ["Kreatives & Kulturelles", "Umweltfreundliche Materialien", "Lokale Produktion", "Nachhaltige Lebensästhetik", "Designauswahl"], 'es': ["Creativo y Cultural", "Materiales Ecológicos", "Producción Local", "Estética de Vida Sostenible", "Diseño Curado"], 'la': ["Creativum et Culturale", "Materiae Oecologicae", "Productio Localis", "Aesthetica Vitae Sustentabilis", "Designum Selectum"] },
                 lat: 25.0315,
                 lng: 121.5290
             },
             "sinpu-market": {
-                name: { 'zh-TW': "心樸市集四維店", 'en': "Sinpu Market Siwei Branch" },
-                type: { 'zh-TW': "食品", 'en': "Food" },
-                address: { 'zh-TW': "台北市大安區四維路45號", 'en': "No. 45, Siwei Rd., Da’an Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "每日 08:00 - 23:00", 'en': "Daily 8:00 AM - 11:00 PM" },
+                name: { 'zh-TW': "心樸市集四維店", 'en': "Sinpu Market Siwei Branch", 'fr': "Marché Sinpu Succursale Siwei", 'de': "Sinpu Markt Siwei Filiale", 'es': "Mercado Sinpu Sucursal Siwei", 'la': "Mercatus Sinpu Ramus Siwei" },
+                type: { 'zh-TW': "食品", 'en': "Food", 'fr': "Alimentation", 'de': "Lebensmittel", 'es': "Comida", 'la': "Cibi" },
+                address: { 'zh-TW': "台北市大安區四維路45號", 'en': "No. 45, Siwei Rd., Da’an Dist., Taipei City, Taiwan", 'fr': "No. 45, Siwei Rd., Da’an Dist., Taipei City, Taiwan", 'de': "No. 45, Siwei Rd., Da’an Dist., Taipei City, Taiwan", 'es': "No. 45, Siwei Rd., Da’an Dist., Taipei City, Taiwan", 'la': "No. 45, Siwei Rd., Da’an Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "每日 08:00 - 23:00", 'en': "Daily 8:00 AM - 11:00 PM", 'fr': "Tous les jours 08:00 - 23:00", 'de': "Täglich 08:00 - 23:00 Uhr", 'es': "Diario 08:00 - 23:00", 'la': "Cotidie 08:00 - 23:00" },
                 phone: "02 2701 9675", // 從搜尋結果更新
                 email: "info@sinpumarket.tw",
                 website: "sinpumarket.tw",
-                description: { 'zh-TW': "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。", 'en': "Supports organic farming, reduces pesticide use, and promotes local ingredients to minimize carbon footprint." },
-                longDescription: { 'zh-TW': "心樸市集致力於提供健康又友善環境的產品。我們嚴選有機食品、友善環境生活用品，並積極與在地小農合作，讓消費者能輕鬆購得新鮮、安心的食材，同時支持永續農業發展。", 'en': "Sinpu Market is committed to providing healthy and environmentally friendly products. We carefully select organic foods and eco-friendly daily necessities, and actively collaborate with local small farmers, allowing consumers to easily purchase fresh, safe ingredients while supporting sustainable agricultural development." },
-                sustainability: { 'zh-TW': "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。", 'en': "Supports organic farming, reduces pesticide use, and promotes local ingredients to minimize carbon footprint." },
-                tags: { 'zh-TW': ["有機食品", "在地小農", "友善環境", "健康飲食", "無毒生活"], 'en': ["Organic Food", "Local Farmers", "Eco-friendly", "Healthy Eating", "Non-toxic Living"] },
+                description: { 'zh-TW': "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。", 'en': "Supports organic farming, reduces pesticide use, and promotes local ingredients to minimize carbon footprint.", 'fr': "Soutient l'agriculture biologique, réduit l'utilisation de pesticides et promeut les ingrédients locaux pour minimiser l'empreinte carbone.", 'de': "Unterstützt den ökologischen Landbau, reduziert den Pestizideinsatz und fördert lokale Zutaten, um den CO2-Fußabdruck zu minimieren.", 'es': "Apoya la agricultura orgánica, reduce el uso de pesticidas y promueve ingredientes locales para minimizar la huella de carbono.", 'la': "Agriculturam organicam sustinet, usum pesticidarum minuit, et ingredientia localia promovet ad vestigium carbonis minuere." },
+                longDescription: { 'zh-TW': "心樸市集致力於提供健康又友善環境的產品。我們嚴選有機食品、友善環境生活用品，並積極與在地小農合作，讓消費者能輕鬆購得新鮮、安心的食材，同時支持永續農業發展。", 'en': "Sinpu Market is committed to providing healthy and environmentally friendly products. We carefully select organic foods and eco-friendly daily necessities, and actively collaborate with local small farmers, allowing consumers to easily purchase fresh, safe ingredients while supporting sustainable agricultural development.", 'fr': "Le marché de Sinpu s'engage à fournir des produits sains et respectueux de l'environnement. Nous sélectionnons soigneusement des aliments biologiques et des nécessités quotidiennes écologiques, et collaborons activement avec les petits agriculteurs locaux, permettant aux consommateurs d'acheter facilement des ingrédients frais et sûrs tout en soutenant le développement agricole durable.", 'de': "Der Sinpu Markt engagiert sich für die Bereitstellung gesunder und umweltfreundlicher Produkte. Wir wählen sorgfältig Bio-Lebensmittel und umweltfreundliche Dinge des täglichen Bedarfs aus und arbeiten aktiv mit lokalen Kleinbauern zusammen, damit Verbraucher problemlos frische, sichere Zutaten kaufen und gleichzeitig die nachhaltige landwirtschaftliche Entwicklung unterstützen können.", 'es': "El Mercado Sinpu se compromete a proporcionar productos saludables y respetuosos con el medio ambiente. Seleccionamos cuidadosamente alimentos orgánicos y necesidades diarias ecológicas, y colaboramos activamente con pequeños agricultores locales, permitiendo a los consumidores comprar fácilmente ingredientes frescos y seguros mientras apoyan el desarrollo agrícola sostenible.", 'la': "Mercatus Sinpu studet praebere producta salubria et naturae amica. Diligenter eligimus cibos organicos et necessitates quotidianas oecologicas, et active cum parvis agricolis localibus cooperamur, permittentes consumptores facile emere ingredientia nova et tuta, dum progressionem agriculturae sustentabilis sustinent." },
+                sustainability: { 'zh-TW': "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。", 'en': "Supports organic farming, reduces pesticide use, and promotes local ingredients to minimize carbon footprint.", 'fr': "Soutient l'agriculture biologique, réduit l'utilisation de pesticides et promeut les ingrédients locaux pour minimiser l'empreinte carbone.", 'de': "Unterstützt den ökologischen Landbau, reduziert den Pestizideinsatz und fördert lokale Zutaten, um den CO2-Fußabdruck zu minimieren.", 'es': "Apoya la agricultura orgánica, reduce el uso de pesticidas y promueve ingredientes locales para minimizar la huella de carbono.", 'la': "Agriculturam organicam sustinet, usum pesticidarum minuit, et ingredientia localia promovet ad vestigium carbonis minuere." },
+                tags: { 'zh-TW': ["有機食品", "在地小農", "友善環境", "健康飲食", "無毒生活"], 'en': ["Organic Food", "Local Farmers", "Eco-friendly", "Healthy Eating", "Non-toxic Living"], 'fr': ["Aliments Biologiques", "Petits Agriculteurs Locaux", "Écologique", "Alimentation Saine", "Vie Non Toxique"], 'de': ["Bio-Lebensmittel", "Lokale Bauern", "Umweltfreundlich", "Gesunde Ernährung", "Ungiftiges Leben"], 'es': ["Alimentos Orgánicos", "Pequeños Agricultores Locales", "Ecológico", "Alimentación Saludable", "Vida No Tóxica"], 'la': ["Cibi Organici", "Parvi Agricolae Locales", "Naturae Amicus", "Sana Victus", "Vita Non Toxica"] },
                 lat: 25.0333,
                 lng: 121.5519
             },
             "simplastic-beitou": {
-                name: { 'zh-TW': "簡塑慢行 Simplastic (北投中正店)", 'en': "Simplastic - Beitou Zhongzheng Branch" },
-                type: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store" },
-                address: { 'zh-TW': "台北市北投區中正街49巷35號", 'en': "No. 35, Ln. 49, Zhongzheng St., Beitou Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "週一 10:00-13:00, 14:30-19:00; 週二 10:00-13:00, 14:30-19:00; 週三 14:00-21:00; 週四 10:00-13:00, 14:30-19:00; 週五 10:00-13:00, 14:30-19:00; 週六 10:00-13:00, 14:30-19:00; 週日 關閉", 'en': "Mon 10:00-13:00, 14:30-19:00; Tue 10:00-13:00, 14:30-19:00; Wed 14:00-21:00; Thu 10:00-13:00, 14:30-19:00; Fri 10:00-13:00, 14:30-19:00; Sat 10:00-13:00, 14:30-19:00; Sun Closed" },
+                name: { 'zh-TW': "簡塑慢行 Simplastic (北投中正店)", 'en': "Simplastic - Beitou Zhongzheng Branch", 'fr': "Simplastic - Succursale Beitou Zhongzheng", 'de': "Simplastic - Beitou Zhongzheng Filiale", 'es': "Simplastic - Sucursal Beitou Zhongzheng", 'la': "Simplastic - Ramus Beitou Zhongzheng" },
+                type: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store", 'fr': "Magasin Zéro Déchet", 'de': "Unverpackt-Laden", 'es': "Tienda de Cero Residuos", 'la': "Copia Sine Sarcina" },
+                address: { 'zh-TW': "台北市北投區中正街49巷35號", 'en': "No. 35, Ln. 49, Zhongzheng St., Beitou Dist., Taipei City, Taiwan", 'fr': "No. 35, Ln. 49, Zhongzheng St., Beitou Dist., Taipei City, Taiwan", 'de': "No. 35, Ln. 49, Zhongzheng St., Beitou Dist., Taipei City, Taiwan", 'es': "No. 35, Ln. 49, Zhongzheng St., Beitou Dist., Taipei City, Taiwan", 'la': "No. 35, Ln. 49, Zhongzheng St., Beitou Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週一 10:00-13:00, 14:30-19:00; 週二 10:00-13:00, 14:30-19:00; 週三 14:00-21:00; 週四 10:00-13:00, 14:30-19:00; 週五 10:00-13:00, 14:30-19:00; 週六 10:00-13:00, 14:30-19:00; 週日 關閉", 'en': "Mon 10:00-13:00, 14:30-19:00; Tue 10:00-13:00, 14:30-19:00; Wed 14:00-21:00; Thu 10:00-13:00, 14:30-19:00; Fri 10:00-13:00, 14:30-19:00; Sat 10:00-13:00, 14:30-19:00; Sun Closed", 'fr': "Lun 10:00-13:00, 14:30-19:00; Mar 10:00-13:00, 14:30-19:00; Mer 14:00-21:00; Jeu 10:00-13:00, 14:30-19:00; Ven 10:00-13:00, 14:30-19:00; Sam 10:00-13:00, 14:30-19:00; Dim Fermé", 'de': "Mo 10:00-13:00, 14:30-19:00; Di 10:00-13:00, 14:30-19:00; Mi 14:00-21:00; Do 10:00-13:00, 14:30-19:00; Fr 10:00-13:00, 14:30-19:00; Sa 10:00-13:00, 14:30-19:00; So geschlossen", 'es': "Lun 10:00-13:00, 14:30-19:00; Mar 10:00-13:00, 14:30-19:00; Mié 14:00-21:00; Jue 10:00-13:00, 14:30-19:00; Vie 10:00-13:00, 14:30-19:00; Sáb 10:00-13:00, 14:30-19:00; Dom Cerrado", 'la': "Lun 10:00-13:00, 14:30-19:00; Mar 10:00-13:00, 14:30-19:00; Mer 14:00-21:00; Iov 10:00-13:00, 14:30-19:00; Ven 10:00-13:00, 14:30-19:00; Sat 10:00-13:00, 14:30-19:00; Sol Clausum" },
                 phone: "02 2898 5678",
                 email: "beitou@simplastic.tw",
                 website: "simplastic.tw",
-                description: { 'zh-TW': "販售五穀雜糧、堅果果乾零食及香料；各式環保生活小物、沐浴清潔用品。", 'en': "Sells grains, nuts, dried fruits, snacks, and spices; various eco-friendly daily necessities, bath, and cleaning products." },
-                longDescription: { 'zh-TW': "簡塑慢行北投中正店是您實踐零廢棄生活的理想選擇。我們提供多種無包裝的食品和清潔用品，鼓勵顧客自備容器，共同減少一次性包裝的浪費。這裡不僅是購物空間，更是推廣永續理念的社群中心。", 'en': "Simplastic Beitou Zhongzheng Branch is your ideal choice for practicing a zero-waste lifestyle. We offer a variety of unpackaged foods and cleaning supplies, encouraging customers to bring their own containers to collectively reduce single-use packaging waste. This is not just a shopping space, but also a community hub promoting sustainable concepts." },
-                sustainability: { 'zh-TW': "透過提供無包裝商品，鼓勵自備容器，減少一次性垃圾，實踐減塑生活。", 'en': "By offering unpackaged goods, we encourage bringing your own containers, reducing single-use waste, and practicing a plastic-free lifestyle." },
-                tags: { 'zh-TW': ["無包裝", "減塑", "環保生活", "零廢棄", "在地小農"], 'en': ["Unpackaged", "Plastic-Free", "Eco-friendly Living", "Zero-Waste", "Local Farmers"] },
+                description: { 'zh-TW': "販售五穀雜糧、堅果果乾零食及香料；各式環保生活小物、沐浴清潔用品。", 'en': "Sells grains, nuts, dried fruits, snacks, and spices; various eco-friendly daily necessities, bath, and cleaning products.", 'fr': "Vend des céréales, des noix, des fruits secs, des collations et des épices; diverses nécessités quotidiennes écologiques, des produits de bain et de nettoyage.", 'de': "Verkauft Getreide, Nüsse, Trockenfrüchte, Snacks und Gewürze; verschiedene umweltfreundliche Dinge des täglichen Bedarfs, Bad- und Reinigungsprodukte.", 'es': "Vende granos, nueces, frutas secas, bocadillos y especias; diversas necesidades diarias ecológicas, productos de baño y limpieza.", 'la': "Vendit grana, nuces, fructus siccos, laborum, et aromata; varias necessitates quotidianas oecologicas, res balnearias, et res purgatorias." },
+                longDescription: { 'zh-TW': "簡塑慢行北投中正店是您實踐零廢棄生活的理想選擇。我們提供多種無包裝的食品和清潔用品，鼓勵顧客自備容器，共同減少一次性包裝的浪費。這裡不僅是購物空間，更是推廣永續理念的社群中心。", 'en': "Simplastic Beitou Zhongzheng Branch is your ideal choice for practicing a zero-waste lifestyle. We offer a variety of unpackaged foods and cleaning supplies, encouraging customers to bring their own containers to collectively reduce single-use packaging waste. This is not just a shopping space, but also a community hub promoting sustainable concepts.", 'fr': "La succursale Simplastic Beitou Zhongzheng est votre choix idéal pour pratiquer un mode de vie zéro déchet. Nous proposons une variété d'aliments et de produits de nettoyage non emballés, encourageant les clients à apporter leurs propres contenants pour réduire collectivement les déchets d'emballage à usage unique. Ce n'est pas seulement un espace commercial, mais aussi un centre communautaire promouvant des concepts durables.", 'de': "Die Simplastic Beitou Zhongzheng Filiale ist Ihre ideale Wahl für einen Zero-Waste-Lebensstil. Wir bieten eine Vielzahl von unverpackten Lebensmitteln und Reinigungsmitteln an und ermutigen Kunden, ihre eigenen Behälter mitzubringen, um gemeinsam Einwegverpackungsabfälle zu reduzieren. Dies ist nicht nur ein Einkaufsbereich, sondern auch ein Gemeinschaftszentrum, das nachhaltige Konzepte fördert.", 'es': "La sucursal de Simplastic Beitou Zhongzheng es su opción ideal para practicar un estilo de vida de cero residuos. Ofrecemos una variedad de alimentos y productos de limpieza sin envasar, animando a los clientes a traer sus propios envases para reducir colectivamente los residuos de envases de un solo uso. Este no es solo un espacio de compras, sino también un centro comunitario que promueve conceptos sostenibles.", 'la': "Ramus Simplastic Beitou Zhongzheng est optima electio tua ad vitam sine vastitate exercendam. Varias res cibarias et purgatorias sine sarcina offerimus, clientes ad proprios receptacula afferendos hortantes ad vastitatem sarcinae unius usus collective reducendam. Hoc non solum spatium emptionis est, sed etiam centrum communitarium conceptus sustentabiles promovens." },
+                sustainability: { 'zh-TW': "透過提供無包裝商品，鼓勵自備容器，減少一次性垃圾，實踐減塑生活。", 'en': "By offering unpackaged goods, we encourage bringing your own containers, reducing single-use waste, and practicing a plastic-free lifestyle.", 'fr': "En proposant des produits non emballés, nous encourageons à apporter ses propres contenants, réduisant ainsi les déchets à usage unique et pratiquant un mode de vie sans plastique.", 'de': "Durch das Angebot unverpackter Waren ermutigen wir dazu, eigene Behälter mitzubringen, Einwegabfälle zu reduzieren und einen plastikfreien Lebensstil zu praktizieren.", 'es': "Al ofrecer productos sin envasar, animamos a traer sus propios envases, reduciendo los residuos de un solo uso y practicando un estilo de vida sin plástico.", 'la': "Res sine sarcina offerendo, proprios receptacula afferenda hortamur, vastitatem unius usus reducentes, et vitam sine plastico exercemus." },
+                tags: { 'zh-TW': ["無包裝", "減塑", "環保生活", "零廢棄", "在地小農"], 'en': ["Unpackaged", "Plastic-Free", "Eco-friendly Living", "Zero-Waste", "Local Farmers"], 'fr': ["Non Emballé", "Sans Plastique", "Vie Écologique", "Zéro Déchet", "Petits Agriculteurs Locaux"], 'de': ["Unverpackt", "Plastikfrei", "Umweltfreundliches Leben", "Zero Waste", "Lokale Bauern"], 'es': ["Sin Envasar", "Sin Plástico", "Vida Ecológica", "Cero Residuos", "Pequeños Agricultores Locales"], 'la': ["Sine Sarcina", "Sine Plastico", "Vita Oecologica", "Sine Vaste", "Parvi Agricolae Locales"] },
                 lat: 25.1370,
                 lng: 121.5020
             }
@@ -594,18 +862,17 @@
                 }
             });
 
-            // Update language toggle button text
-            const langToggleBtn = document.getElementById('language-toggle');
-            const langToggleBtnMobile = document.getElementById('language-toggle-mobile');
-            if (lang === 'zh-TW') {
-                langToggleBtn.textContent = translations['zh-TW'].languageToggle; // English
-                langToggleBtnMobile.textContent = translations['zh-TW'].languageToggle; // English
-                document.documentElement.lang = 'zh-TW';
-            } else {
-                langToggleBtn.textContent = translations['en'].languageToggle; // 繁體中文
-                langToggleBtnMobile.textContent = translations['en'].languageToggle; // 繁體中文
-                document.documentElement.lang = 'en';
+            // Update language select dropdowns to show the current language
+            const langSelect = document.getElementById('language-select');
+            const langSelectMobile = document.getElementById('language-select-mobile');
+            if (langSelect) {
+                langSelect.value = lang;
             }
+            if (langSelectMobile) {
+                langSelectMobile.value = lang;
+            }
+            
+            document.documentElement.lang = lang; // Update HTML lang attribute
 
             // Re-apply filters and re-render shop cards/map to update language
             currentLoadedShops = 0; // Reset loaded shops when language changes
@@ -628,14 +895,17 @@
                 const shop = shopDetails[shopData.id];
                 if (!shop) return false;
 
+                // Ensure the category translation exists for the current language before checking
+                const translatedCategory = translations[currentLang]['filter' + currentFilterCategory.charAt(0).toUpperCase() + currentFilterCategory.slice(1)];
+                
                 const matchesCategory = currentFilterCategory === 'all' || 
-                                        shop.type[currentLang].toLowerCase().includes(translations[currentLang]['filter' + currentFilterCategory.charAt(0).toUpperCase() + currentFilterCategory.slice(1)].toLowerCase()) ||
-                                        shop.tags[currentLang].some(tag => tag.toLowerCase().includes(translations[currentLang]['filter' + currentFilterCategory.charAt(0).toUpperCase() + currentFilterCategory.slice(1)].toLowerCase()));
+                                        (shop.type[currentLang] && shop.type[currentLang].toLowerCase().includes(translatedCategory ? translatedCategory.toLowerCase() : '')) ||
+                                        (shop.tags[currentLang] && shop.tags[currentLang].some(tag => tag.toLowerCase().includes(translatedCategory ? translatedCategory.toLowerCase() : '')));
                 
                 const matchesSearch = currentSearchQuery === '' ||
-                                      shop.name[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
-                                      shop.address[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
-                                      shop.description[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase());
+                                      (shop.name[currentLang] && shop.name[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase())) ||
+                                      (shop.address[currentLang] && shop.address[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase())) ||
+                                      (shop.description[currentLang] && shop.description[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase()));
                 
                 return matchesCategory && matchesSearch;
             });
@@ -664,23 +934,23 @@
                         </div>
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-xl font-bold">${shop.name[currentLang]}</h3>
-                                <span class="tag px-2 py-1 rounded-full text-xs">${shop.type[currentLang]}</span>
+                                <h3 class="text-xl font-bold">${shop.name[currentLang] || translations[currentLang].notProvided}</h3>
+                                <span class="tag px-2 py-1 rounded-full text-xs">${shop.type[currentLang] || translations[currentLang].notProvided}</span>
                             </div>
-                            <p class="text-gray-600 mb-4">${shop.description[currentLang]}</p>
+                            <p class="text-gray-600 mb-4">${shop.description[currentLang] || translations[currentLang].notProvided}</p>
                             <div class="mb-4">
                                 <div class="flex items-center text-gray-600 text-sm mb-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    ${shop.address[currentLang]}
+                                    ${shop.address[currentLang] || translations[currentLang].notProvided}
                                 </div>
                                 <div class="flex items-center text-gray-600 text-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    ${shop.hours[currentLang]}
+                                    ${shop.hours[currentLang] || translations[currentLang].notProvided}
                                 </div>
                             </div>
                             <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('${shopData.id}')" data-i18n="viewDetailsBtn">${translations[currentLang].viewDetailsBtn}</button>
@@ -702,7 +972,7 @@
                 const shop = shopDetails[shopData.id];
                 if (!shop) return;
                 const marker = L.marker([shopData.lat, shopData.lng]);
-                marker.bindPopup(`<b>${shop.name[currentLang]}</b><br>${shop.type[currentLang]}<br>${shop.address[currentLang]}<br><a href="#" onclick="showShopDetail('${shopData.id}'); return false;" class="text-green-600">${translations[currentLang].viewDetailsBtn}</a>`);
+                marker.bindPopup(`<b>${shop.name[currentLang] || translations[currentLang].notProvided}</b><br>${shop.type[currentLang] || translations[currentLang].notProvided}<br>${shop.address[currentLang] || translations[currentLang].notProvided}<br><a href="#" onclick="showShopDetail('${shopData.id}'); return false;" class="text-green-600">${translations[currentLang].viewDetailsBtn}</a>`);
                 markersGroup.addLayer(marker);
             });
             mapInstance.addLayer(markersGroup);
@@ -744,6 +1014,21 @@
 
             // Initial language setup, which triggers filterAndDisplayShops
             setLanguage(currentLang);
+            
+            // Language select dropdowns
+            const languageSelect = document.getElementById('language-select');
+            const languageSelectMobile = document.getElementById('language-select-mobile');
+
+            if (languageSelect) {
+                languageSelect.addEventListener('change', function() {
+                    setLanguage(this.value);
+                });
+            }
+            if (languageSelectMobile) {
+                languageSelectMobile.addEventListener('change', function() {
+                    setLanguage(this.value);
+                });
+            }
 
             // --- 事件監聽器 ---
             // 搜尋按鈕
@@ -778,14 +1063,6 @@
             });
         });
 
-        // Language toggle button event listeners
-        document.getElementById('language-toggle').addEventListener('click', function() {
-            setLanguage(currentLang === 'zh-TW' ? 'en' : 'zh-TW');
-        });
-        document.getElementById('language-toggle-mobile').addEventListener('click', function() {
-            setLanguage(currentLang === 'zh-TW' ? 'en' : 'zh-TW');
-        });
-
 
         // Display shop details
         function showShopDetail(shopId) {
@@ -802,8 +1079,8 @@
             let detailHTML = `
                 <div class="shop-detail-header py-12 text-white rounded-t-xl">
                     <div class="container mx-auto px-4 text-center">
-                        <h1 class="text-3xl md:text-4xl font-bold mb-2">${shop.name[currentLang]}</h1>
-                        <p class="text-lg">${shop.type[currentLang]}</p>
+                        <h1 class="text-3xl md:text-4xl font-bold mb-2">${shop.name[currentLang] || translations[currentLang].notProvided}</h1>
+                        <p class="text-lg">${shop.type[currentLang] || translations[currentLang].notProvided}</p>
                     </div>
                 </div>
                 <button id="close-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md z-[1010]">
@@ -815,10 +1092,10 @@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div class="lg:col-span-2">
                             <h2 class="text-2xl font-bold mb-4" data-i18n-dynamic="modalAboutUs">${translations[currentLang].modalAboutUs}</h2>
-                            <p class="text-gray-700 mb-4">${shop.description[currentLang]}</p>
-                            ${shop.longDescription ? `<p class="text-gray-700 mb-6">${shop.longDescription[currentLang]}</p>` : ''}
+                            <p class="text-gray-700 mb-4">${shop.description[currentLang] || translations[currentLang].notProvided}</p>
+                            ${shop.longDescription && shop.longDescription[currentLang] ? `<p class="text-gray-700 mb-6">${shop.longDescription[currentLang]}</p>` : ''}
                             
-                            ${shop.sustainability ? `
+                            ${shop.sustainability && shop.sustainability[currentLang] ? `
                             <h2 class="text-2xl font-bold mb-4" data-i18n-dynamic="modalSustainability">${translations[currentLang].modalSustainability}</h2>
                             <div class="mb-6">
                                 <p class="text-gray-700 mb-4">${shop.sustainability[currentLang]}</p>
@@ -847,8 +1124,8 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-lg font-bold mb-2">${collection.name[currentLang]}</h3>
-                                    <p class="text-gray-600">${collection.description[currentLang]}</p>
+                                    <h3 class="text-lg font-bold mb-2">${collection.name[currentLang] || translations[currentLang].notProvided}</h3>
+                                    <p class="text-gray-600">${collection.description[currentLang] || translations[currentLang].notProvided}</p>
                                 </div>
                                 `).join('')}
                             </div>
@@ -860,11 +1137,11 @@
                             <div class="space-y-4">
                                 <div>
                                     <h4 class="font-medium text-gray-700" data-i18n-dynamic="modalAddress">${translations[currentLang].modalAddress}</h4>
-                                    <p class="text-gray-600">${shop.address[currentLang]}</p>
+                                    <p class="text-gray-600">${shop.address[currentLang] || translations[currentLang].notProvided}</p>
                                 </div>
                                 <div>
                                     <h4 class="font-medium text-gray-700" data-i18n-dynamic="modalOpeningHours">${translations[currentLang].modalOpeningHours}</h4>
-                                    <p class="text-gray-600">${shop.hours[currentLang]}</p>
+                                    <p class="text-gray-600">${shop.hours[currentLang] || translations[currentLang].notProvided}</p>
                                 </div>
                                 <div>
                                     <h4 class="font-medium text-gray-700" data-i18n-dynamic="modalContactInfo">${translations[currentLang].modalContactInfo}</h4>
@@ -917,7 +1194,7 @@
                 }).addTo(shopMap);
                 
                 const marker = L.marker([shop.lat, shop.lng]).addTo(shopMap);
-                marker.bindPopup(`<b>${shop.name[currentLang]}</b><br>${shop.address[currentLang]}`).openPopup();
+                marker.bindPopup(`<b>${shop.name[currentLang] || translations[currentLang].notProvided}</b><br>${shop.address[currentLang] || translations[currentLang].notProvided}`).openPopup();
                 
                 // Disable map dragging and zooming to prevent conflict with modal scrolling
                 shopMap.dragging.disable();
