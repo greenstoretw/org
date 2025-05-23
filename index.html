@@ -86,7 +86,7 @@
             position: relative;
             z-index: 5;
         }
-        /* Loading spinner styles */
+        /* Loading spinner styles (kept in case needed for other future features, can be removed) */
         .loader {
             border: 4px solid #f3f3f3; /* Light grey */
             border-top: 4px solid #34d399; /* Green */
@@ -320,13 +320,6 @@
                 modalWebsite: '網站',
                 modalSocialMedia: '社群媒體',
                 modalLocation: '位置',
-                modalProductRecs: '永續產品推薦 ✨',
-                generateSuggestionsBtn: '生成產品建議',
-                generatingSuggestions: '生成中...',
-                generatingMessage: '正在為您生成永續產品建議...',
-                generationFailed: '抱歉，未能生成產品建議。請稍後再試。',
-                generationError: '生成產品建議時發生錯誤。請檢查網路連線或稍後再試。',
-                clickToGenerate: '點擊上方按鈕獲取永續產品建議',
                 shopDetailsNotAvailable: '此店家詳情尚未建立，敬請期待！',
                 okButton: '確定',
                 notProvided: '未提供'
@@ -382,13 +375,6 @@
                 modalWebsite: 'Website',
                 modalSocialMedia: 'Social Media',
                 modalLocation: 'Location',
-                modalProductRecs: 'Sustainable Product Recommendations ✨',
-                generateSuggestionsBtn: 'Generate Product Suggestions',
-                generatingSuggestions: 'Generating...',
-                generatingMessage: 'Generating sustainable product suggestions for you...',
-                generationFailed: 'Sorry, failed to generate product suggestions. Please try again later.',
-                generationError: 'An error occurred while generating product suggestions. Please check your internet connection or try again later.',
-                clickToGenerate: 'Click the button above to get sustainable product suggestions',
                 shopDetailsNotAvailable: 'Shop details not yet available, please look forward to it!',
                 okButton: 'OK',
                 notProvided: 'Not provided'
@@ -465,26 +451,11 @@
                 lat: 25.0378,
                 lng: 121.5679
             },
-            "simplastic-guangming": {
-                name: { 'zh-TW': "簡塑慢行 Simplastic", 'en': "Simplastic - Guangming Branch" },
-                type: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store" },
-                address: { 'zh-TW': "台北市北投區光明路2巷2號", 'en': "No. 2, Ln. 2, Guangming Rd., Beitou Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "週二至週日 12:00-20:00（週一公休）", 'en': "Tue-Sun 12:00-20:00 (Closed Mon)" },
-                phone: "02 2891 1234",
-                email: "info@simplastic.tw",
-                website: "simplastic.tw",
-                description: { 'zh-TW': "推廣無包裝、減塑購物，鼓勵自備容器，減少一次性垃圾。", 'en': "Promoting unpackaged, plastic-reducing shopping, encouraging customers to bring their own containers to minimize single-use waste." },
-                longDescription: { 'zh-TW': "創辦人希望讓消費者能輕鬆實踐減塑生活，減少浪費，守護環境。店內提供多樣化的無包裝穀物、堅果、果乾、清潔用品及環保生活用品，讓永續消費成為日常。", 'en': "The founder hopes to make plastic-reducing living easy and accessible for consumers, reducing waste and protecting the environment. The store offers a diverse range of unpackaged grains, nuts, dried fruits, cleaning supplies, and eco-friendly daily necessities, making sustainable consumption a part of everyday life." },
-                sustainability: { 'zh-TW': "推廣無包裝、減塑購物，鼓勵自備容器，減少一次性垃圾。", 'en': "Promoting unpackaged, plastic-reducing shopping, encouraging customers to bring their own containers to minimize single-use waste." },
-                tags: { 'zh-TW': ["無包裝", "減塑", "環保生活", "零廢棄"], 'en': ["Unpackaged", "Plastic-Free", "Eco-friendly Living", "Zero-Waste"] },
-                lat: 25.1378,
-                lng: 121.5034
-            },
             "threetime-lab": {
                 name: { 'zh-TW': "三時生活實驗室", 'en': "Threetime Lab" },
                 type: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store" },
                 address: { 'zh-TW': "台北市中山區松江路97巷3號", 'en': "No. 3, Ln. 97, Songjiang Rd., Zhongshan Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "週一至週日 12:00-20:00", 'en': "Mon-Sun 12:00-20:00" },
+                hours: { 'zh-TW': "每日 11:00 - 20:00", 'en': "Daily 11:00 AM - 8:00 PM" },
                 phone: "02 2507 5678",
                 email: "info@threetimelab.tw",
                 website: "threetimelab.tw",
@@ -498,8 +469,8 @@
             "house-of-story-wear": {
                 name: { 'zh-TW': "House of Story Wear 永續百貨", 'en': "House of Story Wear Sustainable Department Store" },
                 type: { 'zh-TW': "服飾", 'en': "Apparel" },
-                address: { 'zh-TW': "台北市大同區迪化街一段32巷1號", 'en': "No. 1, Ln. 32, Sec. 1, Dihua St., Datong Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "週二至週日 13:00-21:00（週一公休）", 'en': "Tue-Sun 13:00-21:00 (Closed Mon)" },
+                address: { 'zh-TW': "台北市大同區西寧北路65-67號", 'en': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週二至週日 11:00 - 19:00（週一公休）", 'en': "Tue-Sun 11:00 AM - 7:00 PM (Closed Mon)" },
                 phone: "02 2555 9876",
                 email: "info@storywear.tw",
                 website: "storywear.tw",
@@ -507,14 +478,14 @@
                 longDescription: { 'zh-TW': "這裡不僅是永續時尚的選物店，更是一個社區交流的平台，融合了永續時尚、性別友善和文化交流。店內有永續時尚服飾、回收布料商品、二手選物，還有咖啡飲品供您休憩。", 'en': "More than just a sustainable fashion boutique, it's a community hub blending sustainable fashion, gender-friendly principles, and cultural exchange. The store features sustainable apparel, recycled fabric products, curated second-hand items, and offers coffee and beverages for relaxation." },
                 sustainability: { 'zh-TW': "推廣循環經濟、服飾回收再利用、支持本地小品牌。", 'en': "Promoting circular economy, clothing recycling and reuse, and supporting local independent brands." },
                 tags: { 'zh-TW': ["永續時尚", "循環經濟", "服飾回收", "二手選物", "咖啡"], 'en': ["Sustainable Fashion", "Circular Economy", "Clothing Recycling", "Second-hand Curated", "Coffee"] },
-                lat: 25.054418,
-                lng: 121.510162
+                lat: 25.0538,
+                lng: 121.5097
             },
             "story-wear-zerowaste": {
                 name: { 'zh-TW': "Story Wear 零廢時尚", 'en': "Story Wear Zero-Waste Fashion" },
                 type: { 'zh-TW': "服飾", 'en': "Apparel" },
-                address: { 'zh-TW': "台北市大同區迪化街一段32巷1號", 'en': "No. 1, Ln. 32, Sec. 1, Dihua St., Datong Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "週二至週日 13:00-20:00（週一公休）", 'en': "Tue-Sun 13:00-20:00 (Closed Mon)" },
+                address: { 'zh-TW': "台北市大同區西寧北路65-67號", 'en': "No. 65-67, Xining N. Rd., Datong Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "週二至週日 13:00 - 20:00（週一公休）", 'en': "Tue-Sun 1:00 PM - 8:00 PM (Closed Mon)" },
                 phone: "02 2555 9876",
                 email: "info@storywear.tw",
                 website: "storywear.tw",
@@ -522,15 +493,15 @@
                 longDescription: { 'zh-TW': "創辦人希望改變時尚產業的高耗能與高污染現況，實踐永續時尚。我們將回收牛仔布、剩布等廢棄紡織品，透過設計巧思轉化為獨特的服飾與配件，賦予舊布料新生命。", 'en': "The founder aims to transform the high-energy consumption and pollution status of the fashion industry, practicing sustainable fashion. We transform discarded textiles like recycled denim and leftover fabrics into unique apparel and accessories through creative design, giving new life to old materials." },
                 sustainability: { 'zh-TW': "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。", 'en': "Made from 100% recycled fabrics, promoting zero-waste fashion and reducing textile waste." },
                 tags: { 'zh-TW': ["零廢時尚", "回收布料", "紡織廢棄物", "永續時尚", "二手改造"], 'en': ["Zero-Waste Fashion", "Recycled Fabrics", "Textile Waste", "Sustainable Fashion", "Upcycling"] },
-                lat: 25.054418,
-                lng: 121.510162
+                lat: 25.0538,
+                lng: 121.5097
             },
             "garden-selection": {
                 name: { 'zh-TW': "garden文創選物店", 'en': "garden Creative & Cultural Select Shop" },
                 type: { 'zh-TW': "文創", 'en': "Creative & Cultural" },
-                address: { 'zh-TW': "台北市大安區永康街31巷9號", 'en': "No. 9, Ln. 31, Yongkang St., Da’an Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "週一至週日 12:00-20:00", 'en': "Mon-Sun 12:00-20:00" },
-                phone: "02 2391 5678",
+                address: { 'zh-TW': "台北市大安區永康街43-1號", 'en': "No. 43-1, Yongkang St., Da’an Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "每日 14:00 - 19:00", 'en': "Daily 2:00 PM - 7:00 PM" },
+                phone: "02 2341 9953", // 從搜尋結果更新
                 email: "info@gardenselection.tw",
                 website: "gardenselection.tw",
                 description: { 'zh-TW': "選品強調環保材質、在地生產，降低運輸碳足跡，推廣台灣設計與永續生活美學。", 'en': "Curated items emphasize eco-friendly materials and local production to reduce transportation carbon footprint, promoting Taiwanese design and sustainable living aesthetics." },
@@ -538,28 +509,28 @@
                 sustainability: { 'zh-TW': "選品強調環保材質、在地生產，降低運輸碳足跡。", 'en': "Curated items emphasize eco-friendly materials and local production to reduce transportation carbon footprint." },
                 tags: { 'zh-TW': ["文創", "環保材質", "在地生產", "永續生活美學", "設計選物"], 'en': ["Creative & Cultural", "Eco-friendly Materials", "Local Production", "Sustainable Living Aesthetics", "Curated Design"] },
                 lat: 25.0315,
-                lng: 121.5298
+                lng: 121.5290
             },
             "sinpu-market": {
                 name: { 'zh-TW': "心樸市集四維店", 'en': "Sinpu Market Siwei Branch" },
                 type: { 'zh-TW': "食品", 'en': "Food" },
-                address: { 'zh-TW': "台北市大安區四維路76巷9號", 'en': "No. 9, Ln. 76, Siwei Rd., Da’an Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "週一至週日 10:00-21:00", 'en': "Mon-Sun 10:00-21:00" },
-                phone: "02 2701 1234",
+                address: { 'zh-TW': "台北市大安區四維路45號", 'en': "No. 45, Siwei Rd., Da’an Dist., Taipei City, Taiwan" },
+                hours: { 'zh-TW': "每日 08:00 - 23:00", 'en': "Daily 8:00 AM - 11:00 PM" },
+                phone: "02 2701 9675", // 從搜尋結果更新
                 email: "info@sinpumarket.tw",
                 website: "sinpumarket.tw",
                 description: { 'zh-TW': "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。", 'en': "Supports organic farming, reduces pesticide use, and promotes local ingredients to minimize carbon footprint." },
                 longDescription: { 'zh-TW': "心樸市集致力於提供健康又友善環境的產品。我們嚴選有機食品、友善環境生活用品，並積極與在地小農合作，讓消費者能輕鬆購得新鮮、安心的食材，同時支持永續農業發展。", 'en': "Sinpu Market is committed to providing healthy and environmentally friendly products. We carefully select organic foods and eco-friendly daily necessities, and actively collaborate with local small farmers, allowing consumers to easily purchase fresh, safe ingredients while supporting sustainable agricultural development." },
                 sustainability: { 'zh-TW': "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。", 'en': "Supports organic farming, reduces pesticide use, and promotes local ingredients to minimize carbon footprint." },
                 tags: { 'zh-TW': ["有機食品", "在地小農", "友善環境", "健康飲食", "無毒生活"], 'en': ["Organic Food", "Local Farmers", "Eco-friendly", "Healthy Eating", "Non-toxic Living"] },
-                lat: 25.0336,
-                lng: 121.5540
+                lat: 25.0333,
+                lng: 121.5519
             },
             "simplastic-beitou": {
                 name: { 'zh-TW': "簡塑慢行 Simplastic (北投中正店)", 'en': "Simplastic - Beitou Zhongzheng Branch" },
                 type: { 'zh-TW': "無包裝商店", 'en': "Zero-Waste Store" },
                 address: { 'zh-TW': "台北市北投區中正街49巷35號", 'en': "No. 35, Ln. 49, Zhongzheng St., Beitou Dist., Taipei City, Taiwan" },
-                hours: { 'zh-TW': "週一 10:00-13:00, 14:30-19:00; 週二 10:00-13:00, 14:30-19:00; 週三 14:00-21:00; 週四 10:00-13:00, 14:30-19:00; 週五 10:00-13:00, 14:30-19:00; 週六 10:00-13:00, 14:30-19:00", 'en': "Mon 10:00-13:00, 14:30-19:00; Tue 10:00-13:00, 14:30-19:00; Wed 14:00-21:00; Thu 10:00-13:00, 14:30-19:00; Fri 10:00-13:00, 14:30-19:00; Sat 10:00-13:00, 14:30-19:00" },
+                hours: { 'zh-TW': "週一 10:00-13:00, 14:30-19:00; 週二 10:00-13:00, 14:30-19:00; 週三 14:00-21:00; 週四 10:00-13:00, 14:30-19:00; 週五 10:00-13:00, 14:30-19:00; 週六 10:00-13:00, 14:30-19:00; 週日 關閉", 'en': "Mon 10:00-13:00, 14:30-19:00; Tue 10:00-13:00, 14:30-19:00; Wed 14:00-21:00; Thu 10:00-13:00, 14:30-19:00; Fri 10:00-13:00, 14:30-19:00; Sat 10:00-13:00, 14:30-19:00; Sun Closed" },
                 phone: "02 2898 5678",
                 email: "beitou@simplastic.tw",
                 website: "simplastic.tw",
@@ -577,12 +548,11 @@
             { id: "eco-goodies", lat: 25.0330, lng: 121.5500 },
             { id: "green-boutique", lat: 25.0339, lng: 121.5432 },
             { id: "no-package", lat: 25.0378, lng: 121.5679 },
-            { id: "simplastic-guangming", lat: 25.1378, lng: 121.5034 },
             { id: "threetime-lab", lat: 25.0506, lng: 121.5343 },
-            { id: "house-of-story-wear", lat: 25.054418, lng: 121.510162 },
-            { id: "story-wear-zerowaste", lat: 25.054418, lng: 121.510162 },
-            { id: "garden-selection", lat: 25.0315, lng: 121.5298 },
-            { id: "sinpu-market", lat: 25.0336, lng: 121.5540 },
+            { id: "house-of-story-wear", lat: 25.0538, lng: 121.5097 },
+            { id: "story-wear-zerowaste", lat: 25.0538, lng: 121.5097 }, // Same as House of Story Wear
+            { id: "garden-selection", lat: 25.0315, lng: 121.5290 },
+            { id: "sinpu-market", lat: 25.0333, lng: 121.5519 },
             { id: "simplastic-beitou", lat: 25.1370, lng: 121.5020 }
         ];
 
@@ -791,15 +761,6 @@
                                 `).join('')}
                             </div>
                             ` : ''}
-
-                            <h2 class="text-2xl font-bold mb-4" data-i18n-dynamic="modalProductRecs">${translations[currentLang].modalProductRecs}</h2>
-                            <button id="generate-product-suggestions" class="btn-primary px-6 py-3 rounded-lg font-medium mb-4 flex items-center justify-center">
-                                <span id="generate-button-text" data-i18n-dynamic="generateSuggestionsBtn">${translations[currentLang].generateSuggestionsBtn}</span>
-                                <div id="generate-button-spinner" class="loader hidden ml-2"></div>
-                            </button>
-                            <div id="product-suggestions-output" class="bg-green-50 p-4 rounded-lg text-gray-700 min-h-[80px] flex items-center justify-center text-center" data-i18n-dynamic="clickToGenerate">
-                                ${translations[currentLang].clickToGenerate}
-                            </div>
                         </div>
                         
                         <div class="bg-green-50 p-6 rounded-xl">
@@ -884,64 +845,6 @@
                 if (e.target === this) {
                     this.classList.add('hidden');
                     document.body.style.overflow = 'auto'; // Restore background scrolling
-                }
-            });
-
-            // Listen for generate product suggestions button
-            document.getElementById('generate-product-suggestions').addEventListener('click', async function() {
-                const outputDiv = document.getElementById('product-suggestions-output');
-                const generateButtonText = document.getElementById('generate-button-text');
-                const generateButtonSpinner = document.getElementById('generate-button-spinner');
-
-                // Show loading state
-                generateButtonText.textContent = translations[currentLang].generatingSuggestions;
-                generateButtonSpinner.classList.remove('hidden');
-                this.disabled = true; // Disable button to prevent multiple clicks
-                outputDiv.innerHTML = `<div class="text-center">${translations[currentLang].generatingMessage}</div>`;
-
-                try {
-                    // Build LLM prompt based on current language
-                    let promptLang = currentLang === 'zh-TW' ? '繁體中文' : 'English';
-                    let prompt = `請根據一家名為「${shop.name[currentLang]}」的永續商店，其主要類型為「${shop.type[currentLang]}」，並致力於「${shop.sustainability[currentLang] || shop.description[currentLang]}」，列出5個建議的永續產品，每個產品附上簡短說明。請以條列式呈現，例如：\n- 產品名稱：簡短說明\n請以${promptLang}回應。`;
-
-                    // Call Gemini API
-                    let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                    const payload = { contents: chatHistory };
-                    const apiKey = ""; // Canvas will automatically provide the API key at runtime
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await response.json();
-
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        // Convert generated text to HTML list
-                        const htmlContent = text.split('\n').map(line => {
-                            if (line.trim().startsWith('-')) {
-                                return `<li class="mb-1">${line.trim().substring(1).trim()}</li>`;
-                            }
-                            return '';
-                        }).filter(Boolean).join('');
-                        outputDiv.innerHTML = `<ul class="list-disc list-inside text-left">${htmlContent}</ul>`;
-                    } else {
-                        outputDiv.innerHTML = `<div class="text-red-500">${translations[currentLang].generationFailed}</div>`;
-                        console.error('Gemini API response structure unexpected:', result);
-                    }
-                } catch (error) {
-                    outputDiv.innerHTML = `<div class="text-red-500">${translations[currentLang].generationError}</div>`;
-                    console.error('Error calling Gemini API:', error);
-                } finally {
-                    // Restore button state
-                    generateButtonText.textContent = translations[currentLang].generateSuggestionsBtn;
-                    generateButtonSpinner.classList.add('hidden');
-                    this.disabled = false;
                 }
             });
         }
