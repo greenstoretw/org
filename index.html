@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
@@ -135,7 +136,8 @@
                     <option value="de" data-i18n="langGerman">Deutsch</option>
                     <option value="es" data-i18n="langSpanish">Español</option>
                     <option value="la" data-i18n="langLatin">Latin</option>
-                    <option value="ja" data-i18n="langJapanese">日本語</option> </select>
+                    <option value="ja" data-i18n="langJapanese">日本語</option>
+                </select>
             </div>
             <div class="md:hidden flex items-center">
                 <select id="language-select-mobile" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition cursor-pointer mr-2">
@@ -145,7 +147,8 @@
                     <option value="de" data-i18n="langGerman">Deutsch</option>
                     <option value="es" data-i18n="langSpanish">Español</option>
                     <option value="la" data-i18n="langLatin">Latin</option>
-                    <option value="ja" data-i18n="langJapanese">日本語</option> </select>
+                    <option value="ja" data-i18n="langJapanese">日本語</option>
+                </select>
                 <button id="menu-toggle" class="text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -233,8 +236,9 @@
                 <h2 class="text-3xl font-bold mb-4" data-i18n="newsletterTitle">訂閱永續生活電子報</h2>
                 <p class="mb-6" data-i18n="newsletterSubtitle">獲取最新的永續商店資訊、環保生活技巧和特別優惠</p>
                 <div class="flex flex-col md:flex-row gap-2">
-                    <input type="email" placeholder="" class="flex-1 px-4 py-3 rounded-lg text-gray-800 focus:outline-none" data-i18n="newsletterPlaceholder">
-                    <button class="bg-white text-green-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition" data-i18n="subscribeBtn">訂閱</button>
+                    <input type="email" id="newsletter-email" placeholder="" class="flex-1 px-4 py-3 rounded-lg text-gray-800 focus:outline-none" data-i18n="newsletterPlaceholder">
+                    <div id="turnstile-widget" class="cf-turnstile" data-sitekey="0x4AAAAAABeXYd9f0btTQi-I" data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired"></div>
+                    <button id="subscribe-button" class="bg-white text-green-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition" data-i18n="subscribeBtn">訂閱</button>
                 </div>
             </div>
         </div>
@@ -303,13 +307,13 @@
                 map: '地圖',
                 shopList: '商店列表',
                 newsletter: '訂閱電子報',
-                langChinese: '繁體中文',
-                langEnglish: 'English',
-                langFrench: 'Français',
-                langGerman: 'Deutsch',
-                langSpanish: 'Español',
-                langLatin: 'Latin',
-                langJapanese: '日本語', // 新增日文選項的翻譯鍵
+                langChinese: '繁體中文', // 新增語言選項的翻譯鍵
+                langEnglish: 'English', // 新增語言選項的翻譯鍵
+                langFrench: 'Français', // 新增語言選項的翻譯鍵
+                langGerman: 'Deutsch', // 新增語言選項的翻譯鍵
+                langSpanish: 'Español', // 新增語言選項的翻譯鍵
+                langLatin: 'Latin', // 新增語言選項的翻譯鍵
+                langJapanese: '日本語',
                 heroTitle: '探索台灣永續商店',
                 heroSubtitle: '找到支持環保、公平貿易和永續發展的商店，一起為地球盡一份心力',
                 viewMapBtn: '查看地圖',
@@ -355,7 +359,11 @@
                 modalLocation: '位置',
                 shopDetailsNotAvailable: '此店家詳情尚未建立，敬請期待！',
                 okButton: '確定',
-                notProvided: '未提供'
+                notProvided: '未提供',
+                newsletterSuccess: '感謝您的訂閱！您將收到我們的最新消息。',
+                newsletterInvalidEmail: '請輸入有效的電子郵件地址。',
+                newsletterError: '訂閱失敗，請稍後再試。',
+                turnstileFailed: '人機驗證失敗，請重試。' // 新增 Turnstile 失敗訊息
             },
             'en': {
                 pageTitle: 'Sustainable Store Map - Home',
@@ -370,7 +378,7 @@
                 langGerman: 'Deutsch',
                 langSpanish: 'Español',
                 langLatin: 'Latin',
-                langJapanese: '日本語', // 新增日文選項的翻譯鍵
+                langJapanese: '日本語',
                 heroTitle: 'Explore Taiwan\'s Sustainable Stores',
                 heroSubtitle: 'Find stores that support environmental protection, fair trade, and sustainable development, and contribute to the Earth together.',
                 viewMapBtn: 'View Map',
@@ -416,7 +424,11 @@
                 modalLocation: 'Location',
                 shopDetailsNotAvailable: 'Shop details not yet available, please look forward to it!',
                 okButton: 'OK',
-                notProvided: 'Not provided'
+                notProvided: 'Not provided',
+                newsletterSuccess: 'Thank you for subscribing! You will receive our latest news.',
+                newsletterInvalidEmail: 'Please enter a valid email address.',
+                newsletterError: 'Subscription failed, please try again later.',
+                turnstileFailed: 'Human verification failed, please try again.'
             },
             // 法語翻譯 (Français)
             'fr': {
@@ -432,7 +444,7 @@
                 langGerman: 'Deutsch',
                 langSpanish: 'Español',
                 langLatin: 'Latin',
-                langJapanese: '日本語', // 新增日文選項的翻譯鍵
+                langJapanese: '日本語',
                 heroTitle: 'Explorez les Magasins Durables de Taïwan',
                 heroSubtitle: 'Trouvez des magasins qui soutiennent la protection de l\'environnement, le commerce équitable et le développement durable, et contribuez ensemble à la Terre.',
                 viewMapBtn: 'Voir la Carte',
@@ -478,7 +490,11 @@
                 modalLocation: 'Localisation',
                 shopDetailsNotAvailable: 'Les détails du magasin ne sont pas encore disponibles, veuillez patienter !',
                 okButton: 'OK',
-                notProvided: 'Non fourni'
+                notProvided: 'Non fourni',
+                newsletterSuccess: 'Merci de votre abonnement ! Vous recevrez nos dernières nouvelles.',
+                newsletterInvalidEmail: 'Veuillez entrer une adresse e-mail valide.',
+                newsletterError: 'L\'abonnement a échoué, veuillez réessayer plus tard.',
+                turnstileFailed: 'La vérification humaine a échoué, veuillez réessayer.'
             },
             // 德語翻譯 (Deutsch)
             'de': {
@@ -494,9 +510,9 @@
                 langGerman: 'Deutsch',
                 langSpanish: 'Español',
                 langLatin: 'Latin',
-                langJapanese: '日本語', // 新增日文選項的翻譯鍵
+                langJapanese: '日本語',
                 heroTitle: 'Entdecken Sie Taiwans Nachhaltige Geschäfte',
-                heroSubtitle: 'Finden Sie Geschäfte, die Umweltschutz, fairen Handel und nachhaltige Entwicklung unterstützen, und tragen Sie gemeinsam zum Wohl der Erde bei.',
+                heroSubtitle: 'Finden Sie Geschäfte, die Umweltschutz, fairen Handel和 nachhaltige Entwicklung unterstützen, und tragen Sie gemeinsam zum Wohl der Erde bei.',
                 viewMapBtn: 'Karte Ansehen',
                 browseShopsBtn: 'Geschäftsliste Durchsuchen',
                 searchTitle: 'Nach Nachhaltigen Geschäften Suchen',
@@ -540,7 +556,11 @@
                 modalLocation: 'Standort',
                 shopDetailsNotAvailable: 'Geschäftsdetails noch nicht verfügbar, bitte freuen Sie sich darauf!',
                 okButton: 'OK',
-                notProvided: 'Nicht angegeben'
+                notProvided: 'Nicht angegeben',
+                newsletterSuccess: 'Vielen Dank für Ihr Abonnement! Sie erhalten unsere neuesten Nachrichten.',
+                newsletterInvalidEmail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
+                newsletterError: 'Abonnement fehlgeschlagen, bitte versuchen Sie es später erneut.',
+                turnstileFailed: 'Menschliche Überprüfung fehlgeschlagen, bitte versuchen Sie es erneut.'
             },
             // 西班牙語翻譯 (Español)
             'es': {
@@ -556,7 +576,7 @@
                 langGerman: 'Deutsch',
                 langSpanish: 'Español',
                 langLatin: 'Latin',
-                langJapanese: '日本語', // 新增日文選項的翻譯鍵
+                langJapanese: '日本語',
                 heroTitle: 'Explora las Tiendas Sostenibles de Taiwán',
                 heroSubtitle: 'Encuentra tiendas que apoyan la protección del medio ambiente, el comercio justo y el desarrollo sostenible, y contribuye junto a la Tierra.',
                 viewMapBtn: 'Ver Mapa',
@@ -602,7 +622,11 @@
                 modalLocation: 'Ubicación',
                 shopDetailsNotAvailable: 'Los detalles de la tienda aún no están disponibles, ¡espéralos con ansias!',
                 okButton: 'OK',
-                notProvided: 'No proporcionado'
+                notProvided: 'No proporcionado',
+                newsletterSuccess: '¡Gracias por suscribirte! Recibirás nuestras últimas noticias.',
+                newsletterInvalidEmail: 'Por favor, introduce una dirección de correo electrónico válida.',
+                newsletterError: 'Error al suscribirse, por favor, inténtalo de nuevo más tarde.',
+                turnstileFailed: 'La verificación humana falló, por favor, inténtalo de nuevo.'
             },
             // 拉丁語翻譯 (Latin) - 請注意，拉丁語可能沒有直接的現代詞彙，這裡僅作示範，可能需要更精確的翻譯
             'la': {
@@ -618,7 +642,7 @@
                 langGerman: 'Deutsch',
                 langSpanish: 'Español',
                 langLatin: 'Latin',
-                langJapanese: '日本語', // 新增日文選項的翻譯鍵
+                langJapanese: '日本語',
                 heroTitle: 'Explora Copias Sustentabiles Taiwaniae',
                 heroSubtitle: 'Reperi copias quae tutelam naturae, commercium aequum, progressionemque sustentabilem adiuvant, et una pro Terra opera da.',
                 viewMapBtn: 'Vide Tabulam',
@@ -664,7 +688,11 @@
                 modalLocation: 'Locus',
                 shopDetailsNotAvailable: 'Singula copiae nondum praesto sunt, quaeso exspecta!',
                 okButton: 'Bene',
-                notProvided: 'Non provisum'
+                notProvided: 'Non provisum',
+                newsletterSuccess: 'Gratias tibi pro subscriptione! Nuntios nostros recentissimos accipies.',
+                newsletterInvalidEmail: 'Quaeso, inscriptionem electronicam validam inscribe.',
+                newsletterError: 'Subscriptio defecit, quaeso postea iterum conare.',
+                turnstileFailed: 'Verificatio humana defecit, quaeso iterum conare.'
             },
             // 日語翻譯 (日本語)
             'ja': {
@@ -726,11 +754,16 @@
                 modalLocation: '場所',
                 shopDetailsNotAvailable: 'ショップの詳細はまだ利用できません。お楽しみに！',
                 okButton: 'OK',
-                notProvided: '提供されていません'
+                notProvided: '提供されていません',
+                newsletterSuccess: 'ご購読ありがとうございます！最新情報をお届けします。',
+                newsletterInvalidEmail: '有効なメールアドレスを入力してください。',
+                newsletterError: '購読に失敗しました。後でもう一度お試しください。',
+                turnstileFailed: '人間認証に失敗しました。もう一度お試しください。'
             }
         };
 
         let currentLang = localStorage.getItem('lang') || 'zh-TW'; // Load from localStorage or default to Traditional Chinese
+        let turnstileToken = null; // 用於儲存 Turnstile 驗證成功的 token
 
         // Shop data, now with bilingual fields for translatable content
         const shopDetails = {
@@ -750,11 +783,11 @@
                 lng: 121.5500,
                 collections: [
                     {
-                        name: { 'zh-TW': "廚房零廢棄系列", 'en': "Zero-Waste Kitchen Collection", 'fr': "Collection Cuisine Zéro Déchet", 'de': "Zero-Waste Küchenkollektion", 'es': "Colección Cocina Cero Residuos", 'la': "Collectio Culinae Sine Vaste", 'ja': "ゼロウェイストキッチンコレクション" },
+                        name: { 'zh-TW': "廚房零廢棄系列", 'en': "Zero-Waste Kitchen Collection", 'fr': "Collection Cuisine Zéro Déchet", 'de': "Zero-Waste Küchenコレクション", 'es': "Colección Cocina Cero Residuos", 'la': "Collectio Culinae Sine Vaste", 'ja': "ゼロウェイストキッチンコレクション" },
                         description: { 'zh-TW': "包括可重複使用的食物保鮮袋、蜂蠟保鮮膜、竹製餐具等，幫助您建立一個無塑廚房。", 'en': "Includes reusable food storage bags, beeswax wraps, bamboo utensils, etc., to help you create a plastic-free kitchen.", 'fr': "Comprend des sacs de conservation alimentaire réutilisables, des emballages en cire d'abeille, des ustensiles en bambou, etc., pour vous aider à créer une cuisine sans plastique.", 'de': "Umfasst wiederverwendbare Lebensmittelbeutel, Bienenwachstücher, Bambusutensilien usw., um Ihnen zu helfen, eine plastikfreie Küche zu schaffen.", 'es': "Incluye bolsas de almacenamiento de alimentos reutilizables, envoltorios de cera de abeja, utensilios de bambú, etc., para ayudarte a crear una cocina sin plástico.", 'la': "Sacculos cibi reutilizabiles, cerae apium involumenta, utensilia bambuina, etc., comprehendit, ut culinam sine plastico crees.", 'ja': "再利用可能な食品保存袋、蜜蝋ラップ、竹製調理器具など、プラスチックフリーのキッチンを作るのに役立ちます。" }
                     },
                     {
-                        name: { 'zh-TW': "個人護理系列", 'en': "Personal Care Collection", 'fr': "Collection Soins Personnels", 'de': "Körperpflegekollektion", 'es': "Colección Cuidado Personal", 'la': "Collectio Curae Personalis", 'ja': "パーソナルケアコレクション" },
+                        name: { 'zh-TW': "個人護理系列", 'en': "Personal Care Collection", 'fr': "Collection Soins Personnels", 'de': "Körperpflegeコレクション", 'es': "Colección Cuidado Personal", 'la': "Collectio Curae Personalis", 'ja': "パーソナルケアコレクション" },
                         description: { 'zh-TW': "提供天然成分製成的肥皂、洗髮餅、竹牙刷等，減少塑料包裝和有害化學物質。", 'en': "Offers soaps, shampoo bars, bamboo toothbrushes made from natural ingredients, reducing plastic packaging and harmful chemicals.", 'fr': "Propose des savons, des shampoings solides, des brosses à dents en bambou fabriqués à partir d'ingrédients naturels, réduisant les emballages plastiques et les produits chimiques nocifs.", 'de': "Bietet Seifen, Shampoo-Bars, Bambuszahnbürsten aus natürlichen Inhaltsstoffen an, die Plastikverpackungen und schädliche Chemikalien reduzieren.", 'es': "Ofrece jabones, champús sólidos, cepillos de dientes de bambú hechos con ingredientes naturales, reduciendo los envases de plástico y los productos químicos nocivos.", 'la': "Saponem, capilli lavacra, dentifricula bambuina ex ingredientibus naturalibus facta praebet, reducens sarcinas plasticas et chemica nociva.", 'ja': "天然成分で作られた石鹸、シャンプーバー、竹歯ブラシなどを提供し、プラスチック包装と有害な化学物質を削減します。" }
                     }
                 ]
@@ -808,7 +841,7 @@
                 phone: "02 2507 5678",
                 email: "info@threetimelab.tw",
                 website: "threetimelab.tw",
-                description: { 'zh-TW': "所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。", 'en': "All products emphasize reusability and unpackaged options, promoting plastic reduction and conscious consumption.", 'fr': "Tous les produits mettent l'accent sur la réutilisabilité et les options non emballées, promouvant la réduction du plastique et la consommation consciente.", 'de': "Alle Produkte betonen Wiederverwendbarkeit und unverpackte Optionen, fördern die Plastikreduzierung und bewussten Konsum.", 'es': "Todos los productos enfatizan la reutilización y las opciones sin envasar, promoviendo la reducción de plástico y el consumo consciente.", 'la': "Omnia producta reutilitatem et optiones sine sarcina extollunt, reductionem plastici et consumptionem conscientem promoventes.", 'ja': "すべての製品は再利用可能で包装されていないことを強調し、プラスチック削減と意識的な消費を推進しています。" },
+                description: { 'zh-TW': "所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。", 'en': "All products emphasize reusability and unpackaged options, promoting plastic reduction and conscious consumption.", 'fr': "Tous les produits mettent l'accent sur la réutilisabilité et les options non emballées, promouvant la réduction du plastique et la consommation consciente.", 'de': "Alle Produkte betonen Wiederverwendbarkeit und unverpackte Optionen, fördern die Plastikreduzierung und bewussten Konsum.", 'es': "Todos los productos enfatizan la reutilización y lasオプションを重視し、プラスチック削減と意識的な消費を推進しています。", 'la': "Omnia producta reutilitatem et optiones sine sarcina extollunt, reductionem plastici et consumptionem conscientem promoventes.", 'ja': "すべての製品は再利用可能で包装されていないことを強調し、プラスチック削減と意識的な消費を推進しています。" },
                 longDescription: { 'zh-TW': "希望透過商店讓消費者能「為想要的世界投票」，實踐永續生活。店內販售裸裝食品、環保餐具、竹牙刷、布衛生棉等友善環境生活用品，提倡綠色消費理念。", 'en': "Aims to empower consumers to 'vote for the world they want' through conscious shopping and sustainable living. The store offers bulk foods, eco-friendly utensils, bamboo toothbrushes, reusable sanitary pads, and other environmentally friendly daily necessities, advocating a green consumption philosophy.", 'fr': "Vise à donner aux consommateurs le pouvoir de 'voter pour le monde qu'ils veulent' grâce à des achats conscients et à un mode de vie durable. Le magasin propose des aliments en vrac, des ustensiles écologiques, des brosses à dents en bambou, des serviettes hygiéniques réutilisables et d'autres nécessités quotidiennes respectueuses de l'environnement, prônant une philosophie de consommation verte.", 'de': "Ziel ist es, Verbraucher durch bewusstes Einkaufen und nachhaltiges Leben zu befähigen, 'für die Welt zu stimmen, die sie wollen'. Das Geschäft bietet unverpackte Lebensmittel, umweltfreundliche Utensilien, Bambuszahnbürsten, wiederverwendbare Binden und andere umweltfreundliche Dinge des täglichen Bedarfs an, die eine grüne Konsumphilosophie befürworten.", 'es': "Tiene como objetivo empoderar a los consumidores para que 'voten por el mundo que quieren' a través de compras conscientes y una vida sostenible. La tienda ofrece alimentos a granel, utensilios ecológicos, cepillos de dientes de bambú, compresas sanitarias reutilizables y otras necesidades diarias respetuosas con el medio ambiente, abogando por una filosofía de consumo verde.", 'la': "Propositum est consumptores 'suffragari pro mundo quem volunt' per emptiones conscientes et vitam sustentabilem. Copia praebet cibos in mole, utensilia oecologica, dentifricula bambuina, lintea sanitatis reutilizabilia, et alias necessitates quotidianas naturae amicas, philosophiam consumptionis viridis advocans.", 'ja': "店舗を通じて消費者が「望む世界に投票」し、持続可能な生活を送れるようにすることを目指しています。店内では、裸の食品、環境に優しい食器、竹歯ブラシ、布ナプキンなどの環境に優しい日用品を販売し、グリーン消費の理念を提唱しています。" },
                 sustainability: { 'zh-TW': "所有商品皆強調可重複使用、無包裝，推廣減塑與有意識消費。", 'en': "All products emphasize reusability and unpackaged options, promoting plastic reduction and conscious consumption.", 'fr': "Tous les produits mettent l'accent sur la réutilisabilité et les options non emballées, promouvant la réduction du plastique et la consommation consciente.", 'de': "Alle Produkte betonen Wiederverwendbarkeit und unverpackte Optionen, fördern die Plastikreduzierung und bewussten Konsum.", 'es': "Todos los productos enfatizan la reutilización y lasオプションを重視し、プラスチック削減と意識的な消費を推進しています。", 'la': "Omnia producta reutilitatem et optiones sine sarcina extollunt, reductionem plastici et consumptionem conscientem promoventes.", 'ja': "すべての製品は再利用可能で包装されていないことを強調し、プラスチック削減と意識的な消費を推進しています。" },
                 tags: { 'zh-TW': ["無包裝", "減塑", "有意識消費", "環保餐具", "裸裝食品"], 'en': ["Unpackaged", "Plastic-Free", "Conscious Consumption", "Eco-friendly Utensils", "Bulk Foods"], 'fr': ["Non Emballé", "Sans Plastique", "Consommation Consciente", "Ustensiles Écologiques", "Aliments en Vrac"], 'de': ["Unverpackt", "Plastikfrei", "Bewusster Konsum", "Umweltfreundliche Utensilien", "Unverpackte Lebensmittel"], 'es': ["Sin Envasar", "Sin Plástico", "Consumo Consciente", "Utensilios Ecológicos", "Alimentos a Granel"], 'la': ["Sine Sarcina", "Sine Plastico", "Consumptio Conscientis", "Utensilia Oecologica", "Cibi in Mole"], 'ja': ["包装なし", "プラスチックフリー", "意識的な消費", "環境に優しい食器", "バルク食品"] },
@@ -838,7 +871,7 @@
                 phone: "02 2555 9876",
                 email: "info@storywear.tw",
                 website: "storywear.tw",
-                description: { 'zh-TW': "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。", 'en': "Made from 100% recycled fabrics, promoting zero-waste fashion and reducing textile waste.", 'fr': "Fabriqué à partir de tissus 100% recyclés, promouvant la mode zéro déchet et réduisant les déchets textiles.", 'de': "Hergestellt aus 100% recycelten Stoffen, fördert Zero-Waste-Mode und reduziert Textilabfälle.", 'es': "Hecho de telas 100% recicladas, promoviendo la moda de cero residuos y reduciendo los residuos textiles.", 'la': "Ex 100% textilibus recycabilibus facta, modum sine vastitate promovens et vastitatem textilis reducens.", 'ja': "100%リサイクル生地で作られ、ゼロウェイストファッションを推進し、繊維廃棄物を削減しています。" },
+                description: { 'zh-TW': "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。", 'en': "Made from 100% recycled fabrics, promoting zero-waste fashion and reducing textile waste.", 'fr': "Fabriqué à partir de tissus 100% recyclés, promouvant la mode zéro déchet et réduisant les déchets textiles.", 'de': "Hergestellt aus 100% recycelten Stoffों, fördert Zero-Waste-Mode und reduziert Textilabfälle.", 'es': "Hecho de telas 100% recicladas, promoviendo la moda de cero residuos y reduciendo los residuos textiles.", 'la': "Ex 100% textilibus recycabilibus facta, modum sine vastitate promovens et vastitatem textilis reducens.", 'ja': "100%リサイクル生地で作られ、ゼロウェイストファッションを推進し、繊維廃棄物を削減しています。" },
                 longDescription: { 'zh-TW': "創辦人希望改變時尚產業的高耗能與高污染現況，實踐永續時尚。我們將回收牛仔布、剩布等廢棄紡織品，透過設計巧思轉化為獨特的服飾與配件，賦予舊布料新生命。", 'en': "The founder aims to transform the high-energy consumption and pollution status of the fashion industry, practicing sustainable fashion. We transform discarded textiles like recycled denim and leftover fabrics into unique apparel and accessories through creative design, giving new life to old materials.", 'fr': "Le fondateur vise à transformer le statut de forte consommation d'énergie et de pollution de l'industrie de la mode, en pratiquant la mode durable. Nous transformons les textiles mis au rebut comme le denim recyclé et les tissus restants en vêtements et accessoires uniques grâce à une conception créative, donnant une nouvelle vie aux anciens matériaux.", 'de': "Der Gründer möchte den hohen Energieverbrauch und die Umweltverschmutzung in der Modebranche ändern und nachhaltige Mode praktizieren. Wir verwandeln ausrangierte Textilien wie recycelten Denim und Stoffreste durch kreatives Design in einzigartige Bekleidung und Accessoires und verleihen alten Materialien neues Leben.", 'es': "El fundador tiene como objetivo transformar el estado de alto consumo de energía y contaminación de la industria de la moda, practicando la moda sostenible. Transformamos textiles desechados como mezclilla reciclada y telas sobrantes en prendas y accesorios únicos a través de un diseño creativo, dando nueva vida a los materiales antiguos.", 'la': "Fundator propositum habet statum industriae modi altae energiae consumptionis et pollutionis mutare, modum sustentabilem exercens. Textilia reiecta sicut denim recycabile et textilia residua in vestimenta et accessoria unica per consilium creativum convertimus, vitam novam materiis veteribus dando.", 'ja': "創業者は、ファッション業界の高いエネルギー消費と汚染の現状を変え、持続可能なファッションを実践することを目指しています。私たちは、リサイクルデニムや残布などの廃棄されたテキスタイルを、創造的なデザインを通じてユニークなアパレルやアクセサリーに変え、古い素材に新しい命を吹き込んでいます。" },
                 sustainability: { 'zh-TW': "100%回收布料製作，推廣零廢時尚，減少紡織廢棄物。", 'en': "Made from 100% recycled fabrics, promoting zero-waste fashion and reducing textile waste.", 'fr': "Fabriqué à partir de tissus 100% recyclés, promouvant la mode zéro déchet et réduisant les déchets textiles.", 'de': "Hergestellt aus 100% recycelten Stoffen, fördert Zero-Waste-Mode und reduziert Textilabfälle.", 'es': "Hecho de telas 100% recicladas, promoviendo la moda de cero residuos y reduciendo los residuos textiles.", 'la': "Ex 100% textilibus recycabilibus facta, modum sine vastitate promovens et vastitatem textilis reducens.", 'ja': "100%リサイクル生地で作られ、ゼロウェイストファッションを推進し、繊維廃棄物を削減しています。" },
                 tags: { 'zh-TW': ["零廢時尚", "回收布料", "紡織廢棄物", "永續時尚", "二手改造"], 'en': ["Zero-Waste Fashion", "Recycled Fabrics", "Textile Waste", "Sustainable Fashion", "Upcycling"], 'fr': ["Mode Zéro Déchet", "Tissus Recyclés", "Déchets Textiles", "Mode Durable", "Upcycling"], 'de': ["Zero-Waste-Mode", "Recycelte Stoff物", "Textilabfälle", "Nachhaltige Mode", "Upcycling"], 'es': ["Moda Cero Residuos", "Telas Recicladas", "Residuos Textiles", "Moda Sostenible", "Upcycling"], 'la': ["Modus Sine Vaste", "Textilia Recycabilia", "Vastitas Textilis", "Modus Sustentabilis", "Upcycling"], 'ja': ["ゼロウェイストファッション", "リサイクル生地", "繊維廃棄物", "サステナブルファッション", "アップサイクル"] },
@@ -869,9 +902,9 @@
                 email: "info@sinpumarket.tw",
                 website: "sinpumarket.tw",
                 description: { 'zh-TW': "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。", 'en': "Supports organic farming, reduces pesticide use, and promotes local ingredients to minimize carbon footprint.", 'fr': "Soutient l'agriculture biologique, réduit l'utilisation de pesticides et promeut les ingrédients locaux pour minimiser l'empreinte carbone.", 'de': "Unterstützt den ökologischen Landbau, reduziert den Pestizideinsatz und fördert lokale Zutaten, um den CO2-Fußabdruck zu minimieren.", 'es': "Apoya la agricultura orgánica, reduce el uso de pesticidas y promueve ingredientes locales para minimizar la huella de carbono.", 'la': "Agriculturam organicam sustinet, usum pesticidarum minuit, et ingredientia localia promovet ad vestigium carbonis minuere.", 'ja': "有機農業を支援し、農薬の使用を削減し、地元の食材を推進してカーボンフットプリントを最小限に抑えます。" },
-                longDescription: { 'zh-TW': "心樸市集致力於提供健康又友善環境的產品。我們嚴選有機食品、友善環境生活用品，並積極與在地小農合作，讓消費者能輕鬆購得新鮮、安心的食材，同時支持永續農業發展。", 'en': "Sinpu Market is committed to providing healthy and environmentally friendly products. We carefully select organic foods and eco-friendly daily necessities, and actively collaborate with local small farmers, allowing consumers to easily purchase fresh, safe ingredients while supporting sustainable agricultural development.", 'fr': "Le marché de Sinpu s'engage à fournir des produits sains et respectueux de l'environnement. Nous sélectionnons soigneusement des aliments biologiques et des nécessités quotidiennes écologiques, et collaborons activement avec les petits agriculteurs locaux, permettant aux consommateurs d'acheter facilement des ingrédients frais et sûrs tout en soutenant le développement agricole durable.", 'de': "Der Sinpu Markt engagiert sich für die Bereitstellung gesunder und umweltfreundlicher Produkte. Wir wählen sorgfältig Bio-Lebensmittel und umweltfreundliche Dinge des täglichen Bedarfs aus und arbeiten aktiv mit lokalen Kleinbauern zusammen, damit Verbraucher problemlos frische, sichere Zutaten kaufen und gleichzeitig die nachhaltige landwirtschaftliche Entwicklung unterstützen können.", 'es': "El Mercado Sinpu se compromete a proporcionar productos saludables y respetuosos con el medio ambiente. Seleccionamos cuidadosamente alimentos orgánicos y necesidades diarias ecológicas, y colaboramos activamente con pequeños agricultores locales, permitiendo a los consumidores comprar fácilmente ingredientes frescos y seguros mientras apoyan el desarrollo agrícola sostenible.", 'la': "Mercatus Sinpu studet praebere producta salubria et naturae amica. Diligenter eligimus cibos organicos et necessitates quotidianas oecologicas, et active cum parvis agricolis localibus cooperamur, permittentes consumptores facile emere ingredientia nova et tuta, dum progressionem agriculturae sustentabilis sustinent.", 'ja': "心樸市集は、健康的で環境に優しい製品の提供に取り組んでいます。私たちはオーガニック食品と環境に優しい日用品を厳選し、地元の小規模農家と積極的に協力することで、消費者が新鮮で安全な食材を簡単に購入し、同時に持続可能な農業開発を支援できるようにしています。" },
+                longDescription: { 'zh-TW': "心樸市集致力於提供健康又友善環境的產品。我們嚴選有機食品、友善環境生活用品，並積極與在地小農合作，讓消費者能輕鬆購得新鮮、安心的食材，同時支持永續農業發展。", 'en': "Sinpu Market is committed to providing healthy and environmentally friendly products. We carefully select organic foods and eco-friendly daily necessities, and actively collaborate with local small farmers, allowing consumers to easily purchase fresh, safe ingredients while supporting sustainable agricultural development.", 'fr': "Le marché de Sinpu s'engage à fournir des produits sains et respectueux de l'environnement. Nous sélectionnons soigneusement des aliments biologiques et des nécessités quotidiennes écologiques, et collaborons activement avec les petits agriculteurs locaux, permettant aux consommateurs d'acheter facilement des ingrédients frais和安全な食材を調達し、持続可能な農業開発を支援しています。", 'de': "Der Sinpu Markt engagiert sich für die Bereitstellung gesunder und umweltfreundlicher Produkte. Wir wählen sorgfältig Bio-Lebelsmittel und umweltfreundliche Dinge des täglichen Bedarfs aus und arbeiten aktiv mit lokalen Kleinbauern zusammen, damit Verbraucher problemlos frische, sichere Zutaten kaufen und gleichzeitig die nachhaltige landwirtschaftliche Entwicklung unterstützen können.", 'es': "El Mercado Sinpu se compromete a proporcionar productos saludables y respetuosos con el medio ambiente. Seleccionamos cuidadosamente alimentos orgánicos y necesidades diarias ecológicas, y colaboramos activamente con pequeños agricultores locales, permitiendo a los consumidores comprar fácilmente ingredientes frescos y seguros mientras apoyan el desarrollo agrícola sostenible.", 'la': "Mercatus Sinpu studet praebere producta salubria et naturae amica. Diligenter eligimus cibos organicos et necessitates quotidianas oecologicas, et active cum parvis agricolis localibus cooperamur, permittentes consumptores facile emere ingredientia nova et tuta, dum progressionem agriculturae sustentabilis sustinent.", 'ja': "心樸市集は、健康的で環境に優しい製品の提供に取り組んでいます。私たちはオーガニック食品と環境に優しい日用品を厳選し、地元の小規模農家と積極的に協力することで、消費者が新鮮で安全な食材を簡単に購入し、同時に持続可能な農業開発を支援できるようにしています。" },
                 sustainability: { 'zh-TW': "支持有機農業、減少農藥使用、推廣在地食材減少碳足跡。", 'en': "Supports organic farming, reduces pesticide use, and promotes local ingredients to minimize carbon footprint.", 'fr': "Soutient l'agriculture biologique, réduit l'utilisation de pesticides et promeut les ingrédients locaux pour minimiser l'empreinte carbone.", 'de': "Unterstützt den ökologischen Landbau, reduziert den Pestizideinsatz und fördert lokale Zutaten, um den CO2-Fußabdruck zu minimieren.", 'es': "Apoya la agricultura orgánica, reduce el uso de pesticidas y promueve ingredientes locales para minimizar la huella de carbono.", 'la': "Agriculturam organicam sustinet, usum pesticidarum minuit, et ingredientia localia promovet ad vestigium carbonis minuere.", 'ja': "有機農業を支援し、農薬の使用を削減し、地元の食材を推進してカーボンフットプリントを最小限に抑えます。" },
-                tags: { 'zh-TW': ["有機食品", "在地小農", "友善環境", "健康飲食", "無毒生活"], 'en': ["Organic Food", "Local Farmers", "Eco-friendly", "Healthy Eating", "Non-toxic Living"], 'fr': ["Aliments Biologiques", "Petits Agriculteurs Locaux", "Écologique", "Alimentation Saine", "Vie Non Toxique"], 'de': ["Bio-Lebensmittel", "Lokale Bauern", "Umweltfreundlich", "Gesunde Ernährung", "Ungiftiges Leben"], 'es': ["Alimentos Orgánicos", "Pequeños Agricultores Locales", "Ecológico", "Alimentación Saludable", "Vida No Tóxica"], 'la': ["Cibi Organici", "Parvi Agricolae Locales", "Naturae Amicus", "Sana Victus", "Vita Non Toxica"], 'ja': ["オーガニック食品", "地元農家", "環境に優しい", "健康的な食事", "無毒生活"] },
+                tags: { 'zh-TW': ["有機食品", "在地小農", "友善環境", "健康飲食", "無毒生活"], 'en': ["Organic Food", "Local Farmers", "Eco-friendly", "Healthy Eating", "Non-toxic Living"], 'fr': ["Aliments Biologiques", "Petits Agriculteurs Locaux", "Écologique", "Alimentation Saine", "Vie Non Toxique"], 'de': ["Bio-Lebensmittel", "Lokale Bauern", "Umweltfreundlich", "Gesunde Ernährung", "Ungiftiges Leben"], 'es': ["Alimentos Orgánicos", "Pequeños Agricultores Locales", "Ecológico", "Alimentación saludable", "Vida No Tóxica"], 'la': ["Cibi Organici", "Parvi Agricolae Locales", "Naturae Amicus", "Sana Victus", "Vita Non Toxica"], 'ja': ["オーガニック食品", "地元農家", "環境に優しい", "健康的な食事", "無毒生活"] },
                 lat: 25.0333,
                 lng: 121.5519
             },
@@ -912,6 +945,20 @@
         let currentLoadedShops = 0; // 當前已載入的商店數量
         let mapInstance; // Leaflet 地圖實例
         let markersGroup = L.featureGroup(); // 用於管理地圖上的標記
+
+        // Turnstile 驗證成功的回調函數
+        window.onTurnstileSuccess = function(token) {
+            turnstileToken = token;
+            console.log('Turnstile 驗證成功，Token:', turnstileToken);
+        };
+
+        // Turnstile 驗證過期的回調函數
+        window.onTurnstileExpired = function() {
+            turnstileToken = null;
+            console.log('Turnstile 驗證已過期，請重新驗證。');
+            // 可以選擇重新渲染 Turnstile 或是提示使用者
+            // turnstile.render('#turnstile-widget', { sitekey: 'YOUR_SITE_KEY' });
+        };
 
         // 設置語言函數
         function setLanguage(lang) {
@@ -1128,6 +1175,73 @@
             // 載入更多按鈕
             document.getElementById('load-more-button').addEventListener('click', () => {
                 filterAndDisplayShops(); // 繼續載入更多
+            });
+
+            // 電子報訂閱按鈕事件監聽器
+            document.getElementById('subscribe-button').addEventListener('click', async () => {
+                const emailInput = document.getElementById('newsletter-email');
+                const email = emailInput.value.trim();
+
+                // 檢查電子郵件格式
+                if (!email || !/\S+@\S+\.\S+/.test(email)) {
+                    showMessageModal(translations[currentLang].newsletterInvalidEmail);
+                    return;
+                }
+
+                // 檢查 Turnstile 驗證是否成功
+                if (!turnstileToken) {
+                    showMessageModal(translations[currentLang].turnstileFailed);
+                    return;
+                }
+
+                // 這裡模擬發送電子郵件到後端服務，並包含 Turnstile token
+                // 在實際應用中，您會使用 fetch() 或 XMLHttpRequest 將資料發送到您的伺服器
+                // 後端需要驗證這個 turnstileToken 以確保是真人驗證
+                /*
+                try {
+                    const response = await fetch('/api/subscribe-newsletter', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email: email, token: turnstileToken }), // 包含 Turnstile token
+                    });
+
+                    if (response.ok) {
+                        showMessageModal(translations[currentLang].newsletterSuccess);
+                        emailInput.value = ''; // 清空輸入框
+                        // 重置 Turnstile 驗證，以便下次使用
+                        if (typeof turnstile !== 'undefined') {
+                            turnstile.reset();
+                            turnstileToken = null; // 清空 token
+                        }
+                    } else {
+                        const errorData = await response.json();
+                        showMessageModal(errorData.message || translations[currentLang].newsletterError);
+                        // 如果後端驗證 Turnstile 失敗，也需要重置
+                        if (typeof turnstile !== 'undefined') {
+                            turnstile.reset();
+                            turnstileToken = null;
+                        }
+                    }
+                } catch (error) {
+                    console.error('訂閱電子報時發生錯誤:', error);
+                    showMessageModal(translations[currentLang].newsletterError);
+                    if (typeof turnstile !== 'undefined') {
+                        turnstile.reset();
+                        turnstileToken = null;
+                    }
+                }
+                */
+
+                // 由於沒有後端，這裡我們只模擬成功訊息
+                showMessageModal(translations[currentLang].newsletterSuccess);
+                emailInput.value = ''; // 清空輸入框
+                // 模擬成功後重置 Turnstile
+                if (typeof turnstile !== 'undefined') {
+                    turnstile.reset();
+                    turnstileToken = null; // 清空 token
+                }
             });
         });
 
