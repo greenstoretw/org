@@ -36,10 +36,23 @@
         }
         .shop-card {
             transition: all 0.3s ease;
+            display: flex; /* 將卡片本身設為 flex 容器 */
+            flex-direction: column; /* 讓子元素垂直堆疊 */
         }
         .shop-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        /* 讓卡片內容區塊填滿可用空間，並將按鈕推到底部 */
+        .shop-card > div.p-6 {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* 將第一個元素 (商店資訊) 向上推，最後一個元素 (按鈕) 向下推 */
+            flex-grow: 1; /* 允許這個區域成長以填滿卡片剩餘空間 */
+        }
+        /* 確保按鈕在 flex 容器中自動推到底部 */
+        .shop-card button {
+            margin-top: auto; /* 這個屬性在 flex 容器中會將元素推到末端 */
         }
         .shop-detail-header {
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80');
@@ -152,8 +165,8 @@
                     <div class="mb-6">
                         <h2 class="text-2xl font-bold mb-4" data-i18n="searchTitle">搜尋永續商店</h2>
                         <div class="flex">
-                            <input type="text" placeholder="" class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" data-i18n="searchPlaceholder">
-                            <button class="btn-primary px-6 py-3 rounded-r-lg">
+                            <input type="text" id="search-input" placeholder="" class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" data-i18n="searchPlaceholder">
+                            <button id="search-button" class="btn-primary px-6 py-3 rounded-r-lg">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
@@ -162,15 +175,15 @@
                     </div>
                     <div>
                         <h3 class="font-medium mb-3" data-i18n="filterCategoryTitle">依類別篩選</h3>
-                        <div class="flex flex-wrap gap-2">
-                            <button class="tag px-3 py-1 rounded-full text-sm active" data-i18n="filterAll">全部</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterApparel">服飾</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterFood">食品</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterCafe">咖啡廳</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterHomeGoods">家居用品</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterZeroWaste">無包裝商店</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterSecondHand">二手商店</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterCreative">文創</button>
+                        <div class="flex flex-wrap gap-2" id="filter-buttons-container">
+                            <button class="tag px-3 py-1 rounded-full text-sm active" data-i18n="filterAll" data-category="all">全部</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterApparel" data-category="apparel">服飾</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterFood" data-category="food">食品</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterCafe" data-category="cafe">咖啡廳</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterHomeGoods" data-category="homeGoods">家居用品</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterZeroWaste" data-category="zeroWaste">無包裝商店</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterSecondHand" data-category="secondHand">二手商店</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterCreative" data-category="creative">文創</button>
                         </div>
                     </div>
                 </div>
@@ -195,7 +208,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="shop-cards-container">
                 </div>
             <div class="text-center mt-8">
-                <button class="btn-primary px-8 py-3 rounded-lg font-medium" data-i18n="loadMoreBtn">載入更多</button>
+                <button id="load-more-button" class="btn-primary px-8 py-3 rounded-lg font-medium" data-i18n="loadMoreBtn">載入更多</button>
             </div>
         </div>
     </section>
@@ -556,7 +569,15 @@
             { id: "simplastic-beitou", lat: 25.1370, lng: 121.5020 }
         ];
 
-        // Function to set the language
+        // --- 全局變數和篩選邏輯 ---
+        let currentFilterCategory = 'all'; // 當前篩選類別
+        let currentSearchQuery = ''; // 當前搜尋關鍵字
+        const shopsPerPage = 6; // 每頁顯示的商店數量
+        let currentLoadedShops = 0; // 當前已載入的商店數量
+        let mapInstance; // Leaflet 地圖實例
+        let markersGroup = L.featureGroup(); // 用於管理地圖上的標記
+
+        // 設置語言函數
         function setLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('lang', lang); // Save language preference
@@ -586,8 +607,9 @@
                 document.documentElement.lang = 'en';
             }
 
-            // Re-render shop cards to update language
-            renderShopCards();
+            // Re-apply filters and re-render shop cards/map to update language
+            currentLoadedShops = 0; // Reset loaded shops when language changes
+            filterAndDisplayShops();
 
             // If a shop detail modal is open, re-render its content
             const shopDetailModal = document.getElementById('shop-detail-modal');
@@ -600,14 +622,38 @@
             }
         }
 
-        // Function to render shop cards
-        function renderShopCards() {
-            const shopCardsContainer = document.getElementById('shop-cards-container');
-            shopCardsContainer.innerHTML = ''; // Clear existing cards
-
-            shops.forEach(shopData => {
+        // 根據篩選條件過濾商店
+        function getFilteredShops() {
+            return shops.filter(shopData => {
                 const shop = shopDetails[shopData.id];
-                if (!shop) return; // Skip if no detail data
+                if (!shop) return false;
+
+                const matchesCategory = currentFilterCategory === 'all' || 
+                                        shop.type[currentLang].toLowerCase().includes(translations[currentLang]['filter' + currentFilterCategory.charAt(0).toUpperCase() + currentFilterCategory.slice(1)].toLowerCase()) ||
+                                        shop.tags[currentLang].some(tag => tag.toLowerCase().includes(translations[currentLang]['filter' + currentFilterCategory.charAt(0).toUpperCase() + currentFilterCategory.slice(1)].toLowerCase()));
+                
+                const matchesSearch = currentSearchQuery === '' ||
+                                      shop.name[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+                                      shop.address[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+                                      shop.description[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase());
+                
+                return matchesCategory && matchesSearch;
+            });
+        }
+
+        // 渲染商店卡片函數
+        function renderShopCards(filteredShops) {
+            const shopCardsContainer = document.getElementById('shop-cards-container');
+            // 如果是新篩選或首次載入，則清空
+            if (currentLoadedShops === 0) {
+                shopCardsContainer.innerHTML = ''; 
+            }
+
+            const shopsToDisplay = filteredShops.slice(currentLoadedShops, currentLoadedShops + shopsPerPage);
+            
+            shopsToDisplay.forEach(shopData => {
+                const shop = shopDetails[shopData.id];
+                if (!shop) return;
 
                 const cardHTML = `
                     <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
@@ -643,8 +689,41 @@
                 `;
                 shopCardsContainer.insertAdjacentHTML('beforeend', cardHTML);
             });
+
+            currentLoadedShops += shopsToDisplay.length;
+            updateLoadMoreButton(filteredShops.length);
         }
 
+        // 更新地圖標記
+        function updateMapMarkers(filteredShops) {
+            markersGroup.clearLayers(); // 清除所有舊標記
+
+            filteredShops.forEach(shopData => {
+                const shop = shopDetails[shopData.id];
+                if (!shop) return;
+                const marker = L.marker([shopData.lat, shopData.lng]);
+                marker.bindPopup(`<b>${shop.name[currentLang]}</b><br>${shop.type[currentLang]}<br>${shop.address[currentLang]}<br><a href="#" onclick="showShopDetail('${shopData.id}'); return false;" class="text-green-600">${translations[currentLang].viewDetailsBtn}</a>`);
+                markersGroup.addLayer(marker);
+            });
+            mapInstance.addLayer(markersGroup);
+        }
+
+        // 篩選並顯示商店 (主控函數)
+        function filterAndDisplayShops() {
+            const filteredShops = getFilteredShops();
+            renderShopCards(filteredShops);
+            updateMapMarkers(filteredShops);
+        }
+
+        // 更新「載入更多」按鈕狀態
+        function updateLoadMoreButton(totalFilteredShops) {
+            const loadMoreButton = document.getElementById('load-more-button');
+            if (currentLoadedShops < totalFilteredShops) {
+                loadMoreButton.classList.remove('hidden');
+            } else {
+                loadMoreButton.classList.add('hidden');
+            }
+        }
 
         // Mobile menu toggle
         document.getElementById('menu-toggle').addEventListener('click', function() {
@@ -655,23 +734,48 @@
         // Initialize map after DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize map
-            const map = L.map('sustainability-map').setView([25.0330, 121.5654], 13);
+            mapInstance = L.map('sustainability-map').setView([25.0330, 121.5654], 13);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
+            }).addTo(mapInstance);
             
-            // Add shop markers
-            shops.forEach(shopData => {
-                const shop = shopDetails[shopData.id];
-                if (!shop) return;
-                const marker = L.marker([shopData.lat, shopData.lng]).addTo(map);
-                // Updated popup content to include address
-                marker.bindPopup(`<b>${shop.name[currentLang]}</b><br>${shop.type[currentLang]}<br>${shop.address[currentLang]}<br><a href="#" onclick="showShopDetail('${shopData.id}'); return false;" class="text-green-600">${translations[currentLang].viewDetailsBtn}</a>`);
+            markersGroup.addTo(mapInstance); // 將標記群組添加到地圖
+
+            // Initial language setup, which triggers filterAndDisplayShops
+            setLanguage(currentLang);
+
+            // --- 事件監聽器 ---
+            // 搜尋按鈕
+            document.getElementById('search-button').addEventListener('click', () => {
+                currentSearchQuery = document.getElementById('search-input').value.trim();
+                currentLoadedShops = 0; // 重置載入數量
+                filterAndDisplayShops();
             });
 
-            // Initial language setup
-            setLanguage(currentLang);
+            // 搜尋輸入框 Enter 鍵
+            document.getElementById('search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('search-button').click();
+                }
+            });
+
+            // 類別篩選按鈕
+            document.getElementById('filter-buttons-container').addEventListener('click', (e) => {
+                const clickedButton = e.target.closest('.tag');
+                if (clickedButton) {
+                    document.querySelectorAll('#filter-buttons-container .tag').forEach(btn => btn.classList.remove('active'));
+                    clickedButton.classList.add('active');
+                    currentFilterCategory = clickedButton.dataset.category;
+                    currentLoadedShops = 0; // 重置載入數量
+                    filterAndDisplayShops();
+                }
+            });
+
+            // 載入更多按鈕
+            document.getElementById('load-more-button').addEventListener('click', () => {
+                filterAndDisplayShops(); // 繼續載入更多
+            });
         });
 
         // Language toggle button event listeners
@@ -682,18 +786,6 @@
             setLanguage(currentLang === 'zh-TW' ? 'en' : 'zh-TW');
         });
 
-
-        // Category filter buttons (logic not implemented yet)
-        const filterButtons = document.querySelectorAll('.tag');
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                // Add active class to the current button
-                this.classList.add('active');
-                // Filtering logic can be added here
-            });
-        });
 
         // Display shop details
         function showShopDetail(shopId) {
