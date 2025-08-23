@@ -9,6 +9,8 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
@@ -30,7 +32,7 @@
         .btn-primary {
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
             transition: all 0.3s ease;
-            color: white; /* 確保按鈕文字為白色 */
+            color: white;
         }
         .btn-primary:hover {
             transform: translateY(-2px);
@@ -38,23 +40,21 @@
         }
         .shop-card {
             transition: all 0.3s ease;
-            display: flex; /* 將卡片本身設為 flex 容器 */
-            flex-direction: column; /* 讓子元素垂直堆疊 */
+            display: flex;
+            flex-direction: column;
         }
         .shop-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
-        /* 讓卡片內容區塊填滿可用空間，並將按鈕推到底部 */
         .shop-card > div.p-6 {
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* 將第一個元素 (商店資訊) 向上推，最後一個元素 (按鈕) 向下推 */
-            flex-grow: 1; /* 允許這個區域成長以填滿卡片剩餘空間 */
+            justify-content: space-between;
+            flex-grow: 1;
         }
-        /* 確保按鈕在 flex 容器中自動推到底部 */
         .shop-card button {
-            margin-top: auto; /* 這個屬性在 flex 容器中會將元素推到末端 */
+            margin-top: auto;
         }
         .shop-detail-header {
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80');
@@ -63,7 +63,7 @@
         }
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 比例 */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
             max-width: 100%;
@@ -82,29 +82,24 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-        /* 確保地圖容器有正確的z-index和定位 */
         .map-container {
             position: relative;
-            z-index: 10; /* 確保地圖不會超出其容器 */
+            z-index: 10;
             overflow: hidden;
         }
-        /* 修正地圖控制項的z-index */
         .leaflet-control-container {
             z-index: 10;
         }
-        /* 確保彈出視窗的z-index高於地圖 */
         .modal {
             z-index: 100;
         }
-        /* 確保地圖在彈出視窗中正確顯示 */
         .shop-map {
             position: relative;
             z-index: 5;
         }
-        /* Loading spinner styles (kept in case needed for other future features, can be removed) */
         .loader {
-            border: 4px solid #f3f3f3; /* Light grey */
-            border-top: 4px solid #34d399; /* Green */
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #34d399;
             border-radius: 50%;
             width: 24px;
             height: 24px;
@@ -114,9 +109,46 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .admin-mode {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            z-index: 1000;
+            font-size: 14px;
+        }
+        .admin-button {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .admin-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+        /* Ensure map container has proper dimensions */
+        #sustainability-map {
+            width: 100%;
+            height: 500px;
+            min-height: 400px;
+        }
+        .leaflet-container {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
     </style>
 </head>
 <body>
+    <!-- Admin Mode Indicator (Hidden by default) -->
+    <div id="admin-indicator" class="admin-mode hidden">管理員模式</div>
+
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-2">
@@ -247,7 +279,6 @@
         </div>
     </section>
 
-    <!-- 新增問題回報區塊 -->
     <section id="report-issue" class="py-12 bg-yellow-50">
         <div class="container mx-auto px-4">
             <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
@@ -328,6 +359,23 @@
     </div>
 
     <script>
+        // ===== CONFIGURATION =====
+        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJO4SpEbNly7WweAHf0pGu8DGdwCqUrmvLBb29xujm3u2FgPo8Bb-A3y324e_fmnWRcA/exec';
+        const ADMIN_PASSWORD = 'sustainable123';
+        
+        // EmailJS Configuration
+        const EMAILJS_PUBLIC_KEY = '4dCp-T-DcTtjFzpuA';
+        const EMAILJS_SERVICE_ID = 'service_1o6wdpm';
+        const EMAILJS_TEMPLATE_ID = 'template_ibn7ezs';
+
+        // Initialize EmailJS (check if emailjs is loaded)
+        if (typeof emailjs !== 'undefined') {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        }
+
+        // Admin mode state
+        let isAdminMode = false;
+
         // Language translation data
         const translations = {
             'zh-TW': {
@@ -380,7 +428,7 @@
                 contactUsText: '有任何問題或建議，歡迎與我們聯繫',
                 contactUsEmail: '電子郵件：artistworld0815@gmail.com',
                 followUsTitle: '關注我們',
-                copyright: '© 2023 永續商店地圖 - 版權所有',
+                copyright: '© 2025 永續商店地圖 - 版權所有',
                 modalAboutUs: '關於我們',
                 modalSustainability: '永續理念',
                 modalVideoIntro: '影片介紹',
@@ -400,6 +448,13 @@
                 newsletterSuccess: '感謝您的訂閱！您將收到我們的最新消息。',
                 newsletterInvalidEmail: '請輸入有效的電子郵件地址。',
                 newsletterError: '訂閱失敗，請稍後再試。',
+                adminRecommendBtn: '📧 推薦此店家給所有訂閱者',
+                adminLoginPrompt: '請輸入管理員密碼：',
+                adminLoginFailed: '密碼錯誤！',
+                adminLoginSuccess: '已進入管理員模式',
+                recommendationSending: '正在發送推薦信...',
+                recommendationSent: '推薦信已成功發送給所有訂閱者！',
+                recommendationFailed: '發送推薦信失敗，請稍後再試。',
             },
             'en': {
                 pageTitle: 'Sustainable Store Map - Home',
@@ -451,7 +506,7 @@
                 contactUsText: 'For any questions or suggestions, please contact us',
                 contactUsEmail: 'Email: artistworld0815@gmail.com',
                 followUsTitle: 'Follow Us',
-                copyright: '© 2023 Sustainable Store Map - All Rights Reserved',
+                copyright: '© 2025 Sustainable Store Map - All Rights Reserved',
                 modalAboutUs: 'About Us',
                 modalSustainability: 'Sustainability Philosophy',
                 modalVideoIntro: 'Video Introduction',
@@ -471,395 +526,75 @@
                 newsletterSuccess: 'Thank you for subscribing! You will receive our latest news.',
                 newsletterInvalidEmail: 'Please enter a valid email address.',
                 newsletterError: 'Subscription failed, please try again later.',
-            },
-            // 其他語言的翻譯...
-            'fr': {
-                pageTitle: 'Carte des Magasins Durables - Accueil',
-                appName: 'Carte des Magasins Durables',
-                home: 'Accueil',
-                map: 'Carte',
-                shopList: 'Liste des Magasins',
-                newsletter: 'Newsletter',
-                reportIssueNavLink: 'Signaler un problème',
-                langChinese: '繁體中文',
-                langEnglish: 'English',
-                langFrench: 'Français',
-                langGerman: 'Deutsch',
-                langSpanish: 'Español',
-                langLatin: 'Latin',
-                langJapanese: '日本語',
-                heroTitle: 'Explorez les Magasins Durables de Taïwan',
-                heroSubtitle: 'Trouvez des magasins qui soutiennent la protection de l\'environnement, le commerce équitable et le développement durable, et contribuez ensemble à la Terre.',
-                viewMapBtn: 'Voir la Carte',
-                browseShopsBtn: 'Parcourir la Liste des Magasins',
-                searchTitle: 'Rechercher des Magasins Durables',
-                searchPlaceholder: 'Entrez le nom du magasin ou l\'adresse...',
-                filterCategoryTitle: 'Filtrer par Catégorie',
-                filterAll: 'Tout',
-                filterApparel: 'Vêtements',
-                filterFood: 'Alimentation',
-                filterCafe: 'Café',
-                filterHomeGoods: 'Articles Ménagers',
-                filterZeroWaste: 'Magasins Zéro Déchet',
-                filterSecondHand: 'Magasins d\'Occasion',
-                filterCreative: 'Créatif & Culturel',
-                mapSectionTitle: 'Carte des Magasins Durables',
-                shopListSectionTitle: 'Liste des Magasins Durables',
-                viewDetailsBtn: 'Voir les Détails',
-                loadMoreBtn: 'Charger Plus',
-                newsletterTitle: 'Abonnez-vous à la Newsletter Vie Durable',
-                newsletterSubtitle: 'Recevez les dernières informations sur les magasins durables, des conseils de vie écologique et des offres spéciales',
-                newsletterPlaceholder: 'Votre e-mail',
-                subscribeBtn: 'S\'abonner',
-                reportIssueTitle: 'Signaler un problème',
-                reportIssueLabel: 'Veuillez décrire le problème que vous avez rencontré :',
-                reportIssuePlaceholder: 'Ex : Informations incorrectes sur le magasin, mauvais emplacement sur la carte...',
-                reportIssueSubmitBtn: 'Envoyer le rapport',
-                reportIssueSuccessMsg: 'Merci pour votre rapport, nous le traiterons bientôt !',
-                reportIssueErrorMsg: 'Échec de l\'envoi du rapport. Veuillez réessayer plus tard.',
-                footerAppName: 'Carte des Magasins Durables',
-                footerAppDescription: 'Aider les consommateurs à trouver et à soutenir les magasins de développement durable, contribuant ensemble à la Terre.',
-                contactUsTitle: 'Nous Contacter',
-                contactUsText: 'Pour toute question ou suggestion, veuillez nous contacter',
-                contactUsEmail: 'E-mail: artistworld0815@gmail.com',
-                followUsTitle: 'Suivez-nous',
-                copyright: '© 2023 Carte des Magasins Durables - Tous Droits Réservés',
-                modalAboutUs: 'À Propos de Nous',
-                modalSustainability: 'Philosophie de Durabilité',
-                modalVideoIntro: 'Introduction Vidéo',
-                modalLatestCollections: 'Dernières Collections',
-                modalShopInfo: 'Informations sur le Magasin',
-                modalAddress: 'Adresse',
-                modalOpeningHours: 'Heures d\'Ouverture',
-                modalContactInfo: 'Coordonnées',
-                modalPhone: 'Téléphone',
-                modalEmail: 'E-mail',
-                modalWebsite: 'Site Web',
-                modalSocialMedia: 'Réseaux Sociaux',
-                modalLocation: 'Localisation',
-                shopDetailsNotAvailable: 'Les détails du magasin ne sont pas encore disponibles, veuillez patienter !',
-                okButton: 'OK',
-                notProvided: 'Non fourni',
-                newsletterSuccess: 'Merci de votre abonnement ! Vous recevrez nos dernières nouvelles.',
-                newsletterInvalidEmail: 'Veuillez entrer une adresse e-mail valide.',
-                newsletterError: 'L\'abonnement a échoué, veuillez réessayer plus tard.',
-            },
-            'de': {
-                pageTitle: 'Karte der Nachhaltigen Geschäfte - Startseite',
-                appName: 'Karte der Nachhaltigen Geschäfte',
-                home: 'Startseite',
-                map: 'Karte',
-                shopList: 'Geschäftsliste',
-                newsletter: 'Newsletter',
-                reportIssueNavLink: 'Problem Melden',
-                langChinese: '繁體中文',
-                langEnglish: 'English',
-                langFrench: 'Français',
-                langGerman: 'Deutsch',
-                langSpanish: 'Español',
-                langLatin: 'Latin',
-                langJapanese: '日本語',
-                heroTitle: 'Entdecken Sie Taiwans Nachhaltige Geschäfte',
-                heroSubtitle: 'Finden Sie Geschäfte, die Umweltschutz, fairen Handel und nachhaltige Entwicklung unterstützen, und tragen Sie gemeinsam zum Wohl der Erde bei.',
-                viewMapBtn: 'Karte Ansehen',
-                browseShopsBtn: 'Geschäftsliste Durchsuchen',
-                searchTitle: 'Nach Nachhaltigen Geschäften Suchen',
-                searchPlaceholder: 'Geschäftsname oder Adresse eingeben...',
-                filterCategoryTitle: 'Nach Kategorie Filtern',
-                filterAll: 'Alle',
-                filterApparel: 'Bekleidung',
-                filterFood: 'Lebensmittel',
-                filterCafe: 'Café',
-                filterHomeGoods: 'Haushaltswaren',
-                filterZeroWaste: 'Unverpackt-Läden',
-                filterSecondHand: 'Second-Hand-Läden',
-                filterCreative: 'Kreatives & Kulturelles',
-                mapSectionTitle: 'Karte der Nachhaltigen Geschäfte',
-                shopListSectionTitle: 'Liste der Nachhaltigen Geschäfte',
-                viewDetailsBtn: 'Details Ansehen',
-                loadMoreBtn: 'Mehr Laden',
-                newsletterTitle: 'Nachhaltiger Leben Newsletter Abonnieren',
-                newsletterSubtitle: 'Erhalten Sie die neuesten Informationen zu nachhaltigen Geschäften, umweltfreundliche Lebenstipps und Sonderangebote',
-                newsletterPlaceholder: 'Ihre E-Mail-Adresse',
-                subscribeBtn: 'Abonnieren',
-                reportIssueTitle: 'Ein Problem Melden',
-                reportIssueLabel: 'Bitte beschreiben Sie das aufgetretene Problem:',
-                reportIssuePlaceholder: 'z.B. Falsche Geschäftsinformationen, falscher Kartenstandort...',
-                reportIssueSubmitBtn: 'Bericht Senden',
-                reportIssueSuccessMsg: 'Vielen Dank für Ihren Bericht, wir werden ihn bald bearbeiten!',
-                reportIssueErrorMsg: 'Fehler beim Senden des Berichts. Bitte versuchen Sie es später erneut.',
-                footerAppName: 'Karte der Nachhaltigen Geschäfte',
-                footerAppDescription: 'Verbrauchern helfen, nachhaltige Entwicklungsgeschäfte zu finden und zu unterstützen, gemeinsam zur Erde beitragen.',
-                contactUsTitle: 'Kontaktieren Sie Uns',
-                contactUsText: 'Bei Fragen oder Anregungen kontaktieren Sie uns bitte',
-                contactUsEmail: 'E-Mail: artistworld0815@gmail.com',
-                followUsTitle: 'Folgen Sie Uns',
-                copyright: '© 2023 Karte der Nachhaltigen Geschäfte - Alle Rechte Vorbehalten',
-                modalAboutUs: 'Über Uns',
-                modalSustainability: 'Nachhaltigkeitsphilosophie',
-                modalVideoIntro: 'Video-Einführung',
-                modalLatestCollections: 'Neueste Kollektionen',
-                modalShopInfo: 'Geschäftsinformationen',
-                modalAddress: 'Adresse',
-                modalOpeningHours: 'Öffnungszeiten',
-                modalContactInfo: 'Kontaktinformationen',
-                modalPhone: 'Telefon',
-                modalEmail: 'E-Mail',
-                modalWebsite: 'Webseite',
-                modalSocialMedia: 'Soziale Medien',
-                modalLocation: 'Standort',
-                shopDetailsNotAvailable: 'Geschäftsdetails noch nicht verfügbar, bitte freuen Sie sich darauf!',
-                okButton: 'OK',
-                notProvided: 'Nicht angegeben',
-                newsletterSuccess: 'Vielen Dank für Ihr Abonnement! Sie erhalten unsere neuesten Nachrichten.',
-                newsletterInvalidEmail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
-                newsletterError: 'Abonnement fehlgeschlagen, bitte versuchen Sie es später erneut.',
-            },
-            'es': {
-                pageTitle: 'Mapa de Tiendas Sostenibles - Inicio',
-                appName: 'Mapa de Tiendas Sostenibles',
-                home: 'Inicio',
-                map: 'Mapa',
-                shopList: 'Lista de Tiendas',
-                newsletter: 'Boletín',
-                reportIssueNavLink: 'Reportar un Problema',
-                langChinese: '繁體中文',
-                langEnglish: 'English',
-                langFrench: 'Français',
-                langGerman: 'Deutsch',
-                langSpanish: 'Español',
-                langLatin: 'Latin',
-                langJapanese: '日本語',
-                heroTitle: 'Explora las Tiendas Sostenibles de Taiwán',
-                heroSubtitle: 'Encuentra tiendas que apoyan la protección del medio ambiente, el comercio justo y el desarrollo sostenible, y contribuye junto a la Tierra.',
-                viewMapBtn: 'Ver Mapa',
-                browseShopsBtn: 'Explorar Lista de Tiendas',
-                searchTitle: 'Buscar Tiendas Sostenibles',
-                searchPlaceholder: 'Introduce el nombre o la dirección de la tienda...',
-                filterCategoryTitle: 'Filtrar por Categoría',
-                filterAll: 'Todo',
-                filterApparel: 'Ropa',
-                filterFood: 'Comida',
-                filterCafe: 'Cafetería',
-                filterHomeGoods: 'Artículos para el Hogar',
-                filterZeroWaste: 'Tiendas de Cero Residuos',
-                filterSecondHand: 'Tiendas de Segunda Mano',
-                filterCreative: 'Creativo y Cultural',
-                mapSectionTitle: 'Mapa de Tiendas Sostenibles',
-                shopListSectionTitle: 'Lista de Tiendas Sostenibles',
-                viewDetailsBtn: 'Ver Detalles',
-                loadMoreBtn: 'Cargar Más',
-                newsletterTitle: 'Suscríbete al Boletín de Vida Sostenible',
-                newsletterSubtitle: 'Recibe la última información sobre tiendas sostenibles, consejos de vida ecológica y ofertas especiales',
-                newsletterPlaceholder: 'Tu correo electrónico',
-                subscribeBtn: 'Suscribirse',
-                reportIssueTitle: 'Reportar un Problema',
-                reportIssueLabel: 'Por favor, describe el problema que encontraste:',
-                reportIssuePlaceholder: 'Ej: Información incorrecta de la tienda, ubicación incorrecta en el mapa...',
-                reportIssueSubmitBtn: 'Enviar Reporte',
-                reportIssueSuccessMsg: '¡Gracias por tu reporte, lo procesaremos pronto!',
-                reportIssueErrorMsg: 'Error al enviar el reporte. Por favor, inténtalo de nuevo más tarde.',
-                footerAppName: 'Mapa de Tiendas Sostenibles',
-                footerAppDescription: 'Ayudando a los consumidores a encontrar y apoyar tiendas de desarrollo sostenible, contribuyendo juntos a la Tierra.',
-                contactUsTitle: 'Contáctanos',
-                contactUsText: 'Para cualquier pregunta o sugerencia, por favor contáctanos',
-                contactUsEmail: 'Correo electrónico: artistworld0815@gmail.com',
-                followUsTitle: 'Síguenos',
-                copyright: '© 2023 Mapa de Tiendas Sostenibles - Todos los Derechos Reservados',
-                modalAboutUs: 'Sobre Nosotros',
-                modalSustainability: 'Filosofía de Sostenibilidad',
-                modalVideoIntro: 'Introducción en Video',
-                modalLatestCollections: 'Últimas Colecciones',
-                modalShopInfo: 'Información de la Tienda',
-                modalAddress: 'Dirección',
-                modalOpeningHours: 'Horario de Apertura',
-                modalContactInfo: 'Información de Contacto',
-                modalPhone: 'Teléfono',
-                modalEmail: 'Correo electrónico',
-                modalWebsite: 'Sitio web',
-                modalSocialMedia: 'Redes Sociales',
-                modalLocation: 'Ubicación',
-                shopDetailsNotAvailable: 'Los detalles de la tienda aún no están disponibles, ¡espéralos con ansias!',
-                okButton: 'OK',
-                notProvided: 'No proporcionado',
-                newsletterSuccess: '¡Gracias por suscribirte! Recibirás nuestras últimas noticias.',
-                newsletterInvalidEmail: 'Por favor, introduce una dirección de correo electrónico válida.',
-                newsletterError: 'Error al suscribirse, por favor, inténtalo de nuevo más tarde.',
-            },
-            'la': {
-                pageTitle: 'Tabula Copiarum Sustentabilium - Pagina Prima',
-                appName: 'Tabula Copiarum Sustentabilium',
-                home: 'Pagina Prima',
-                map: 'Tabula',
-                shopList: 'Index Copiarum',
-                newsletter: 'Epistula Nuntia',
-                reportIssueNavLink: 'Refer Problema',
-                langChinese: '繁體中文',
-                langEnglish: 'English',
-                langFrench: 'Français',
-                langGerman: 'Deutsch',
-                langSpanish: 'Español',
-                langLatin: 'Latin',
-                langJapanese: '日本語',
-                heroTitle: 'Explora Copias Sustentabiles Taiwaniae',
-                heroSubtitle: 'Reperi copias quae tutelam naturae, commercium aequum, progressionemque sustentabilem adiuvant, et una pro Terra opera da.',
-                viewMapBtn: 'Vide Tabulam',
-                browseShopsBtn: 'Percurrere Indicem Copiarum',
-                searchTitle: 'Quaerere Copias Sustentabiles',
-                searchPlaceholder: 'Intra nomen copiae vel inscriptionem...',
-                filterCategoryTitle: 'Per Categoriem Filtra',
-                filterAll: 'Omnia',
-                filterApparel: 'Vestimenta',
-                filterFood: 'Cibi',
-                filterCafe: 'Taberna Coffeae',
-                filterHomeGoods: 'Res Domesticae',
-                filterZeroWaste: 'Copiae Sine Vaste',
-                filterSecondHand: 'Copiae Secundae Manus',
-                filterCreative: 'Creativum et Culturale',
-                mapSectionTitle: 'Tabula Copiarum Sustentabilium',
-                shopListSectionTitle: 'Index Copiarum Sustentabilium',
-                viewDetailsBtn: 'Vide Singula',
-                loadMoreBtn: 'Plura Carica',
-                newsletterTitle: 'Subscribere Epistulae Nuntiae Vitae Sustentabilis',
-                newsletterSubtitle: 'Accipe recentissimas informationes de copiia sustentabilibus, consilia vitae naturae amicae, et oblationes speciales',
-                newsletterPlaceholder: 'Tua epistula electronica',
-                subscribeBtn: 'Subscribere',
-                reportIssueTitle: 'Refer Problema',
-                reportIssueLabel: 'Quaeso, describe problema quod invenisti:',
-                reportIssuePlaceholder: 'Ex: Informatio copiae falsa, locus tabulae falsus...',
-                reportIssueSubmitBtn: 'Mitte Relationem',
-                reportIssueSuccessMsg: 'Gratias pro relatione tua, eam mox tractabimus!',
-                reportIssueErrorMsg: 'Error in mittendo relatione. Quaeso, postea iterum conare.',
-                footerAppName: 'Tabula Copiarum Sustentabilium',
-                footerAppDescription: 'Adiuvare consumptores ut copias progressionis sustentabilis inveniant et sustineant, una pro Terra cooperantes.',
-                contactUsTitle: 'Contacta Nos',
-                contactUsText: 'Pro quibusvis quaestionibus vel suggestionibus, quaeso nos contacta',
-                contactUsEmail: 'Epistula electronica: artistworld0815@gmail.com',
-                followUsTitle: 'Sequere Nos',
-                copyright: '© 2023 Tabula Copiarum Sustentabilium - Omnia Iura Reservata',
-                modalAboutUs: 'De Nobis',
-                modalSustainability: 'Philosophia Sustentabilitatis',
-                modalVideoIntro: 'Introductio Video',
-                modalLatestCollections: 'Novissimae Collectiones',
-                modalShopInfo: 'Informatio Copiae',
-                modalAddress: 'Inscriptio',
-                modalOpeningHours: 'Horae Aperturae',
-                modalContactInfo: 'Contacta Informatio',
-                modalPhone: 'Telephonum',
-                modalEmail: 'Epistula electronica',
-                modalWebsite: 'Situs Interretialis',
-                modalSocialMedia: 'Media Socialia',
-                modalLocation: 'Locus',
-                shopDetailsNotAvailable: 'Singula copiae nondum praesto sunt, quaeso exspecta!',
-                okButton: 'Bene',
-                notProvided: 'Non provisum',
-                newsletterSuccess: 'Gratias tibi pro subscriptione! Nuntios nostros recentissimos accipies.',
-                newsletterInvalidEmail: 'Quaeso, inscriptionem electronicam validam inscribe.',
-                newsletterError: 'Subscriptio defecit, quaeso postea iterum conare.',
-            },
-            'ja': {
-                pageTitle: 'サステナブルショップマップ - ホーム',
-                appName: 'サステナブルショップマップ',
-                home: 'ホーム',
-                map: 'マップ',
-                shopList: 'ショップリスト',
-                newsletter: 'ニュースレター',
-                reportIssueNavLink: '問題を報告',
-                langChinese: '繁體中文',
-                langEnglish: 'English',
-                langFrench: 'Français',
-                langGerman: 'Deutsch',
-                langSpanish: 'Español',
-                langLatin: 'Latin',
-                langJapanese: '日本語',
-                heroTitle: '台湾のサステナブルショップを探す',
-                heroSubtitle: '環境保護、フェアトレード、持続可能な開発を支援するショップを見つけて、一緒に地球に貢献しましょう。',
-                viewMapBtn: 'マップを見る',
-                browseShopsBtn: 'ショップリストを見る',
-                searchTitle: 'サステナブルショップを検索',
-                searchPlaceholder: 'ショップ名または住所を入力...',
-                filterCategoryTitle: 'カテゴリで絞り込む',
-                filterAll: 'すべて',
-                filterApparel: 'アパレル',
-                filterFood: '食品',
-                filterCafe: 'カフェ',
-                filterHomeGoods: '家庭用品',
-                filterZeroWaste: 'ゼロウェイストショップ',
-                filterSecondHand: 'リサイクルショップ',
-                filterCreative: '文具・雑貨',
-                mapSectionTitle: 'サステナブルショップマップ',
-                shopListSectionTitle: 'サステナブルショップリスト',
-                viewDetailsBtn: '詳細を見る',
-                loadMoreBtn: 'もっと読み込む',
-                newsletterTitle: 'サステナブルライフニュースレターを購読',
-                newsletterSubtitle: '最新のサステナブルショップ情報、エコライフのヒント、特別オファーを受け取る',
-                newsletterPlaceholder: 'あなたのメールアドレス',
-                subscribeBtn: '購読する',
-                reportIssueTitle: '問題を報告',
-                reportIssueLabel: '発生した問題を説明してください：',
-                reportIssuePlaceholder: '例：店舗情報が間違っている、地図の場所が違うなど...',
-                reportIssueSubmitBtn: '報告を送信',
-                reportIssueSuccessMsg: 'ご報告ありがとうございます。すぐに対応いたします！',
-                reportIssueErrorMsg: '報告の送信に失敗しました。後でもう一度お試しください。',
-                footerAppName: 'サステナブルショップマップ',
-                footerAppDescription: '消費者が持続可能な開発を支援するショップを見つけて支援し、一緒に地球に貢献するのを助けます。',
-                contactUsTitle: 'お問い合わせ',
-                contactUsText: 'ご質問やご提案がありましたら、お気軽にお問い合わせください',
-                contactUsEmail: 'Eメール：artistworld0815@gmail.com',
-                followUsTitle: 'フォローする',
-                copyright: '© 2023 サステナブルショップマップ - 全著作権所有',
-                modalAboutUs: '私たちについて',
-                modalSustainability: 'サステナビリティ理念',
-                modalVideoIntro: 'ビデオ紹介',
-                modalLatestCollections: '最新コレクション',
-                modalShopInfo: 'ショップ情報',
-                modalAddress: '住所',
-                modalOpeningHours: '営業時間',
-                modalContactInfo: '連絡先情報',
-                modalPhone: '電話',
-                modalEmail: 'Eメール',
-                modalWebsite: 'ウェブサイト',
-                modalSocialMedia: 'ソーシャルメディア',
-                modalLocation: '場所',
-                shopDetailsNotAvailable: 'ショップの詳細はまだ利用できません。お楽しみに！',
-                okButton: 'OK',
-                notProvided: '提供されていません',
-                newsletterSuccess: 'ご購読ありがとうございます！最新情報をお届けします。',
-                newsletterInvalidEmail: '有効なメールアドレスを入力してください。',
-                newsletterError: '購読に失敗しました。後でもう一度お試しください。',
+                adminRecommendBtn: '📧 Recommend this store to all subscribers',
+                adminLoginPrompt: 'Please enter admin password:',
+                adminLoginFailed: 'Incorrect password!',
+                adminLoginSuccess: 'Admin mode activated',
+                recommendationSending: 'Sending recommendation email...',
+                recommendationSent: 'Recommendation email sent successfully to all subscribers!',
+                recommendationFailed: 'Failed to send recommendation email, please try again later.',
             }
         };
 
         let currentLang = localStorage.getItem('lang') || 'zh-TW';
 
-        // Shop data, now with bilingual fields for translatable content
+        // Shop data with complete multilingual support
         const shopDetails = {
             "eco-goodies": {
-                name: { 'zh-TW': "綠好物", 'en': "Eco Goodies", 'fr': "Eco Goodies", 'de': "Eco Goodies", 'es': "Eco Goodies", 'la': "Eco Goodies", 'ja': "エコグッズ" },
-                type: { 'zh-TW': "家居用品", 'en': "Home Goods", 'fr': "Articles Ménagers", 'de': "Haushaltswaren", 'es': "Artículos para el Hogar", 'la': "Res Domesticae", 'ja': "家庭用品" },
-                address: { 'zh-TW': "106台北市大安區信義路四段187之2號", 'en': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan", 'fr': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan", 'de': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan", 'es': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan", 'la': "No. 187-2, Sec. 4, Xinyi Rd., Da’an Dist., Taipei City 106, Taiwan", 'ja': "106台北市大安区信義路四段187-2号" },
-                hours: { 'zh-TW': "週一至三、五 11:00-19:00，週四 12:00-19:00，週六日休息", 'en': "Mon-Wed, Fri 11:00-19:00, Thu 12:00-19:00, Closed Sat-Sun", 'fr': "Lun-Mer, Ven 11:00-19:00, Jeu 12:00-19:00, Fermé Sam-Dim", 'de': "Mo-Mi, Fr 11:00-19:00, Do 12:00-19:00, Sa-So geschlossen", 'es': "Lun-Mié, Vie 11:00-19:00, Jue 12:00-19:00, Cerrado Sáb-Dom", 'la': "Lun-Mer, Ven 11:00-19:00, Iov 12:00-19:00, Clausum Sat-Sol", 'ja': "月～水、金 11:00-19:00、木 12:00-19:00、土日休業" },
+                name: { 'zh-TW': "綠好物", 'en': "Eco Goodies" },
+                type: { 'zh-TW': "家居用品", 'en': "Home Goods" },
+                address: { 'zh-TW': "106台北市大安區信義路四段187之2號", 'en': "No. 187-2, Sec. 4, Xinyi Rd., Da'an Dist., Taipei City 106, Taiwan" },
+                hours: { 'zh-TW': "週一至三、五 11:00-19:00，週四 12:00-19:00，週六日休息", 'en': "Mon-Wed, Fri 11:00-19:00, Thu 12:00-19:00, Closed Sat-Sun" },
                 phone: "02 2706 8819",
                 email: "service@ecogoodies.com.tw",
                 website: "ecogoodies.com.tw",
-                description: { 'zh-TW': "綠好物是一家專注於提供環保、永續生活用品的商店，致力於推廣零廢棄生活方式。", 'en': "Eco Goodies specializes in eco-friendly and sustainable home products, promoting a zero-waste lifestyle.", 'fr': "Eco Goodies est un magasin spécialisé dans les produits écologiques et durables pour la maison, promouvant un mode de vie zéro déchet.", 'de': "Eco Goodies ist ein Geschäft, das sich auf umweltfreundliche und nachhaltige Haushaltsprodukte spezialisiert hat und einen Zero-Waste-Lebensstil fördert.", 'es': "Eco Goodies se especializa en productos para el hogar ecológicos y sostenibles, promoviendo un estilo de vida de cero residuos.", 'la': "Eco Goodies copia est quae ad res domesticas oecologicas et sustinebiles spectat, vitam sine vastitate promovens.", 'ja': "エコグッズは、環境に優しく持続可能な家庭用品を提供する専門店で、ゼロウェイストなライフスタイルを推進しています。" },
-                longDescription: { 'zh-TW': "我們提供各種環保替代品，從日常生活用品到個人護理產品，幫助消費者減少塑料使用和環境足跡。我們的產品經過嚴格篩選，確保它們是真正環保且實用的。", 'en': "We offer a wide range of eco-friendly alternatives, from daily necessities to personal care products, helping consumers reduce plastic use and environmental footprint. Our products are rigorously screened to ensure they are truly eco-friendly and practical.", 'fr': "Nous offrons une large gamme d'alternatives écologiques, des nécessités quotidiennes aux produits de soins personnels, aidant les consommateurs à réduire l'utilisation du plastique et leur empreinte environnementale. Nos produits sont rigoureusement sélectionnés pour s'assurer qu'ils sont vraiment écologiques et pratiques.", 'de': "Wir bieten eine breite Palette umweltfreundlicher Alternativen, von alltäglichen Notwendigkeiten bis hin zu Körperpflegeprodukten, die Verbrauchern helfen, den Plastikverbrauch und den ökologischen Fußabdruck zu reduzieren. Unsere Produkte werden streng geprüft, um sicherzustellen, dass sie wirklich umweltfreundlich und praktisch sind.", 'es': "Ofrecemos una amplia gama de alternativas ecológicas, desde necesidades diarias hasta productos de cuidado personal, ayudando a los consumidores a reducir el uso de plástico y la huella ambiental. Nuestros productos son rigurosamente seleccionados para garantizar que son verdaderamente ecológicos y prácticos.", 'la': "Varias res oecologicae offerimus, a quotidianis necessitatibus ad curam personalem, adiuvantes consumptores ad usum plastici et vestigium environmentalem reducere. Nostra producta diligenter examinantur ut vere oecologica et utilia sint.", 'ja': "私たちは、日用品からパーソナルケア製品まで、幅広い環境に優しい代替品を提供し、消費者がプラスチックの使用と環境負荷を削減できるよう支援しています。当社の製品は、真に環境に優しく実用的であることを確認するために厳格な審査を受けています。" },
-                sustainability: { 'zh-TW': "我們的使命是讓永續生活變得簡單且可行。我們的產品都經過嚴格篩選，確保它們是真正環保、耐用且實用的。我們優先選擇使用可再生材料、可生物降解或可回收的產品，並與符合道德標準的供應商合作。", 'en': "Our mission is to make sustainable living simple and achievable. Our products are rigorously screened to ensure they are truly eco-friendly, durable, and practical. We prioritize products made from renewable, biodegradable, or recyclable materials, and partner with ethically compliant suppliers.", 'fr': "Notre mission est de rendre la vie durable simple et réalisable. Nos produits sont rigoureusement sélectionnés pour s'assurer qu'ils sont vraiment écologiques, durables et pratiques. Nous privilégions les produits fabriqués à partir de matériaux renouvelables, biodégradables ou recyclables, et nous collaborons avec des fournisseurs conformes à l'éthique.", 'de': "Unsere Mission ist es, nachhaltiges Leben einfach und erreichbar zu machen. Unsere Produkte werden streng geprüft, um sicherzustellen, dass sie wirklich umweltfreundlich, langlebig und praktisch sind. Wir bevorzugen Produkte aus erneuerbaren, biologisch abbaubaren oder recycelbaren Materialien und arbeiten mit ethisch einwandfreien Lieferanten zusammen.", 'es': "Nuestra misión es hacer que la vida sostenible sea simple y alcanzable. Nuestros productos son rigurosamente seleccionados para garantizar que son verdaderamente ecológicos, duraderos y prácticos. Priorizamos productos hechos de materiales renovables, biodegradables o reciclables, y nos asociamos con proveedores éticamente conformes.", 'la': "Nostra missio est vitam sustentabilem simplicem et possibilem facere. Nostra producta diligenter examinantur ut vere oecologica, durabilia, et utilia sint. Prioritatem damus productis ex materiis renovabilibus, biodegradabilibus, vel recycabilibus factis, et cum commeatuum praebitoribus ethice conformamur.", 'ja': "私たちの使命は、持続可能な生活をシンプルかつ実現可能にすることです。当社の製品は、真に環境に優しく、耐久性があり、実用的であることを確認するために厳格な審査を受けています。再生可能な素材、生分解性またはリサイクル可能な製品の使用を優先し、倫理的に準拠したサプライヤーと提携しています。" },
-                tags: { 'zh-TW': ["零廢棄", "環保生活", "可重複使用", "無塑", "永續消費"], 'en': ["Zero-Waste", "Eco-friendly Living", "Reusable", "Plastic-Free", "Sustainable Consumption"], 'fr': ["Zéro Déchet", "Vie Écologique", "Réutilisable", "Sans Plastique", "Consommation Durable"], 'de': ["Zero Waste", "Umweltfreundliches Leben", "Wiederverwendbar", "Plastikfrei", "Nachhaltiger Konsum"], 'es': ["Cero Residuos", "Vida Ecológica", "Reutilizable", "Sin Plástico", "Consumo Sostenible"], 'la': ["Sine Vaste", "Vita Oecologica", "Reutilizabile", "Sine Plastico", "Consumptio Sustentabilis"], 'ja': ["ゼロウェイスト", "エコフレンドリーな生活", "再利用可能", "プラスチックフリー", "持続可能な消費"] },
+                description: { 'zh-TW': "綠好物是一家專注於提供環保、永續生活用品的商店，致力於推廣零廢棄生活方式。", 'en': "Eco Goodies specializes in eco-friendly and sustainable home products, promoting a zero-waste lifestyle." },
+                longDescription: { 'zh-TW': "我們提供各種環保替代品，從日常生活用品到個人護理產品，幫助消費者減少塑料使用和環境足跡。我們的產品經過嚴格篩選，確保它們是真正環保且實用的。", 'en': "We offer a wide range of eco-friendly alternatives, from daily necessities to personal care products, helping consumers reduce plastic use and environmental footprint. Our products are rigorously screened to ensure they are truly eco-friendly and practical." },
+                sustainability: { 'zh-TW': "我們的使命是讓永續生活變得簡單且可行。我們的產品都經過嚴格篩選，確保它們是真正環保、耐用且實用的。我們優先選擇使用可再生材料、可生物降解或可回收的產品，並與符合道德標準的供應商合作。", 'en': "Our mission is to make sustainable living simple and achievable. Our products are rigorously screened to ensure they are truly eco-friendly, durable, and practical. We prioritize products made from renewable, biodegradable, or recyclable materials, and partner with ethically compliant suppliers." },
+                tags: { 'zh-TW': ["零廢棄", "環保生活", "可重複使用", "無塑", "永續消費"], 'en': ["Zero-Waste", "Eco-friendly Living", "Reusable", "Plastic-Free", "Sustainable Consumption"] },
                 lat: 25.0330,
-                lng: 121.5500,
+                lng: 121.5654,
                 collections: [
                     {
-                        name: { 'zh-TW': "廚房零廢棄系列", 'en': "Zero-Waste Kitchen Collection", 'fr': "Collection Cuisine Zéro Déchet", 'de': "Zero-Waste Küchenコレクション", 'es': "Colección Cocina Cero Residuos", 'la': "Collectio Culinae Sine Vaste", 'ja': "ゼロウェイストキッチンコレクション" },
-                        description: { 'zh-TW': "包括可重複使用的食物保鮮袋、蜂蠟保鮮膜、竹製餐具等，幫助您建立一個無塑廚房。", 'en': "Includes reusable food storage bags, beeswax wraps, bamboo utensils, etc., to help you create a plastic-free kitchen.", 'fr': "Comprend des sacs de conservation alimentaire réutilisables, des emballages en cire d'abeille, des ustensiles en bambou, etc., pour vous aider à créer une cuisine sans plastique.", 'de': "Umfasst wiederverwendbare Lebensmittelbeutel, Bienenwachstücher, Bambusutensilien usw., um Ihnen zu helfen, eine plastikfreie Küche zu schaffen.", 'es': "Incluye bolsas de almacenamiento de alimentos reutilizables, envoltorios de cera de abeja, utensilios de bambú, etc., para ayudarte a crear una cocina sin plástico.", 'la': "Sacculos cibi reutilizabiles, cerae apium involumenta, utensilia bambuina, etc., comprehendit, ut culinam sine plastico crees.", 'ja': "再利用可能な食品保存袋、蜜蝋ラップ、竹製調理器具など、プラスチックフリーのキッチンを作るのに役立ちます。" }
+                        name: { 'zh-TW': "廚房零廢棄系列", 'en': "Zero-Waste Kitchen Collection" },
+                        description: { 'zh-TW': "包括可重複使用的食物保鮮袋、蜂蠟保鮮膜、竹製餐具等，幫助您建立一個無塑廚房。", 'en': "Includes reusable food storage bags, beeswax wraps, bamboo utensils, etc., to help you create a plastic-free kitchen." }
                     },
                     {
-                        name: { 'zh-TW': "個人護理系列", 'en': "Personal Care Collection", 'fr': "Collection Soins Personnels", 'de': "Körperpflegeコレクション", 'es': "Colección Cuidado Personal", 'la': "Collectio Curae Personalis", 'ja': "パーソナルケアコレクション" },
-                        description: { 'zh-TW': "提供天然成分製成的肥皂、洗髮餅、竹牙刷等，減少塑料包裝和有害化學物質。", 'en': "Offers soaps, shampoo bars, bamboo toothbrushes made from natural ingredients, reducing plastic packaging and harmful chemicals.", 'fr': "Propose des savons, des shampoings solides, des brosses à dents en bambou fabriqués à partir d'ingrédients naturels, réduisant les emballages plastiques和有害な化学物質を削減します。", 'de': "Bietet Seifen, Shampoo-Bars, Bambuszahnbürsten aus natürlichen Inhaltsstoffen an, die Plastikverpackungen und schädliche Chemikalien reduzieren.", 'es': "Ofrece jabones, champús sólidos, cepillos de dientes de bambú hechos con ingredientes naturales, reduciendo los envases de plástico y los productos químicos nocivos.", 'la': "Saponem, capilli lavacra, dentifricula bambuina ex ingredientibus naturalibus facta praebet, reducens sarcinas plasticas et chemica nociva.", 'ja': "天然成分で作られた石鹸、シャンプーバー、竹歯ブラシなどを提供し、プラスチック包装と有害な化学物質を削減します。" }
+                        name: { 'zh-TW': "個人護理系列", 'en': "Personal Care Collection" },
+                        description: { 'zh-TW': "提供天然成分製成的肥皂、洗髮餅、竹牙刷等，減少塑料包裝和有害化學物質。", 'en': "Offers soaps, shampoo bars, bamboo toothbrushes made from natural ingredients, reducing plastic packaging and harmful chemicals." }
                     }
                 ]
             },
-            // ... 其他商店的詳細資料 ...
+            "sustainable-cafe": {
+                name: { 'zh-TW': "永續咖啡", 'en': "Sustainable Cafe" },
+                type: { 'zh-TW': "咖啡廳", 'en': "Cafe" },
+                address: { 'zh-TW': "110台北市信義區松壽路11號", 'en': "No. 11, Songshou Rd., Xinyi Dist., Taipei City 110, Taiwan" },
+                hours: { 'zh-TW': "每日 08:00-21:00", 'en': "Daily 08:00-21:00" },
+                phone: "02 2722 5566",
+                email: "hello@sustainablecafe.tw",
+                website: "sustainablecafe.tw",
+                description: { 'zh-TW': "專注於公平貿易咖啡豆和永續經營理念的咖啡廳，提供有機美食。", 'en': "A cafe focused on fair trade coffee beans and sustainable business practices, serving organic food." },
+                longDescription: { 'zh-TW': "我們堅持使用公平貿易認證的咖啡豆，與產地農民建立直接合作關係。店內採用環保材料裝潢，提供可重複使用的杯具，並推廣減塑生活。", 'en': "We insist on using fair trade certified coffee beans and establish direct partnerships with origin farmers. The store uses eco-friendly decoration materials, provides reusable cups, and promotes plastic-free living." },
+                sustainability: { 'zh-TW': "支持公平貿易，確保咖啡農獲得合理報酬。使用可再生能源，實施零廢棄政策，所有包裝材料均可回收或可堆肥。", 'en': "Supporting fair trade to ensure coffee farmers receive fair compensation. Using renewable energy, implementing zero-waste policies, all packaging materials are recyclable or compostable." },
+                tags: { 'zh-TW': ["公平貿易", "有機咖啡", "零廢棄", "可回收包裝"], 'en': ["Fair Trade", "Organic Coffee", "Zero Waste", "Recyclable Packaging"] },
+                lat: 25.0369,
+                lng: 121.5645
+            },
+            "green-fashion": {
+                name: { 'zh-TW': "綠色時尚", 'en': "Green Fashion" },
+                type: { 'zh-TW': "服飾", 'en': "Apparel" },
+                address: { 'zh-TW': "104台北市中山區南京東路三段219號", 'en': "No. 219, Sec. 3, Nanjing E. Rd., Zhongshan Dist., Taipei City 104, Taiwan" },
+                hours: { 'zh-TW': "週二至日 11:00-20:00，週一休息", 'en': "Tue-Sun 11:00-20:00, Closed Mon" },
+                phone: "02 2545 7788",
+                email: "info@greenfashion.com.tw",
+                website: "greenfashion.com.tw",
+                description: { 'zh-TW': "販售有機棉、再生纖維等環保材質製作的時尚服飾。", 'en': "Selling fashionable clothing made from eco-friendly materials like organic cotton and recycled fibers." },
+                longDescription: { 'zh-TW': "我們致力於推廣永續時尚，所有服飾均採用有機棉、天絲、再生聚酯纖維等環保材料製作。與國際認證工廠合作，確保生產過程符合環保和勞工權益標準。", 'en': "We are committed to promoting sustainable fashion. All clothing is made from eco-friendly materials such as organic cotton, Tencel, and recycled polyester. We partner with internationally certified factories to ensure production processes meet environmental and labor rights standards." },
+                sustainability: { 'zh-TW': "使用有機和再生材料，支持循環經濟。工廠符合GOTS有機紡織品標準，確保從原料到成品的環保生產鏈。", 'en': "Using organic and recycled materials to support circular economy. Factories comply with GOTS organic textile standards, ensuring an eco-friendly production chain from raw materials to finished products." },
+                tags: { 'zh-TW': ["有機棉", "再生纖維", "公平勞動", "循環時尚"], 'en': ["Organic Cotton", "Recycled Fibers", "Fair Labor", "Circular Fashion"] },
+                lat: 25.0522,
+                lng: 121.5437
+            }
         };
 
         const shops = Object.keys(shopDetails).map(id => ({
@@ -868,7 +603,7 @@
             lng: shopDetails[id].lng
         }));
 
-        // --- 全局變數和篩選邏輯 ---
+        // ===== GLOBAL VARIABLES =====
         let currentFilterCategory = 'all';
         let currentSearchQuery = '';
         const shopsPerPage = 6;
@@ -876,7 +611,85 @@
         let mapInstance;
         let markersGroup = L.featureGroup();
 
-        // 設置語言函數
+        // ===== ADMIN FUNCTIONS =====
+        function promptAdminLogin() {
+            const password = prompt(translations[currentLang].adminLoginPrompt);
+            if (password === ADMIN_PASSWORD) {
+                isAdminMode = true;
+                document.getElementById('admin-indicator').classList.remove('hidden');
+                showMessageModal(translations[currentLang].adminLoginSuccess);
+            } else if (password !== null) {
+                showMessageModal(translations[currentLang].adminLoginFailed);
+            }
+        }
+
+        // Make admin trigger accessible globally for keyboard shortcut
+        window.promptAdminLogin = promptAdminLogin;
+
+        // Admin keyboard shortcut (Ctrl+Shift+A)
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
+                promptAdminLogin();
+            }
+        });
+
+        // ===== EMAIL FUNCTIONS =====
+        async function getSubscriberEmails() {
+            try {
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL + '?action=getEmails');
+                const data = await response.json();
+                return data.emails || [];
+            } catch (error) {
+                console.error('Error fetching subscriber emails:', error);
+                return [];
+            }
+        }
+
+        async function sendRecommendationEmail(shopId) {
+            if (typeof emailjs === 'undefined') {
+                console.error('EmailJS not loaded');
+                showMessageModal('EmailJS service not available');
+                return;
+            }
+
+            const shop = shopDetails[shopId];
+            if (!shop) return;
+
+            try {
+                showMessageModal(translations[currentLang].recommendationSending);
+                
+                const emails = await getSubscriberEmails();
+                if (emails.length === 0) {
+                    showMessageModal('沒有找到訂閱者');
+                    return;
+                }
+
+                // Prepare email template parameters
+                const templateParams = {
+                    shop_name: shop.name[currentLang] || shop.name['zh-TW'],
+                    shop_description: shop.description[currentLang] || shop.description['zh-TW'],
+                    shop_address: shop.address[currentLang] || shop.address['zh-TW'],
+                    shop_phone: shop.phone || '未提供',
+                    shop_website: shop.website || '未提供',
+                    subscriber_emails: emails.join(','), // EmailJS will handle multiple recipients
+                };
+
+                // Send email via EmailJS
+                const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+                
+                if (result.status === 200) {
+                    showMessageModal(translations[currentLang].recommendationSent);
+                } else {
+                    throw new Error('EmailJS returned non-200 status');
+                }
+            } catch (error) {
+                console.error('Error sending recommendation email:', error);
+                showMessageModal(translations[currentLang].recommendationFailed);
+            }
+        }
+
+        // ===== LANGUAGE FUNCTIONS =====
         function setLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('lang', lang);
@@ -914,7 +727,7 @@
             }
         }
 
-        // 根據篩選條件過濾商店
+        // ===== SHOP FILTERING AND DISPLAY FUNCTIONS =====
         function getFilteredShops() {
             return shops.filter(shopData => {
                 const shop = shopDetails[shopData.id];
@@ -936,7 +749,6 @@
             });
         }
 
-        // 渲染商店卡片函數
         function renderShopCards(filteredShops) {
             const shopCardsContainer = document.getElementById('shop-cards-container');
             if (currentLoadedShops === 0) {
@@ -958,23 +770,23 @@
                         </div>
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-xl font-bold">${shop.name[currentLang] || translations[currentLang].notProvided}</h3>
-                                <span class="tag px-2 py-1 rounded-full text-xs">${shop.type[currentLang] || translations[currentLang].notProvided}</span>
+                                <h3 class="text-xl font-bold">${shop.name[currentLang] || shop.name['zh-TW'] || translations[currentLang].notProvided}</h3>
+                                <span class="tag px-2 py-1 rounded-full text-xs">${shop.type[currentLang] || shop.type['zh-TW'] || translations[currentLang].notProvided}</span>
                             </div>
-                            <p class="text-gray-600 mb-4">${shop.description[currentLang] || translations[currentLang].notProvided}</p>
+                            <p class="text-gray-600 mb-4">${shop.description[currentLang] || shop.description['zh-TW'] || translations[currentLang].notProvided}</p>
                             <div class="mb-4">
                                 <div class="flex items-center text-gray-600 text-sm mb-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    ${shop.address[currentLang] || translations[currentLang].notProvided}
+                                    ${shop.address[currentLang] || shop.address['zh-TW'] || translations[currentLang].notProvided}
                                 </div>
                                 <div class="flex items-center text-gray-600 text-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    ${shop.hours[currentLang] || translations[currentLang].notProvided}
+                                    ${shop.hours[currentLang] || shop.hours['zh-TW'] || translations[currentLang].notProvided}
                                 </div>
                             </div>
                             <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('${shopData.id}')" data-i18n="viewDetailsBtn">${translations[currentLang].viewDetailsBtn}</button>
@@ -990,18 +802,31 @@
 
         // 更新地圖標記
         function updateMapMarkers(filteredShops) {
+            if (!mapInstance) return;
+            
             markersGroup.clearLayers();
 
             filteredShops.forEach(shopData => {
                 const shop = shopDetails[shopData.id];
                 if (!shop) return;
+                
                 const marker = L.marker([shopData.lat, shopData.lng]);
-                marker.bindPopup(`<b>${shop.name[currentLang] || translations[currentLang].notProvided}</b><br>${shop.type[currentLang] || translations[currentLang].notProvided}<br>${shop.address[currentLang] || translations[currentLang].notProvided}<br><a href="#" onclick="showShopDetail('${shopData.id}'); return false;" class="text-green-600">${translations[currentLang].viewDetailsBtn}</a>`);
+                const shopName = shop.name[currentLang] || shop.name['zh-TW'] || translations[currentLang].notProvided;
+                const shopType = shop.type[currentLang] || shop.type['zh-TW'] || translations[currentLang].notProvided;
+                const shopAddress = shop.address[currentLang] || shop.address['zh-TW'] || translations[currentLang].notProvided;
+                
+                marker.bindPopup(`
+                    <div class="p-2">
+                        <h3 class="font-bold text-lg mb-1">${shopName}</h3>
+                        <p class="text-sm text-gray-600 mb-1">${shopType}</p>
+                        <p class="text-xs text-gray-500 mb-2">${shopAddress}</p>
+                        <button onclick="showShopDetail('${shopData.id}')" class="text-green-600 text-sm hover:underline">${translations[currentLang].viewDetailsBtn}</button>
+                    </div>
+                `);
                 markersGroup.addLayer(marker);
             });
-            if (mapInstance) {
-                mapInstance.addLayer(markersGroup);
-            }
+            
+            mapInstance.addLayer(markersGroup);
         }
 
         // 篩選並顯示商店 (主控函數)
@@ -1034,8 +859,8 @@
             let detailHTML = `
                 <div class="shop-detail-header py-12 text-white rounded-t-xl">
                     <div class="container mx-auto px-4 text-center">
-                        <h1 class="text-3xl md:text-4xl font-bold mb-2">${shop.name[currentLang] || translations[currentLang].notProvided}</h1>
-                        <p class="text-lg">${shop.type[currentLang] || translations[currentLang].notProvided}</p>
+                        <h1 class="text-3xl md:text-4xl font-bold mb-2">${shop.name[currentLang] || shop.name['zh-TW'] || translations[currentLang].notProvided}</h1>
+                        <p class="text-lg">${shop.type[currentLang] || shop.type['zh-TW'] || translations[currentLang].notProvided}</p>
                     </div>
                 </div>
                 <button id="close-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md z-[1010]">
@@ -1047,19 +872,25 @@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div class="lg:col-span-2">
                             <h2 class="text-2xl font-bold mb-4" data-i18n="modalAboutUs">${translations[currentLang].modalAboutUs}</h2>
-                            <p class="text-gray-700 mb-4">${shop.description[currentLang] || translations[currentLang].notProvided}</p>
-                            ${shop.longDescription && shop.longDescription[currentLang] ? `<p class="text-gray-700 mb-6">${shop.longDescription[currentLang]}</p>` : ''}
+                            <p class="text-gray-700 mb-4">${shop.description[currentLang] || shop.description['zh-TW'] || translations[currentLang].notProvided}</p>
+                            ${shop.longDescription && (shop.longDescription[currentLang] || shop.longDescription['zh-TW']) ? `<p class="text-gray-700 mb-6">${shop.longDescription[currentLang] || shop.longDescription['zh-TW']}</p>` : ''}
                             
-                            ${shop.sustainability && shop.sustainability[currentLang] ? `
+                            ${shop.sustainability && (shop.sustainability[currentLang] || shop.sustainability['zh-TW']) ? `
                             <h2 class="text-2xl font-bold mb-4" data-i18n="modalSustainability">${translations[currentLang].modalSustainability}</h2>
                             <div class="mb-6">
-                                <p class="text-gray-700 mb-4">${shop.sustainability[currentLang]}</p>
-                                ${shop.tags && shop.tags[currentLang] && shop.tags[currentLang].length > 0 ? `
+                                <p class="text-gray-700 mb-4">${shop.sustainability[currentLang] || shop.sustainability['zh-TW']}</p>
+                                ${shop.tags && (shop.tags[currentLang] || shop.tags['zh-TW']) && (shop.tags[currentLang] || shop.tags['zh-TW']).length > 0 ? `
                                 <div class="flex flex-wrap gap-2 mb-4">
-                                    ${shop.tags[currentLang].map(tag => `<span class="tag px-3 py-1 rounded-full text-sm">${tag}</span>`).join('')}
+                                    ${(shop.tags[currentLang] || shop.tags['zh-TW']).map(tag => `<span class="tag px-3 py-1 rounded-full text-sm">${tag}</span>`).join('')}
                                 </div>
                                 ` : ''}
                             </div>
+                            ` : ''}
+                            
+                            ${isAdminMode ? `
+                            <button onclick="sendRecommendationEmail('${shopId}')" class="admin-button" data-i18n="adminRecommendBtn">
+                                ${translations[currentLang].adminRecommendBtn}
+                            </button>
                             ` : ''}
                         </div>
                         
@@ -1068,11 +899,11 @@
                             <div class="space-y-4">
                                 <div>
                                     <h4 class="font-medium text-gray-700" data-i18n="modalAddress">${translations[currentLang].modalAddress}</h4>
-                                    <p class="text-gray-600">${shop.address[currentLang] || translations[currentLang].notProvided}</p>
+                                    <p class="text-gray-600">${shop.address[currentLang] || shop.address['zh-TW'] || translations[currentLang].notProvided}</p>
                                 </div>
                                 <div>
                                     <h4 class="font-medium text-gray-700" data-i18n="modalOpeningHours">${translations[currentLang].modalOpeningHours}</h4>
-                                    <p class="text-gray-600">${shop.hours[currentLang] || translations[currentLang].notProvided}</p>
+                                    <p class="text-gray-600">${shop.hours[currentLang] || shop.hours['zh-TW'] || translations[currentLang].notProvided}</p>
                                 </div>
                                 <div>
                                     <h4 class="font-medium text-gray-700" data-i18n="modalContactInfo">${translations[currentLang].modalContactInfo}</h4>
@@ -1097,21 +928,26 @@
             document.getElementById('shop-detail-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
+            // Initialize shop detail map
             setTimeout(() => {
-                const shopMap = L.map(`shop-map-${shopId}`, {
-                    zoomControl: false,
-                    attributionControl: false
-                }).setView([shop.lat, shop.lng], 16);
-                
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(shopMap);
-                
-                L.marker([shop.lat, shop.lng]).addTo(shopMap)
-                    .bindPopup(`<b>${shop.name[currentLang] || translations[currentLang].notProvided}</b>`).openPopup();
-                
-                shopMap.dragging.disable();
-                shopMap.touchZoom.disable();
-                shopMap.doubleClickZoom.disable();
-                shopMap.scrollWheelZoom.disable();
+                try {
+                    const shopMap = L.map(`shop-map-${shopId}`, {
+                        zoomControl: false,
+                        attributionControl: false
+                    }).setView([shop.lat, shop.lng], 16);
+                    
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(shopMap);
+                    
+                    L.marker([shop.lat, shop.lng]).addTo(shopMap)
+                        .bindPopup(`<b>${shop.name[currentLang] || shop.name['zh-TW']}</b>`).openPopup();
+                    
+                    shopMap.dragging.disable();
+                    shopMap.touchZoom.disable();
+                    shopMap.doubleClickZoom.disable();
+                    shopMap.scrollWheelZoom.disable();
+                } catch (error) {
+                    console.error('Error initializing shop detail map:', error);
+                }
             }, 300);
 
             document.getElementById('close-modal').addEventListener('click', closeModal);
@@ -1144,14 +980,31 @@
             });
         }
 
+        // Initialize map with error handling
+        function initializeMap() {
+            try {
+                mapInstance = L.map('sustainability-map').setView([25.0330, 121.5654], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(mapInstance);
+                
+                markersGroup.addTo(mapInstance);
+                
+                // Force map to resize and render properly
+                setTimeout(() => {
+                    if (mapInstance) {
+                        mapInstance.invalidateSize();
+                    }
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error initializing map:', error);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize map
-            mapInstance = L.map('sustainability-map').setView([25.0330, 121.5654], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(mapInstance);
-            
-            markersGroup.addTo(mapInstance);
+            initializeMap();
 
             // Initial language setup
             setLanguage(currentLang);
@@ -1203,11 +1056,34 @@
                     showMessageModal(translations[currentLang].newsletterInvalidEmail);
                     return;
                 }
-                showMessageModal(translations[currentLang].newsletterSuccess);
-                emailInput.value = '';
+
+                try {
+                    // Send to Google Apps Script
+                    const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'subscribe',
+                            email: email
+                        })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        showMessageModal(translations[currentLang].newsletterSuccess);
+                        emailInput.value = '';
+                    } else {
+                        throw new Error('Subscription failed');
+                    }
+                } catch (error) {
+                    console.error('Newsletter subscription error:', error);
+                    showMessageModal(translations[currentLang].newsletterError);
+                }
             });
 
-            // 問題回報表單提交
+            // Issue report form submission
             document.getElementById('issue-form').addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const issueText = document.getElementById('issue').value.trim();
@@ -1215,7 +1091,6 @@
 
                 if (!issueText) return;
 
-                // 禁用按鈕並顯示處理中狀態
                 submitButton.disabled = true;
                 submitButton.textContent = '...';
 
@@ -1234,10 +1109,9 @@
 
                     const result = await response.json();
                     
-                    if (result.success === "true" || response.ok) { // 增加 response.ok 判斷
+                    if (result.success === "true" || response.ok) {
                         document.getElementById('issue-message').classList.remove('hidden');
                         document.getElementById('issue-form').reset();
-                        // 5秒後隱藏成功訊息
                         setTimeout(() => {
                            document.getElementById('issue-message').classList.add('hidden');
                         }, 5000);
@@ -1248,18 +1122,20 @@
                     console.error("Issue report error:", error);
                     showMessageModal(translations[currentLang].reportIssueErrorMsg);
                 } finally {
-                    // 重新啟用按鈕並還原文字
                     submitButton.disabled = false;
-                    // 使用 data-i18n 屬性來還原正確的語言文字
                     const originalTextKey = submitButton.getAttribute('data-i18n');
                     if (originalTextKey) {
                        submitButton.textContent = translations[currentLang][originalTextKey];
                     } else {
-                       submitButton.textContent = '送出回報'; // Fallback
+                       submitButton.textContent = '送出回報';
                     }
                 }
             });
         });
+
+        // Make functions globally accessible
+        window.showShopDetail = showShopDetail;
+        window.sendRecommendationEmail = sendRecommendationEmail;
     </script>
 </body>
 </html>
