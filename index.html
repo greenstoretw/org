@@ -534,7 +534,6 @@
                 recommendationSent: 'Recommendation email sent successfully to all subscribers!',
                 recommendationFailed: 'Failed to send recommendation email, please try again later.',
             },
-            // ===== FIX START: Added missing translations =====
             'fr': {
                 pageTitle: 'Carte des Magasins Durables - Accueil',
                 appName: 'Carte des Magasins Durables',
@@ -830,7 +829,6 @@
                 newsletterInvalidEmail: '有効なメールアドレスを入力してください。',
                 newsletterError: '購読に失敗しました。もう一度お試しください。',
             }
-            // ===== FIX END =====
         };
 
         let currentLang = localStorage.getItem('lang') || 'zh-TW';
@@ -1097,7 +1095,7 @@
             updateLoadMoreButton(filteredShops.length);
         }
 
-        // 更新地圖標記
+        // Update map markers
         function updateMapMarkers(filteredShops) {
             if (!mapInstance) return;
             
@@ -1126,14 +1124,14 @@
             mapInstance.addLayer(markersGroup);
         }
 
-        // 篩選並顯示商店 (主控函數)
+        // Filter and display shops (main control function)
         function filterAndDisplayShops() {
             const filteredShops = getFilteredShops();
             renderShopCards(filteredShops);
             updateMapMarkers(filteredShops);
         }
 
-        // 更新「載入更多」按鈕狀態
+        // Update "Load More" button state
         function updateLoadMoreButton(totalFilteredShops) {
             const loadMoreButton = document.getElementById('load-more-button');
             if (currentLoadedShops < totalFilteredShops) {
@@ -1143,7 +1141,7 @@
             }
         }
 
-        // 顯示商店詳情
+        // Show shop details
         function showShopDetail(shopId) {
             const shop = shopDetails[shopId];
             if (!shop) {
@@ -1345,6 +1343,7 @@
                 filterAndDisplayShops();
             });
 
+            // ===== START: MODIFIED CODE BLOCK =====
             document.getElementById('subscribe-button').addEventListener('click', async () => {
                 const emailInput = document.getElementById('newsletter-email');
                 const email = emailInput.value.trim();
@@ -1355,38 +1354,35 @@
                 }
 
                 try {
-                    const payload = {
-                        action: 'subscribe',
-                        email: email
-                    };
+                    // Using FormData and 'no-cors' mode to submit the data. This is a common
+                    // pattern to avoid CORS preflight/redirect issues when posting to a simple
+                    // Google Apps Script endpoint from a browser.
+                    const formData = new FormData();
+                    formData.append('action', 'subscribe');
+                    formData.append('email', email);
 
-                    const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    // We are not awaiting the response and using 'no-cors'. We fire and forget.
+                    // A successful POST to a Google Apps Script often results in a redirect,
+                    // which would cause a CORS error if we tried to read the response.
+                    // 'no-cors' prevents this error but means we can't confirm success from the response.
+                    fetch(GOOGLE_APPS_SCRIPT_URL, {
                         method: 'POST',
-                        headers: {
-                          'Content-Type': 'text/plain;charset=utf-8',
-                        },
-                        body: JSON.stringify(payload)
+                        body: formData,
+                        mode: 'no-cors' 
                     });
-                    
-                    const textResult = await response.text();
-                    try {
-                        const jsonResult = JSON.parse(textResult);
-                        if (jsonResult.success) {
-                            showMessageModal(translations[currentLang].newsletterSuccess);
-                            emailInput.value = '';
-                        } else {
-                            throw new Error(jsonResult.error || 'Subscription failed via JSON');
-                        }
-                    } catch (e) {
-                        console.error("Failed to parse server response as JSON. Response text:", textResult);
-                        throw new Error('Server returned a non-JSON response.');
-                    }
+
+                    // Optimistically assume success and give user feedback immediately.
+                    showMessageModal(translations[currentLang].newsletterSuccess);
+                    emailInput.value = '';
 
                 } catch (error) {
+                    // This catch block is unlikely to be triggered with 'no-cors' mode,
+                    // but is kept as a fallback.
                     console.error('Newsletter subscription error:', error);
                     showMessageModal(translations[currentLang].newsletterError);
                 }
             });
+            // ===== END: MODIFIED CODE BLOCK =====
 
             // Issue report form submission
             document.getElementById('issue-form').addEventListener('submit', async function (e) {
