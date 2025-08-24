@@ -360,8 +360,10 @@
 
     <script>
         // ===== CONFIGURATION =====
-        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJO4SpEbNly7WweAHf0pGu8DGdwCqUrmvLBb29xujm3u2FgPo8Bb-A3y324e_fmnWRcA/exec';
-        const ADMIN_PASSWORD = 'sustainable123';
+        // ‼️ 重要：請將 '...' 替換成您新的 Google Apps Script 網址。
+        // ‼️ IMPORTANT: Replace '...' with your new Google Apps Script URL.
+        const GOOGLE_APPS_SCRIPT_URL = '請在這裡貼上您新的 Google Apps Script 網址';
+        const ADMIN_PASSWORD = 'index@1215312836';
         
         // EmailJS Configuration
         const EMAILJS_PUBLIC_KEY = '4dCp-T-DcTtjFzpuA';
@@ -934,7 +936,12 @@
             try {
                 const response = await fetch(GOOGLE_APPS_SCRIPT_URL + '?action=getEmails');
                 const data = await response.json();
-                return data.emails || [];
+                if (data.success && data.emails) {
+                    return data.emails;
+                } else {
+                    console.error('Error from Apps Script:', data.error);
+                    return [];
+                }
             } catch (error) {
                 console.error('Error fetching subscriber emails:', error);
                 return [];
@@ -1354,30 +1361,20 @@
                 }
 
                 try {
-                    // Using FormData and 'no-cors' mode to submit the data. This is a common
-                    // pattern to avoid CORS preflight/redirect issues when posting to a simple
-                    // Google Apps Script endpoint from a browser.
                     const formData = new FormData();
                     formData.append('action', 'subscribe');
                     formData.append('email', email);
 
-                    // We are not awaiting the response and using 'no-cors'. We fire and forget.
-                    // A successful POST to a Google Apps Script often results in a redirect,
-                    // which would cause a CORS error if we tried to read the response.
-                    // 'no-cors' prevents this error but means we can't confirm success from the response.
                     fetch(GOOGLE_APPS_SCRIPT_URL, {
                         method: 'POST',
                         body: formData,
                         mode: 'no-cors' 
                     });
 
-                    // Optimistically assume success and give user feedback immediately.
                     showMessageModal(translations[currentLang].newsletterSuccess);
                     emailInput.value = '';
 
                 } catch (error) {
-                    // This catch block is unlikely to be triggered with 'no-cors' mode,
-                    // but is kept as a fallback.
                     console.error('Newsletter subscription error:', error);
                     showMessageModal(translations[currentLang].newsletterError);
                 }
