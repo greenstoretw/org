@@ -947,6 +947,7 @@
             }
         }
 
+        // ===== START: MODIFIED CODE BLOCK =====
         async function sendRecommendationEmail(shopId) {
             if (typeof emailjs === 'undefined') {
                 console.error('EmailJS not loaded');
@@ -966,29 +967,41 @@
                     return;
                 }
 
-                // Prepare email template parameters
-                const templateParams = {
-                    shop_name: shop.name[currentLang] || shop.name['zh-TW'],
-                    shop_description: shop.description[currentLang] || shop.description['zh-TW'],
-                    shop_address: shop.address[currentLang] || shop.address['zh-TW'],
-                    shop_phone: shop.phone || '未提供',
-                    shop_website: shop.website || '未提供',
-                    subscriber_emails: emails.join(','), // EmailJS will handle multiple recipients
-                };
+                // Create an array of promises, one for each email to be sent.
+                const emailPromises = emails.map(email => {
+                    const templateParams = {
+                        shop_name: shop.name[currentLang] || shop.name['zh-TW'],
+                        shop_description: shop.description[currentLang] || shop.description['zh-TW'],
+                        shop_address: shop.address[currentLang] || shop.address['zh-TW'],
+                        shop_phone: shop.phone || '未提供',
+                        shop_website: shop.website || '未提供',
+                        subscriber_email: email 
+                    };
+                    return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+                });
 
-                // Send email via EmailJS
-                const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-                
-                if (result.status === 200) {
+                // Use Promise.allSettled to wait for all emails to be sent.
+                const results = await Promise.allSettled(emailPromises);
+
+                const successfulSends = results.filter(r => r.status === 'fulfilled' && r.value.status === 200).length;
+                const failedSends = results.length - successfulSends;
+
+                if (successfulSends > 0 && failedSends === 0) {
                     showMessageModal(translations[currentLang].recommendationSent);
+                } else if (successfulSends > 0 && failedSends > 0) {
+                    showMessageModal(`成功發送 ${successfulSends} 封，失敗 ${failedSends} 封。`);
                 } else {
-                    throw new Error('EmailJS returned non-200 status');
+                    const firstError = results.find(r => r.status === 'rejected');
+                    console.error('All recommendation emails failed to send. First error:', firstError ? firstError.reason : 'Unknown error');
+                    throw new Error('All emails failed to send.');
                 }
+
             } catch (error) {
                 console.error('Error sending recommendation email:', error);
                 showMessageModal(translations[currentLang].recommendationFailed);
             }
         }
+        // ===== END: MODIFIED CODE BLOCK =====
 
         // ===== LANGUAGE FUNCTIONS =====
         function setLanguage(lang) {
