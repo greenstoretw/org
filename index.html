@@ -155,7 +155,8 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <a href="#" class="text-2xl font-bold text-gray-800" data-i18n="appName">永續商店地圖</a>
+                <!-- ✅ 修正：為標題加上 ID，以便偵測點擊 -->
+                <a href="#" id="app-title" class="text-2xl font-bold text-gray-800" data-i18n="appName">永續商店地圖</a>
             </div>
             <div class="hidden md:flex space-x-6 items-center">
                 <a href="#" class="text-gray-700 hover:text-green-600 transition" data-i18n="home">首頁</a>
@@ -1363,7 +1364,6 @@
                 filterAndDisplayShops();
             });
 
-            // ===== START: MODIFIED CODE BLOCK =====
             document.getElementById('subscribe-button').addEventListener('click', async () => {
                 const emailInput = document.getElementById('newsletter-email');
                 const email = emailInput.value.trim();
@@ -1392,9 +1392,7 @@
                     showMessageModal(translations[currentLang].newsletterError);
                 }
             });
-            // ===== END: MODIFIED CODE BLOCK =====
 
-            // Issue report form submission
             document.getElementById('issue-form').addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const issueText = document.getElementById('issue').value.trim();
@@ -1440,6 +1438,31 @@
                     } else {
                        submitButton.textContent = '送出回報';
                     }
+                }
+            });
+
+            // ✅ 修正：新增手機版開啟管理員模式的方法
+            const appTitle = document.getElementById('app-title');
+            let tapCount = 0;
+            let tapTimer;
+
+            appTitle.addEventListener('click', function(e) {
+                e.preventDefault(); // 防止點擊標題時跳轉頁面
+                tapCount++;
+                
+                // 如果已經有計時器，就清除它
+                clearTimeout(tapTimer);
+                
+                // 設定一個新的計時器，2秒後會重置點擊次數
+                tapTimer = setTimeout(() => {
+                    tapCount = 0; 
+                }, 2000);
+                
+                // 如果在2秒內點擊達到5次
+                if (tapCount >= 5) {
+                    clearTimeout(tapTimer);
+                    tapCount = 0;
+                    promptAdminLogin();
                 }
             });
         });
