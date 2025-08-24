@@ -456,11 +456,10 @@
         }
 
         // ===== LANGUAGE & DATA FUNCTIONS =====
-        function setLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem('lang', lang);
+        function applyTranslations() {
             document.querySelectorAll('[data-i18n]').forEach(element => {
                 const key = element.getAttribute('data-i18n');
+                const lang = currentLang;
                 if (translations[lang] && translations[lang][key]) {
                     const el = element;
                     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
@@ -470,6 +469,12 @@
                     }
                 }
             });
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+            applyTranslations();
             document.getElementById('language-select').value = lang;
             document.getElementById('language-select-mobile').value = lang;
             document.documentElement.lang = lang;
@@ -625,7 +630,7 @@
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', function() {
             initializeMap();
-            setLanguage(currentLang);
+            applyTranslations(); // Apply initial translations
             fetchShopData();
             fetchAndShowAnnouncement();
             
