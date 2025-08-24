@@ -12,6 +12,9 @@
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         body {
             font-family: 'Noto Sans TC', sans-serif;
             background-color: #f0f7f4;
@@ -1447,21 +1450,23 @@
             let tapTimer;
 
             appTitle.addEventListener('click', function(e) {
-                e.preventDefault(); // 防止點擊標題時跳轉頁面
+                e.preventDefault(); // Always prevent default to handle logic manually
                 tapCount++;
                 
-                // 如果已經有計時器，就清除它
                 clearTimeout(tapTimer);
                 
-                // 設定一個新的計時器，2秒後會重置點擊次數
                 tapTimer = setTimeout(() => {
-                    tapCount = 0; 
-                }, 2000);
-                
-                // 如果在2秒內點擊達到5次
-                if (tapCount >= 5) {
-                    clearTimeout(tapTimer);
-                    tapCount = 0;
+                    if (tapCount === 1) {
+                        // Single tap action: go to home/top
+                        window.location.href = '#';
+                        window.scrollTo(0, 0);
+                    }
+                    tapCount = 0; // Reset after the timer
+                }, 250); // A 250ms delay is standard for double-click detection
+
+                if (tapCount >= 20) {
+                    clearTimeout(tapTimer); // Cancel single-tap action
+                    tapCount = 0; // Reset immediately
                     promptAdminLogin();
                 }
             });
