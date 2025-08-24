@@ -511,7 +511,7 @@
                 const emailPromises = emails.map(email => {
                     const templateParams = {
                         to_name: email,
-                        shop_name: shop[`name_${currentLang.replace('-', '_')}`] || shop.name_zh_TW,
+                        shop_name: getShopDisplayName(shop),
                         shop_description: shop[`description_${currentLang.replace('-', '_')}`] || shop.description_zh_TW,
                         shop_address: shop[`address_${currentLang.replace('-', '_')}`] || shop.address_zh_TW,
                         subscriber_email: email 
@@ -553,9 +553,20 @@
             document.getElementById('language-select-mobile').value = lang;
             document.documentElement.lang = lang;
             
-            // Re-render content with new language
             currentLoadedShops = 0;
             filterAndDisplayShops();
+        }
+
+        // ✅ 修正：新增一個函式來處理多語言店名顯示
+        function getShopDisplayName(shop) {
+            const langKey = currentLang.replace('-', '_');
+            const nativeName = shop.name_zh_TW;
+            const foreignName = shop[`name_${langKey}`];
+
+            if (currentLang === 'zh-TW' || !foreignName || nativeName === foreignName) {
+                return nativeName;
+            }
+            return `${nativeName} (${foreignName})`;
         }
 
         // ===== UI & DISPLAY FUNCTIONS =====
@@ -567,9 +578,9 @@
 
                 const query = currentSearchQuery.toLowerCase();
                 const matchesSearch = query === '' ||
-                    (shop[`name_${langKey}`] || shop.name_zh_TW).toLowerCase().includes(query) ||
-                    (shop[`address_${langKey}`] || shop.address_zh_TW).toLowerCase().includes(query) ||
-                    (shop[`description_${langKey}`] || shop.description_zh_TW).toLowerCase().includes(query);
+                    (shop.name_zh_TW && shop.name_zh_TW.toLowerCase().includes(query)) ||
+                    (shop.name_en && shop.name_en.toLowerCase().includes(query)) ||
+                    (shop[`address_${langKey}`] || shop.address_zh_TW).toLowerCase().includes(query);
                 
                 return matchesCategory && matchesSearch;
             });
@@ -590,7 +601,7 @@
                         </div>
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-xl font-bold">${shop[`name_${langKey}`] || shop.name_zh_TW}</h3>
+                                <h3 class="text-xl font-bold">${getShopDisplayName(shop)}</h3>
                                 <span class="tag px-2 py-1 rounded-full text-xs">${shop[`type_${langKey}`] || shop.type_zh_TW}</span>
                             </div>
                             <p class="text-gray-600 mb-4">${shop[`description_${langKey}`] || shop.description_zh_TW}</p>
@@ -622,7 +633,7 @@
                 const marker = L.marker([shop.lat, shop.lng]);
                 marker.bindPopup(`
                     <div class="p-2">
-                        <h3 class="font-bold text-lg mb-1">${shop[`name_${langKey}`] || shop.name_zh_TW}</h3>
+                        <h3 class="font-bold text-lg mb-1">${getShopDisplayName(shop)}</h3>
                         <p class="text-sm text-gray-600 mb-2">${shop[`address_${langKey}`] || shop.address_zh_TW}</p>
                         <button onclick="showShopDetail('${shop.id}')" class="text-green-600 text-sm hover:underline">${translations[currentLang].viewDetailsBtn}</button>
                     </div>`);
@@ -656,7 +667,7 @@
             let detailHTML = `
                 <div class="shop-detail-header py-12 text-white rounded-t-xl">
                     <div class="container mx-auto px-4 text-center">
-                        <h1 class="text-3xl md:text-4xl font-bold mb-2">${shop[`name_${langKey}`] || shop.name_zh_TW}</h1>
+                        <h1 class="text-3xl md:text-4xl font-bold mb-2">${getShopDisplayName(shop)}</h1>
                         <p class="text-lg">${shop[`type_${langKey}`] || shop.type_zh_TW}</p>
                     </div>
                 </div>
