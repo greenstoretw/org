@@ -365,7 +365,7 @@
         const ADMIN_PASSWORD = 'index@1215312836';
         
         // EmailJS Configuration
-        const EMAILJS_PUBLIC_KEY = '4dCp-T-DcTtjFzpuA';
+        const EMAILJS_PUBLIC_KEY = '4dCp-T-DcTtjFzpuA'; // ✅ 修正：加回 Public Key
         const EMAILJS_SERVICE_ID = 'service_1o6wdpm';
         const EMAILJS_TEMPLATE_ID = 'template_ibn7ezs';
 
@@ -970,6 +970,7 @@
                 // Create an array of promises, one for each email to be sent.
                 const emailPromises = emails.map(email => {
                     const templateParams = {
+                        to_name: email, // ✅ Added to_name variable
                         shop_name: shop.name[currentLang] || shop.name['zh-TW'],
                         shop_description: shop.description[currentLang] || shop.description['zh-TW'],
                         shop_address: shop.address[currentLang] || shop.address['zh-TW'],
