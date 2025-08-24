@@ -362,7 +362,7 @@
         // ===== CONFIGURATION =====
         // ‼️ 重要：請將 '...' 替換成您新的 Google Apps Script 網址。
         // ‼️ IMPORTANT: Replace '...' with your new Google Apps Script URL.
-        const GOOGLE_APPS_SCRIPT_URL = '請在這裡貼上您新的 Google Apps Script 網址';
+        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwREhwZHhBDzHj5KWMlayvzmQ4jGNIbW74CYCqQYIuDdEMqgp5pNnbneoVhk4esFjx7fQ/exec';
         const ADMIN_PASSWORD = 'index@1215312836';
         
         // EmailJS Configuration
@@ -1365,11 +1365,11 @@
                     formData.append('action', 'subscribe');
                     formData.append('email', email);
 
-                    fetch(GOOGLE_APPS_SCRIPT_URL, {
-                        method: 'POST',
-                        body: formData,
-                        mode: 'no-cors' 
-                    });
+                    await fetch(GOOGLE_APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'subscribe', email })
+});
 
                     showMessageModal(translations[currentLang].newsletterSuccess);
                     emailInput.value = '';
