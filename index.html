@@ -1003,7 +1003,7 @@
             }
         }
 
-        // [FIX] Modified email sending logic to send one by one
+        // [FIX] Modified email sending logic to send one by one with delay
         async function sendRecommendationEmail(shopId) {
             if (typeof emailjs === 'undefined') {
                 console.error('EmailJS not loaded');
@@ -1013,6 +1013,9 @@
 
             const shop = shopDetails[shopId];
             if (!shop) return;
+
+            // Helper function to introduce a delay
+            const delay = ms => new Promise(res => setTimeout(res, ms));
 
             try {
                 showMessageModal(translations[currentLang].recommendationSending);
@@ -1024,20 +1027,23 @@
                 }
 
                 const templateParams = {
-                    shop_name: shop.name[currentLang] || shop.name['zh-TW'],
-                    shop_description: shop.description[currentLang] || shop.description['zh-TW'],
-                    shop_address: shop.address[currentLang] || shop.address['zh-TW'],
-                    shop_phone: shop.phone || '未提供',
-                    shop_website: shop.website || '未提供',
-                    to_email: '', // This will be replaced for each email
+                    shop_name: shop.name[currentLang] || shop.name['en'] || 'N/A',
+                    shop_address: shop.address[currentLang] || shop.address['en'] || 'N/A',
+                    shop_description: shop.description[currentLang] || shop.description['en'] || 'N/A',
+                    subscriber_email: '', // This will be replaced for each email
+                    // Add other params from your template if needed
+                    to_name: '永續生活愛好者',
+                    name: '永續商店地圖',
+                    email: 'artistworld0815@gmail.com',
                 };
 
                 let successCount = 0;
                 for (const email of emails) {
                     try {
-                        templateParams.to_email = email;
+                        templateParams.subscriber_email = email;
                         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
                         successCount++;
+                        await delay(200); // Wait 200ms before sending the next email
                     } catch (error) {
                         console.error(`Failed to send to ${email}:`, error);
                     }
