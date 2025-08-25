@@ -199,6 +199,11 @@
         </div>
     </nav>
 
+    <!-- [NEW] Announcement Bar -->
+    <div id="announcement-bar" class="hidden bg-yellow-200 border-b-2 border-yellow-300 text-yellow-800 p-3 text-center">
+        <p id="announcement-text" class="font-medium"></p>
+    </div>
+
     <section class="hero-section py-20 md:py-32 text-white">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-6" data-i18n="heroTitle">探索台灣永續商店</h1>
@@ -360,7 +365,6 @@
 
     <script>
         // ===== CONFIGURATION =====
-        // [MODIFIED] Updated Google Apps Script URL
         const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4NR0LWj6j27lB_1-LxIDthj2ihaGyEQTQ1hqUNMyX5KC7a1bQtzpZwJYQVvq-6aILUA/exec';
         const ADMIN_PASSWORD = 'index@1215312836';
         
@@ -1303,10 +1307,31 @@
             }
         }
 
+        // [NEW] Function to load and display the announcement
+        async function loadAnnouncement() {
+            try {
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL + '?action=getAnnouncement');
+                if (!response.ok) {
+                    console.error('Failed to fetch announcement:', response.status);
+                    return;
+                }
+                const data = await response.json();
+                if (data.success && data.announcement && data.announcement.trim() !== '') {
+                    const announcementBar = document.getElementById('announcement-bar');
+                    const announcementText = document.getElementById('announcement-text');
+                    announcementText.textContent = data.announcement;
+                    announcementBar.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error loading announcement:', error);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize map
             initializeMap();
-
+            // [NEW] Load announcement on page load
+            loadAnnouncement();
             // Initial language setup
             setLanguage(currentLang);
             
@@ -1349,7 +1374,7 @@
                 filterAndDisplayShops();
             });
 
-            // [MODIFIED] Newsletter subscription with robust error handling
+            // Newsletter subscription with robust error handling
             document.getElementById('subscribe-button').addEventListener('click', async () => {
                 const emailInput = document.getElementById('newsletter-email');
                 const email = emailInput.value.trim();
