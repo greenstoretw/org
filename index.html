@@ -134,7 +134,6 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
         }
-        /* Ensure map container has proper dimensions */
         #sustainability-map {
             width: 100%;
             height: 500px;
@@ -142,6 +141,31 @@
         }
         .leaflet-container {
             font-family: 'Noto Sans TC', sans-serif;
+        }
+        /* [NEW] Favorite button styles */
+        .favorite-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+        .favorite-btn svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            stroke: #4b5563;
+            stroke-width: 1.5;
+            fill: none;
+        }
+        .favorite-btn.favorited svg {
+            fill: #ef4444;
+            stroke: #ef4444;
         }
     </style>
 </head>
@@ -199,7 +223,6 @@
         </div>
     </nav>
 
-    <!-- [NEW] Announcement Bar -->
     <div id="announcement-bar" class="hidden bg-yellow-200 border-b-2 border-yellow-300 text-yellow-800 p-3 text-center">
         <p id="announcement-text" class="font-medium"></p>
     </div>
@@ -232,15 +255,17 @@
                     </div>
                     <div>
                         <h3 class="font-medium mb-3" data-i18n="filterCategoryTitle">依類別篩選</h3>
+                        <!-- [MODIFIED] Filter buttons with icons -->
                         <div class="flex flex-wrap gap-2" id="filter-buttons-container">
                             <button class="tag px-3 py-1 rounded-full text-sm active" data-i18n="filterAll" data-category="all">全部</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterApparel" data-category="apparel">服飾</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterFood" data-category="food">食品</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterCafe" data-category="cafe">咖啡廳</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterHomeGoods" data-category="homeGoods">家居用品</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterZeroWaste" data-category="zeroWaste">無包裝商店</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterSecondHand" data-category="secondHand">二手商店</button>
-                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterCreative" data-category="creative">文創</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterFavorites" data-category="favorites">❤️ 我的收藏</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterApparel" data-category="apparel">👕 服飾</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterFood" data-category="food">🍎 食品</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterCafe" data-category="cafe">☕ 咖啡廳</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterHomeGoods" data-category="homeGoods">🏠 家居用品</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterZeroWaste" data-category="zeroWaste">♻️ 無包裝商店</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterSecondHand" data-category="secondHand">🛍️ 二手商店</button>
+                            <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterCreative" data-category="creative">🎨 文創</button>
                         </div>
                     </div>
                 </div>
@@ -406,6 +431,7 @@
                 searchPlaceholder: '輸入商店名稱或地址...',
                 filterCategoryTitle: '依類別篩選',
                 filterAll: '全部',
+                filterFavorites: '我的收藏',
                 filterApparel: '服飾',
                 filterFood: '食品',
                 filterCafe: '咖啡廳',
@@ -484,6 +510,7 @@
                 searchPlaceholder: 'Enter store name or address...',
                 filterCategoryTitle: 'Filter by Category',
                 filterAll: 'All',
+                filterFavorites: 'My Favorites',
                 filterApparel: 'Apparel',
                 filterFood: 'Food',
                 filterCafe: 'Cafe',
@@ -539,6 +566,7 @@
                 recommendationSent: 'Recommendation email sent successfully to all subscribers!',
                 recommendationFailed: 'Failed to send recommendation email, please try again later.',
             },
+            // [FIX] Added missing 'filterFavorites' translations
             'fr': {
                 pageTitle: 'Carte des Magasins Durables - Accueil',
                 appName: 'Carte des Magasins Durables',
@@ -562,6 +590,7 @@
                 searchPlaceholder: 'Entrez le nom ou l\'adresse du magasin...',
                 filterCategoryTitle: 'Filtrer par Catégorie',
                 filterAll: 'Tous',
+                filterFavorites: 'Mes Favoris',
                 filterApparel: 'Vêtements',
                 filterFood: 'Alimentation',
                 filterCafe: 'Café',
@@ -621,6 +650,7 @@
                 searchPlaceholder: 'Ladennamen oder Adresse eingeben...',
                 filterCategoryTitle: 'Nach Kategorie Filtern',
                 filterAll: 'Alle',
+                filterFavorites: 'Meine Favoriten',
                 filterApparel: 'Kleidung',
                 filterFood: 'Lebensmittel',
                 filterCafe: 'Café',
@@ -680,6 +710,7 @@
                 searchPlaceholder: 'Ingrese el nombre o la dirección de la tienda...',
                 filterCategoryTitle: 'Filtrar por Categoría',
                 filterAll: 'Todas',
+                filterFavorites: 'Mis Favoritos',
                 filterApparel: 'Ropa',
                 filterFood: 'Comida',
                 filterCafe: 'Cafetería',
@@ -739,6 +770,7 @@
                 searchPlaceholder: 'Nomen vel inscriptionem tabernae inscribe...',
                 filterCategoryTitle: 'Filtra per Genus',
                 filterAll: 'Omnes',
+                filterFavorites: 'Mea Favorita',
                 filterApparel: 'Vestimenta',
                 filterFood: 'Cibus',
                 filterCafe: 'Cafea',
@@ -798,6 +830,7 @@
                 searchPlaceholder: '店舗名または住所を入力...',
                 filterCategoryTitle: 'カテゴリーで絞り込む',
                 filterAll: 'すべて',
+                filterFavorites: 'お気に入り',
                 filterApparel: 'アパレル',
                 filterFood: '食品',
                 filterCafe: 'カフェ',
@@ -910,6 +943,8 @@
         let currentLoadedShops = 0;
         let mapInstance;
         let markersGroup = L.featureGroup();
+        // [NEW] Favorite shops state
+        let favoriteShops = JSON.parse(localStorage.getItem('favoriteShops')) || [];
 
         // ===== ADMIN FUNCTIONS =====
         function promptAdminLogin() {
@@ -923,16 +958,33 @@
             }
         }
 
-        // Make admin trigger accessible globally for keyboard shortcut
         window.promptAdminLogin = promptAdminLogin;
 
-        // Admin keyboard shortcut (Ctrl+Shift+A)
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.shiftKey && e.key === 'A') {
                 e.preventDefault();
                 promptAdminLogin();
             }
         });
+
+        // ===== FAVORITES FUNCTIONS [NEW] =====
+        function toggleFavorite(shopId, btnElement) {
+            const index = favoriteShops.indexOf(shopId);
+            if (index > -1) {
+                favoriteShops.splice(index, 1);
+                btnElement.classList.remove('favorited');
+            } else {
+                favoriteShops.push(shopId);
+                btnElement.classList.add('favorited');
+            }
+            localStorage.setItem('favoriteShops', JSON.stringify(favoriteShops));
+
+            // If currently viewing favorites, re-render the list
+            if (currentFilterCategory === 'favorites') {
+                currentLoadedShops = 0;
+                filterAndDisplayShops();
+            }
+        }
 
         // ===== EMAIL FUNCTIONS =====
         async function getSubscriberEmails() {
@@ -970,17 +1022,15 @@
                     return;
                 }
 
-                // Prepare email template parameters
                 const templateParams = {
                     shop_name: shop.name[currentLang] || shop.name['zh-TW'],
                     shop_description: shop.description[currentLang] || shop.description['zh-TW'],
                     shop_address: shop.address[currentLang] || shop.address['zh-TW'],
                     shop_phone: shop.phone || '未提供',
                     shop_website: shop.website || '未提供',
-                    subscriber_emails: emails.join(','), // EmailJS will handle multiple recipients
+                    subscriber_emails: emails.join(','),
                 };
 
-                // Send email via EmailJS
                 const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
                 
                 if (result.status === 200) {
@@ -1033,23 +1083,35 @@
         }
 
         // ===== SHOP FILTERING AND DISPLAY FUNCTIONS =====
+        // [FIX] Made filtering logic more robust with fallbacks
         function getFilteredShops() {
             return shops.filter(shopData => {
                 const shop = shopDetails[shopData.id];
                 if (!shop) return false;
 
+                if (currentFilterCategory === 'favorites') {
+                    return favoriteShops.includes(shopData.id);
+                }
+
                 const categoryKey = 'filter' + currentFilterCategory.charAt(0).toUpperCase() + currentFilterCategory.slice(1);
-                const translatedCategory = translations[currentLang][categoryKey];
+                const translatedCategory = translations[currentLang] ? translations[currentLang][categoryKey] : translations['en'][categoryKey];
+
+                const shopType = shop.type[currentLang] || shop.type['en'] || '';
+                const shopTags = shop.tags[currentLang] || shop.tags['en'] || [];
                 
-                const matchesCategory = currentFilterCategory === 'all' || 
-                                        (shop.type[currentLang] && translatedCategory && shop.type[currentLang].toLowerCase().includes(translatedCategory.toLowerCase())) ||
-                                        (shop.tags[currentLang] && translatedCategory && shop.tags[currentLang].some(tag => tag.toLowerCase().includes(translatedCategory.toLowerCase())));
+                const matchesCategory = currentFilterCategory === 'all' ||
+                    (shopType && translatedCategory && shopType.toLowerCase().includes(translatedCategory.toLowerCase())) ||
+                    (shopTags.length > 0 && translatedCategory && shopTags.some(tag => tag.toLowerCase().includes(translatedCategory.toLowerCase())));
                 
+                const shopName = shop.name[currentLang] || shop.name['en'] || '';
+                const shopAddress = shop.address[currentLang] || shop.address['en'] || '';
+                const shopDescription = shop.description[currentLang] || shop.description['en'] || '';
+
                 const matchesSearch = currentSearchQuery === '' ||
-                                      (shop.name[currentLang] && shop.name[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase())) ||
-                                      (shop.address[currentLang] && shop.address[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase())) ||
-                                      (shop.description[currentLang] && shop.description[currentLang].toLowerCase().includes(currentSearchQuery.toLowerCase()));
-                
+                    shopName.toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+                    shopAddress.toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+                    shopDescription.toLowerCase().includes(currentSearchQuery.toLowerCase());
+
                 return matchesCategory && matchesSearch;
             });
         }
@@ -1065,14 +1127,20 @@
             shopsToDisplay.forEach(shopData => {
                 const shop = shopDetails[shopData.id];
                 if (!shop) return;
+                const isFavorited = favoriteShops.includes(shopData.id);
 
                 const cardHTML = `
-                    <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="shop-card bg-white rounded-xl overflow-hidden shadow-md relative">
                         <div class="h-48 bg-green-100 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
                         </div>
+                        <button class="favorite-btn ${isFavorited ? 'favorited' : ''}" onclick="toggleFavorite('${shopData.id}', this)">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                        </button>
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-2">
                                 <h3 class="text-xl font-bold">${shop.name[currentLang] || shop.name['zh-TW'] || translations[currentLang].notProvided}</h3>
@@ -1094,7 +1162,7 @@
                                     ${shop.hours[currentLang] || shop.hours['zh-TW'] || translations[currentLang].notProvided}
                                 </div>
                             </div>
-                            <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" onclick="showShopDetail('${shopData.id}')" data-i18n="viewDetailsBtn">${translations[currentLang].viewDetailsBtn}</button>
+                            <button class="block w-full text-center py-2 btn-primary rounded-lg font-medium" onclick="showShopDetail('${shopData.id}')" data-i18n="viewDetailsBtn">${translations[currentLang].viewDetailsBtn}</button>
                         </div>
                     </div>
                 `;
@@ -1134,14 +1202,12 @@
             mapInstance.addLayer(markersGroup);
         }
 
-        // Filter and display shops (main control function)
         function filterAndDisplayShops() {
             const filteredShops = getFilteredShops();
             renderShopCards(filteredShops);
             updateMapMarkers(filteredShops);
         }
 
-        // Update "Load More" button state
         function updateLoadMoreButton(totalFilteredShops) {
             const loadMoreButton = document.getElementById('load-more-button');
             if (currentLoadedShops < totalFilteredShops) {
@@ -1151,7 +1217,6 @@
             }
         }
 
-        // Show shop details
         function showShopDetail(shopId) {
             const shop = shopDetails[shopId];
             if (!shop) {
@@ -1233,7 +1298,6 @@
             document.getElementById('shop-detail-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
-            // Initialize shop detail map
             setTimeout(() => {
                 try {
                     const shopMap = L.map(`shop-map-${shopId}`, {
@@ -1241,7 +1305,9 @@
                         attributionControl: false
                     }).setView([shop.lat, shop.lng], 16);
                     
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(shopMap);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(shopMap);
                     
                     L.marker([shop.lat, shop.lng]).addTo(shopMap)
                         .bindPopup(`<b>${shop.name[currentLang] || shop.name['zh-TW']}</b>`).openPopup();
@@ -1268,7 +1334,6 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Custom message box function (replaces alert)
         function showMessageModal(message) {
             const messageModal = document.getElementById('custom-message-modal');
             document.getElementById('message-modal-text').textContent = message;
@@ -1276,7 +1341,6 @@
 
             const closeButton = document.getElementById('close-message-modal');
             
-            // Clone and replace the button to remove old event listeners
             const newCloseButton = closeButton.cloneNode(true);
             closeButton.parentNode.replaceChild(newCloseButton, closeButton);
 
@@ -1285,17 +1349,15 @@
             });
         }
 
-        // Initialize map with error handling
         function initializeMap() {
             try {
                 mapInstance = L.map('sustainability-map').setView([25.0330, 121.5654], 13);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(mapInstance);
                 
                 markersGroup.addTo(mapInstance);
                 
-                // Force map to resize and render properly
                 setTimeout(() => {
                     if (mapInstance) {
                         mapInstance.invalidateSize();
@@ -1307,7 +1369,6 @@
             }
         }
 
-        // [NEW] Function to load and display the announcement
         async function loadAnnouncement() {
             try {
                 const response = await fetch(GOOGLE_APPS_SCRIPT_URL + '?action=getAnnouncement');
@@ -1316,7 +1377,7 @@
                     return;
                 }
                 const data = await response.json();
-                if (data.success && data.announcement && data.announcement.trim() !== '') {
+                if (data.success && typeof data.announcement === 'string' && data.announcement.trim() !== '') {
                     const announcementBar = document.getElementById('announcement-bar');
                     const announcementText = document.getElementById('announcement-text');
                     announcementText.textContent = data.announcement;
@@ -1328,14 +1389,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize map
             initializeMap();
-            // [NEW] Load announcement on page load
             loadAnnouncement();
-            // Initial language setup
             setLanguage(currentLang);
             
-            // Event Listeners
             document.getElementById('menu-toggle').addEventListener('click', function() {
                 document.getElementById('mobile-menu').classList.toggle('hidden');
             });
@@ -1374,7 +1431,6 @@
                 filterAndDisplayShops();
             });
 
-            // Newsletter subscription with robust error handling
             document.getElementById('subscribe-button').addEventListener('click', async () => {
                 const emailInput = document.getElementById('newsletter-email');
                 const email = emailInput.value.trim();
@@ -1387,25 +1443,21 @@
                 try {
                     const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
                         method: 'POST',
-                        // Use text/plain to avoid potential CORS preflight issues with Apps Script
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         body: JSON.stringify({ action: 'subscribe', email })
                     });
 
                     if (!response.ok) {
-                        // If the server response is not OK, throw an error
                         throw new Error(`Server responded with status: ${response.status}`);
                     }
                     
-                    // First, get the response as text. This prevents errors if the response is not valid JSON.
                     const text = await response.text();
-                    const result = JSON.parse(text); // Now, parse the text as JSON
+                    const result = JSON.parse(text);
 
                     if (result && result.success) {
                         showMessageModal(translations[currentLang].newsletterSuccess);
                         emailInput.value = '';
                     } else {
-                        // If the script returned an error message, display it. Otherwise, show a generic error.
                         const errorMessage = result.error || translations[currentLang].newsletterError;
                         showMessageModal(errorMessage);
                     }
@@ -1415,7 +1467,6 @@
                 }
             });
 
-            // Issue report form submission
             document.getElementById('issue-form').addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const issueText = document.getElementById('issue').value.trim();
@@ -1468,6 +1519,8 @@
         // Make functions globally accessible
         window.showShopDetail = showShopDetail;
         window.sendRecommendationEmail = sendRecommendationEmail;
+        // [NEW] Make toggleFavorite globally accessible
+        window.toggleFavorite = toggleFavorite;
     </script>
 </body>
 </html>
