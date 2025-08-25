@@ -1003,6 +1003,7 @@
             }
         }
 
+        // [FIX] Modified email sending logic to send one by one
         async function sendRecommendationEmail(shopId) {
             if (typeof emailjs === 'undefined') {
                 console.error('EmailJS not loaded');
@@ -1028,16 +1029,26 @@
                     shop_address: shop.address[currentLang] || shop.address['zh-TW'],
                     shop_phone: shop.phone || '未提供',
                     shop_website: shop.website || '未提供',
-                    subscriber_emails: emails.join(','),
+                    to_email: '', // This will be replaced for each email
                 };
 
-                const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-                
-                if (result.status === 200) {
+                let successCount = 0;
+                for (const email of emails) {
+                    try {
+                        templateParams.to_email = email;
+                        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+                        successCount++;
+                    } catch (error) {
+                        console.error(`Failed to send to ${email}:`, error);
+                    }
+                }
+
+                if (successCount === emails.length) {
                     showMessageModal(translations[currentLang].recommendationSent);
                 } else {
-                    throw new Error('EmailJS returned non-200 status');
+                    showMessageModal(`成功發送 ${successCount} / ${emails.length} 封郵件。部分郵件發送失敗。`);
                 }
+
             } catch (error) {
                 console.error('Error sending recommendation email:', error);
                 showMessageModal(translations[currentLang].recommendationFailed);
@@ -1377,10 +1388,10 @@
                     return;
                 }
                 const data = await response.json();
-                if (data.success && typeof data.announcement === 'string' && data.announcement.trim() !== '') {
+                if (data.success && data.announcement && String(data.announcement).trim() !== '') {
                     const announcementBar = document.getElementById('announcement-bar');
                     const announcementText = document.getElementById('announcement-text');
-                    announcementText.textContent = data.announcement;
+                    announcementText.textContent = String(data.announcement);
                     announcementBar.classList.remove('hidden');
                 }
             } catch (error) {
