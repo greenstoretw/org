@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${website}
                 </div>
             </div>
-            <button id="close-modal" class="absolute top-2 right-2 p-2 bg-white rounded-full shadow">&times;</button>`;
+            <button id="close-modal" class="absolute top-2 right-2 p-2 bg-white rounded-full shadow text-2xl">&times;</button>`;
         document.getElementById('shop-detail-modal').classList.remove('hidden');
     };
 
@@ -267,6 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('menu-toggle').addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('hidden'));
     document.querySelectorAll('#language-select').forEach(sel => sel.addEventListener('change', e => setLanguage(e.target.value)));
+    document.getElementById('search-input').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('search-button').click(); });
     document.getElementById('search-button').addEventListener('click', () => { currentSearchQuery = document.getElementById('search-input').value.toLowerCase(); shopsDisplayed = 0; filterAndRender(); });
     document.getElementById('filter-buttons-container').addEventListener('click', e => {
         if (!e.target.matches('.tag')) return;
@@ -294,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const t = translations[currentLang] || translations['zh-TW'];
         const privacyHTML = ((policies.privacy && (policies.privacy.value ?? policies.privacy)) || '').toString().replace(/\n/g, '<br>');
         const disclaimerHTML = ((policies.disclaimer && (policies.disclaimer.value ?? policies.disclaimer)) || '').toString().replace(/\n/g, '<br>');
-        document.getElementById('policy-content').innerHTML = `<h2>${t.privacyPolicy}</h2><br>${privacyHTML}<br><br>${disclaimerHTML}<button id="close-policy" class="absolute top-2 right-2 p-2">&times;</button>`;
+        document.getElementById('policy-content').innerHTML = `<h2 class="text-2xl font-bold mb-4">${t.privacyPolicy}</h2><div class="space-y-4 text-left">${privacyHTML}<br><br>${disclaimerHTML}</div><button id="close-policy" class="absolute top-2 right-2 p-2 text-2xl">&times;</button>`;
         policyModal.classList.remove('hidden');
     });
     document.getElementById('policy-modal').addEventListener('click', e => { if (e.target.matches('#policy-modal, #close-policy')) e.currentTarget.classList.add('hidden'); });
@@ -305,3 +306,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
