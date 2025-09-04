@@ -25,6 +25,8 @@
         .favorite-btn { position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.8); border-radius: 50%; padding: 0.5rem; cursor: pointer; }
         .favorite-btn svg { width: 1.5rem; height: 1.5rem; stroke: #4b5563; stroke-width: 1.5; fill: none; }
         .favorite-btn.favorited svg { fill: #ef4444; stroke: #ef4444; }
+        /* **PATCH APPLIED**: New Toast styles */
+        #toast { transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out; }
     </style>
 </head>
 <body class="antialiased">
@@ -76,7 +78,12 @@
     
     <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center modal p-4"><div class="bg-white rounded-xl max-w-4xl w-full modal-content"><div id="shop-detail-content" class="relative"></div></div></div>
     <div id="policy-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center modal p-4"><div class="bg-white rounded-xl max-w-3xl w-full modal-content"><div id="policy-content" class="p-6 relative"></div></div></div>
-    <div id="toast" class="fixed bottom-5 right-5 bg-green-600 text-white py-2 px-4 rounded-lg shadow-lg hidden"></div>
+    
+    <!-- **PATCH APPLIED**: New Toast Element -->
+    <div id="toast" class="fixed top-0 left-1/2 -translate-x-1/2 p-4 rounded-b-lg shadow-lg text-white flex items-center gap-3 transform -translate-y-full z-[2000] opacity-0">
+        <span id="toast-icon"></span>
+        <span id="toast-message" class="font-medium"></span>
+    </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -93,11 +100,26 @@ document.addEventListener('DOMContentLoaded', () => {
         'en': { pageTitle: 'Sustainable Store Map', appName: 'Sustainable Store Map', home: 'Home', map: 'Map', shopList: 'Shops', newsletter: 'Newsletter', reportIssueNavLink: 'Report Issue', heroTitle: 'Explore Sustainable Stores', heroSubtitle: 'Find shops that support eco-friendly and fair trade practices', viewMapBtn: 'View Map', searchTitle: 'Search Stores', searchPlaceholder: 'Enter store name...', filterCategoryTitle: 'Filter by Category', filterAll: 'All', filterFavorites: '❤️ My Favorites', mapSectionTitle: 'Sustainable Store Map', shopListSectionTitle: 'Sustainable Shops', viewDetailsBtn: 'View Details', loadMoreBtn: 'Load More', newsletterTitle: 'Subscribe', newsletterSubtitle: 'Get the latest sustainable news', newsletterPlaceholder: 'Your email', subscribeBtn: 'Subscribe', reportIssueTitle: 'Report an Issue', reportIssuePlaceholder: 'Describe the issue...', reportIssueSubmitBtn: 'Submit', copyright: '© 2025 All Rights Reserved', modalAddress: 'Address', modalPhone: 'Phone', modalEmail: 'Your Email', modalWebsite: 'Website', notProvided: 'Not provided', newsletterSuccess: 'Thanks for subscribing!', newsletterError: 'Subscription failed', reportIssueSuccess: 'Thanks for the feedback!', reportIssueError: 'Submission failed', privacyPolicy: 'Privacy Policy & Disclaimer', reportIssueSelectType: 'Select type', reportIssueDataError: 'Incorrect Store Info', reportIssueFeatureRequest: 'Feature Suggestion', reportIssueBugReport: 'System Bug', reportIssueOther: 'Other' }
     };
 
-    const showToast = (msg) => {
-        const el = document.getElementById('toast');
-        el.textContent = msg;
-        el.classList.remove('hidden');
-        setTimeout(() => el.classList.add('hidden'), 3000);
+    // **PATCH APPLIED**: New Toast function
+    const showToast = (message, type = 'success') => {
+        const toast = document.getElementById('toast');
+        const toastIcon = document.getElementById('toast-icon');
+        const toastMessage = document.getElementById('toast-message');
+
+        toastMessage.textContent = message;
+        if (type === 'success') {
+            toast.className = toast.className.replace(/bg-\w+-\d+/g, 'bg-green-600');
+            toastIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+        } else { // error
+            toast.className = toast.className.replace(/bg-\w+-\d+/g, 'bg-red-600');
+            toastIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
+        }
+
+        toast.classList.remove('-translate-y-full', 'opacity-0');
+        
+        setTimeout(() => {
+            toast.classList.add('-translate-y-full', 'opacity-0');
+        }, 3000);
     };
 
     const setLanguage = (lang) => {
@@ -120,11 +142,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' }
             });
 
-            // **PATCH APPLIED**: Robust response handling
             const result = await response.json();
             const ok = result && (result.status === 'success' || result.success === true);
             if (!ok) throw new Error((result && result.message) || 'Unknown backend error');
-            const data = result.data || result; // Fallback if data is not nested
+            const data = result.data || result;
 
             allShops = data.shops || [];
             policies = data.policies || {};
@@ -137,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
             filterAndRender();
         } catch (error) {
             console.error("Data fetch failed:", error);
-            showToast('資料載入失敗，請檢查網路連線或稍後再試。');
+            showToast('資料載入失敗，請稍後再試。', 'error');
         }
     }
 
@@ -161,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const filtered = allShops.filter(shop => {
             const name = shop[`name_${currentLang}`] || shop['name_zh-TW'] || '';
             const type = shop[`type_${currentLang}`] || shop['type_zh-TW'] || '';
-            // **PATCH APPLIED**: Use String() for ID comparison
             const categoryMatch = !currentFilterCategory || (currentFilterCategory === 'favorites' ? favoriteShops.includes(String(shop.id)) : type === currentFilterCategory);
             const searchMatch = !currentSearchQuery || name.toLowerCase().includes(currentSearchQuery.toLowerCase());
             return categoryMatch && searchMatch;
@@ -172,7 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = shop[`name_${currentLang}`] || shop['name_zh-TW'];
             const type = shop[`type_${currentLang}`] || shop['type_zh-TW'];
             const desc = shop[`description_${currentLang}`] || shop['description_zh-TW'];
-            // **PATCH APPLIED**: Use String() for ID comparison
             const isFavorited = favoriteShops.includes(String(shop.id));
             container.innerHTML += `<div class="shop-card bg-white rounded-xl shadow-md"><div class="h-48 bg-green-100 flex items-center justify-center relative"><svg class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg><button class="favorite-btn ${isFavorited ? 'favorited' : ''}" data-id="${shop.id}"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button></div><div class="p-6"><div><h3 class="text-xl font-bold">${name}</h3><p class="text-sm text-gray-500">${type}</p><p class="text-gray-600 my-2 h-20 overflow-hidden">${desc}</p></div><button class="btn-primary py-2 rounded-lg" data-id="${shop.id}" data-action="details">${translations[currentLang].viewDetailsBtn}</button></div></div>`;
         });
@@ -216,7 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const favBtn = e.target.closest('.favorite-btn');
         if (detailsBtn) showShopDetail(detailsBtn.dataset.id);
         if (favBtn) {
-            // **PATCH APPLIED**: Use String() for ID comparison
             const shopId = String(favBtn.dataset.id);
             const index = favoriteShops.indexOf(shopId);
             if (index > -1) favoriteShops.splice(index, 1);
@@ -250,15 +268,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, payload }) });
             const result = await res.json();
             if (result.status !== 'success') throw new Error(result.message);
-            showToast(translations[currentLang][successKey]);
+            showToast(translations[currentLang][successKey], 'success');
             form.reset();
-        } catch (err) { showToast(translations[currentLang][errorKey] + `: ${err.message}`); }
+        } catch (err) { showToast(translations[currentLang][errorKey] + `: ${err.message}`, 'error'); }
     };
     document.getElementById('newsletter-form').addEventListener('submit', e => { e.preventDefault(); submitApiForm(e.target, 'subscribe', 'newsletterSuccess', 'newsletterError'); });
     document.getElementById('issue-form').addEventListener('submit', e => { e.preventDefault(); submitApiForm(e.target, 'submitFeedback', 'reportIssueSuccess', 'reportIssueError'); });
     document.getElementById('showPolicyFooter').addEventListener('click', () => {
         const policyModal = document.getElementById('policy-modal');
-        // **PATCH APPLIED**: Robust policy value handling
         const privacyHTML = ((policies.privacy && (policies.privacy.value ?? policies.privacy)) || '').toString().replace(/\n/g, '<br>');
         const disclaimerHTML = ((policies.disclaimer && (policies.disclaimer.value ?? policies.disclaimer)) || '').toString().replace(/\n/g, '<br>');
         document.getElementById('policy-content').innerHTML = `<h2>${translations[currentLang].privacyPolicy}</h2><br>${privacyHTML}<br><br>${disclaimerHTML}<button id="close-policy" class="absolute top-2 right-2 p-2">&times;</button>`;
