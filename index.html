@@ -9,119 +9,156 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        /* ... same styles as before ... */
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f7f4;
+        }
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        .tag {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .tag.active, .tag:hover {
+            background-color: #16a34a;
+            color: white;
+        }
+        .shop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .modal-content {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .favorite-btn.favorited svg {
+            fill: #ef4444;
+            stroke: #ef4444;
+        }
+        .spinner {
+            border-top-color: #10B981;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* [FIX] Explicitly define the flex behavior for the modal when it's active */
+        #shop-detail-modal {
+            display: none; /* Hidden by default */
+        }
+        #shop-detail-modal.flex {
+            display: flex; /* Use flex to enable centering */
+        }
     </style>
 </head>
-<body class="antialiased">
+<body class="antialiased text-gray-800">
+
     <!-- Fullscreen Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center">
-        <!-- ... spinner ... -->
+    <div id="loading-overlay" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center transition-opacity duration-300">
+        <div class="spinner h-12 w-12 border-4 border-gray-200 rounded-full"></div>
+        <p class="mt-4 text-gray-600" data-i18n="loading">載入中...</p>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-0 left-1/2 -translate-x-1/2 -translate-y-full transition-transform duration-300 z-[9998] w-full max-w-sm">
+        <div id="toast-content" class="flex items-center gap-4 p-4 mt-4 mx-2 rounded-lg shadow-lg">
+            <div id="toast-icon"></div>
+            <p id="toast-message" class="font-medium"></p>
+        </div>
     </div>
     
-    <!-- Main content structure is the same -->
-    <nav>...</nav>
-    <section class="hero-section">...</section>
-    <section class="search-section">
-        <!-- Filter buttons container will be populated dynamically -->
-        <div class="flex flex-wrap gap-2" id="filter-buttons-container">
-             <button class="tag px-3 py-1 rounded-full text-sm active" data-category="" data-i18n="filterAll"></button>
-             <button class="tag px-3 py-1 rounded-full text-sm" data-category="favorites" data-i18n="filterFavorites"></button>
-             <!-- Dynamic tags will be inserted here -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+             <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <a href="#" class="text-2xl font-bold text-gray-800" data-i18n="appName">永續商店地圖</a>
+            </div>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#map" class="text-gray-700 hover:text-green-600 transition" data-i18n="map">地圖</a>
+                <a href="#shops" class="text-gray-700 hover:text-green-600 transition" data-i18n="shopList">商店列表</a>
+                <a href="#newsletter" class="text-gray-700 hover:text-green-600 transition" data-i18n="newsletter">訂閱電子報</a>
+                <a href="#report-issue" class="text-gray-700 hover:text-green-600 transition" data-i18n="reportIssueNavLink">問題回報</a>
+                <a href="#policies" class="text-gray-700 hover:text-green-600 transition" data-i18n="policiesNavLink">政策聲明</a>
+                 <select id="language-select" class="bg-gray-100 text-sm px-3 py-1 rounded-full hover:bg-gray-200 transition cursor-pointer border">
+                    <option value="zh-TW">繁體中文</option><option value="en">English</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="es">Español</option><option value="ja">日本語</option><option value="la">Latin</option>
+                </select>
+            </div>
+            <div class="md:hidden flex items-center">
+                <button id="menu-toggle" class="text-gray-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg></button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-4 py-2 bg-white"></div>
+    </nav>
+    <div id="announcement-bar" class="hidden bg-yellow-100 border-b-2 border-yellow-200 text-yellow-800 p-3 text-center text-sm"><p id="announcement-text" class="font-medium"></p></div>
+    <section class="hero-section py-20 md:py-32 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6" data-i18n="heroTitle">探索台灣永續商店</h1>
+            <p class="text-xl max-w-2xl mx-auto mb-8" data-i18n="heroSubtitle">找到支持環保、公平貿易和永續發展的商店，一起為地球盡一份心力</p>
         </div>
     </section>
-    <section id="map">...</section>
-    <section id="shops">...</section>
-    <!-- ... other sections ... -->
+    <section class="py-12 bg-white relative -mt-16 z-20 mx-4 md:mx-auto max-w-5xl rounded-xl shadow-lg">
+        <div class="container mx-auto px-6">
+            <h2 class="text-2xl font-bold mb-4" data-i18n="searchTitle">搜尋永續商店</h2>
+            <div class="flex mb-4"><input type="text" id="search-input" class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500" data-i18n="searchPlaceholder"><button id="search-button" class="bg-green-600 text-white px-6 py-3 rounded-r-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></button></div>
+            <div>
+                <h3 class="font-medium mb-3" data-i18n="filterCategoryTitle">依類別篩選</h3>
+                <div class="flex flex-wrap gap-2" id="filter-buttons-container">
+                    <button class="tag bg-green-600 text-white px-3 py-1 rounded-full text-sm" data-category="" data-i18n="filterAll"></button>
+                    <button class="tag bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm" data-category="favorites" data-i18n="filterFavorites"></button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="map" class="py-12 bg-green-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8" data-i18n="mapSectionTitle">永續商店地圖</h2>
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden h-96 md:h-[500px] w-full flex items-center justify-center text-gray-500" id="map-placeholder">地圖載入中...</div>
+            <div id="sustainability-map" class="h-96 md:h-[500px] w-full rounded-xl shadow-lg hidden"></div>
+        </div>
+    </section>
+    <section id="shops" class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8" data-i18n="shopListSectionTitle">永續商店列表</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="shop-cards-container"></div>
+            <div class="text-center mt-8"><button id="load-more-button" class="bg-green-600 text-white px-8 py-3 rounded-lg font-medium hidden" data-i18n="loadMoreBtn"></button></div>
+        </div>
+    </section>
+    <section id="newsletter" class="py-12 bg-green-700 text-white">
+        <form id="newsletter-form" class="container mx-auto px-4 max-w-2xl text-center">
+            <h2 class="text-3xl font-bold mb-4" data-i18n="newsletterTitle">訂閱永續生活電子報</h2>
+            <p class="mb-6" data-i18n="newsletterSubtitle">獲取最新的永續商店資訊、環保生活技巧和特別優惠</p>
+            <div class="flex flex-col md:flex-row gap-2">
+                <input type="email" name="email" class="flex-1 px-4 py-3 rounded-lg text-gray-800 focus:outline-none" data-i18n="newsletterPlaceholder" required>
+                <button type="submit" class="bg-white text-green-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition" data-i18n="subscribeBtn"></button>
+            </div>
+        </form>
+    </section>
+    <section id="report-issue" class="py-12 bg-yellow-50">
+        <div class="container mx-auto px-4 max-w-2xl bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-3xl font-bold text-center mb-6" data-i18n="reportIssueTitle">問題回報</h2>
+            <form id="issue-form" class="space-y-4">
+                <div><label class="block text-sm font-medium" data-i18n="reportIssueEmailLabel">您的電子郵件</label><input type="email" name="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" data-i18n="reportIssueEmailPlaceholder" required></div>
+                <div><label class="block text-sm font-medium" data-i18n="reportIssueTypeLabel">問題類型</label><select name="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required><option value="info_error" data-i18n="reportTypeInfoError">店家資訊錯誤</option><option value="bug" data-i18n="reportTypeBug">網站功能問題</option><option value="suggestion" data-i18n="reportTypeSuggestion">功能建議</option><option value="other" data-i18n="reportTypeOther">其他</option></select></div>
+                <div><label class="block text-sm font-medium" data-i18n="reportIssueLabel">請描述您遇到的問題</label><textarea name="message" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" data-i18n="reportIssuePlaceholder" required></textarea></div>
+                <div class="text-center pt-2"><button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg font-medium" data-i18n="reportIssueSubmitBtn"></button></div>
+            </form>
+        </div>
+    </section>
+     <section id="policies" class="py-12 bg-gray-100">
+        <div id="policy-content" class="container mx-auto px-4 max-w-4xl text-sm text-gray-600 space-y-6"></div>
+    </section>
+    <footer class="bg-gray-800 text-white py-10"></footer>
     
-    <!-- Modals and Toast -->
-    <!-- ... all modals are the same ... -->
-
+    <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-60 z-[1000] items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-6xl w-full mx-auto modal-content">
+            <div id="shop-detail-content" class="relative"></div>
+        </div>
+    </div>
+    
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // ... initial variables are the same ...
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyJ76tpxJ2eeRRqcv3qUqx3Z8nWLqrNsAIxgMR5vnkfmJOXulhhu1Av2T9w4AzDLg83gA/exec';
-    let allShops = [], policies = {}; // etc.
-
-    // ... translations object remains the same ...
-    const translations = { 'zh-TW': { /* ... */ }, 'en': { /* ... */ } };
-
-    // ... showToast, setLanguage are the same ...
-    
-    async function fetchPublicData() {
-        try {
-            // ... same fetch logic ...
-            const result = await response.json();
-            // ... same result handling ...
-            allShops = result.data.shops || []; // Now shops will contain a `tags` array of objects
-            policies = result.data.policies || {};
-            // ...
-            setLanguage(currentLang); // This will now call the updated populateFilters
-        } catch (error) {
-            // ... error handling ...
-        } finally {
-            document.getElementById('loading-overlay').style.display = 'none';
-        }
-    }
-
-    const populateFilters = () => {
-        const container = document.getElementById('filter-buttons-container');
-        // Clear only dynamic tags
-        container.querySelectorAll('.tag:not([data-category=""]):not([data-category="favorites"])').forEach(btn => btn.remove());
-        
-        // Collect all unique tags from all shops
-        const allTagsInUse = new Map();
-        allShops.forEach(shop => {
-            (shop.tags || []).forEach(tag => {
-                if (!allTagsInUse.has(tag.id)) {
-                    allTagsInUse.set(tag.id, tag);
-                }
-            });
-        });
-
-        // Create buttons from the unique tags
-        allTagsInUse.forEach(tag => {
-            const tagName = tag[`name_${currentLang}`] || tag['name_zh-TW'];
-            const btn = document.createElement('button');
-            btn.className = 'tag px-3 py-1 rounded-full text-sm';
-            btn.dataset.category = tagName; // Filter by the tag name in the current language
-            btn.textContent = tagName;
-            container.appendChild(btn);
-        });
-    };
-
-    const filterAndRender = () => {
-        // ... container setup ...
-        const filtered = allShops.filter(shop => {
-            const name = (shop[`name_${currentLang}`] || shop['name_zh-TW'] || '').toLowerCase();
-            const shopTags = (shop.tags || []).map(t => t[`name_${currentLang}`] || t['name_zh-TW']);
-            
-            // Updated category matching logic
-            const categoryMatch = !currentFilterCategory || 
-                                  (currentFilterCategory === 'favorites' ? favoriteShops.includes(String(shop.id)) : shopTags.includes(currentFilterCategory));
-            
-            // Updated search logic to include tags
-            const searchMatch = !currentSearchQuery || 
-                                name.includes(currentSearchQuery) || 
-                                shopTags.some(t => t.toLowerCase().includes(currentSearchQuery));
-            
-            return categoryMatch && searchMatch;
-        });
-
-        // ... rendering logic for toDisplay is largely the same, but the `type` can now be derived from tags ...
-        // For simplicity, I'll display the first tag as the "type" on the card.
-        toDisplay.forEach(shop => {
-            // ...
-            const type = (shop.tags && shop.tags[0]) ? (shop.tags[0][`name_${currentLang}`] || shop.tags[0]['name_zh-TW']) : '';
-            // The rest of the card HTML generation is the same
-        });
-        // ...
-    };
-    
-    // ... all other functions (updateMapMarkers, showShopDetail, initMap, event listeners) remain largely the same ...
-    
-    initMap();
-    fetchPublicData();
-});
+// JavaScript will be placed here
 </script>
 </body>
 </html>
