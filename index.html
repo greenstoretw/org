@@ -123,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const API_URL = 'https://script.google.com/macros/s/AKfycbwgQoUrk2fspuJTc0aPJHzJe_xHhIB9s50qcJQj5xLC4wujhhqW2TBG2Q07hIjcHEMqEg/exec';
     const LANGUAGES = ['zh-TW', 'en', 'fr', 'de', 'es', 'ja', 'la'];
     
-    // Global state
     let allShops = [], allTags = [], policies = {}, announcements = {};
     let currentLang = localStorage.getItem('lang') || 'zh-TW';
     let favoriteShops = JSON.parse(localStorage.getItem('favoriteShops')) || [];
@@ -133,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const shopsPerPage = 6;
     let renderedShopCount = 0;
 
-    // UI Elements
     const ui = {
         loadingOverlay: document.getElementById('loading-overlay'),
         toast: document.getElementById('toast'),
@@ -159,16 +157,25 @@ document.addEventListener('DOMContentLoaded', () => {
         menuToggle: document.getElementById('menu-toggle')
     };
     
-    // Static Translations
-    const staticTranslations = { /* ... Full static translations object ... */ };
+    const staticTranslations = {"zh-TW":{"pageTitle":"永續商店地圖","appName":"永續商店地圖","map":"地圖","shopList":"商店列表","newsletter":"訂閱電子報","reportIssueNavLink":"問題回報","policiesNavLink":"政策聲明","heroTitle":"探索台灣永續商店","heroSubtitle":"找到支持環保、公平貿易和永續發展的商店，一起為地球盡一份心力","searchTitle":"搜尋永續商店","searchPlaceholder":"輸入商店名稱、地址或標籤...","filterCategoryTitle":"依類別篩選","filterAll":"全部","filterFavorites":"❤️ 我的收藏","mapSectionTitle":"永續商店地圖","shopListSectionTitle":"永續商店列表","loadMoreBtn":"載入更多","newsletterTitle":"訂閱永續生活電子報","newsletterSubtitle":"獲取最新的永續商店資訊、環保生活技巧和特別優惠","newsletterPlaceholder":"您的電子郵件","subscribeBtn":"訂閱","reportIssueTitle":"問題回報","reportIssueEmailLabel":"您的電子郵件","reportIssueEmailPlaceholder":"請輸入您的 Email","reportIssueTypeLabel":"問題類型","reportTypeInfoError":"店家資訊錯誤","reportTypeBug":"網站功能問題","reportTypeSuggestion":"功能建議","reportTypeOther":"其他","reportIssueLabel":"請描述您遇到的問題","reportIssuePlaceholder":"請詳細說明...","reportIssueSubmitBtn":"送出回報","privacyPolicyTitle":"隱私權政策","disclaimerTitle":"免責聲明","loading":"載入中..."},"en":{"pageTitle":"Sustainable Store Map","appName":"Sustainable Store Map","map":"Map","shopList":"Shop List","newsletter":"Newsletter","reportIssueNavLink":"Report Issue","policiesNavLink":"Policies","heroTitle":"Explore Taiwan's Sustainable Stores","heroSubtitle":"Find stores that support environmental protection, fair trade, and sustainable development.","searchTitle":"Search Sustainable Stores","searchPlaceholder":"Enter store name, address, or tag...","filterCategoryTitle":"Filter by Category","filterAll":"All","filterFavorites":"❤️ My Favorites","mapSectionTitle":"Sustainable Store Map","shopListSectionTitle":"Sustainable Shop List","loadMoreBtn":"Load More","newsletterTitle":"Subscribe to Sustainable Living Newsletter","newsletterSubtitle":"Get the latest info on sustainable stores, eco-friendly tips, and special offers.","newsletterPlaceholder":"Your email address","subscribeBtn":"Subscribe","reportIssueTitle":"Report an Issue","reportIssueEmailLabel":"Your Email","reportIssueEmailPlaceholder":"Enter your email","reportIssueTypeLabel":"Type of Issue","reportTypeInfoError":"Incorrect Store Info","reportTypeBug":"Website Bug","reportTypeSuggestion":"Suggestion","reportTypeOther":"Other","reportIssueLabel":"Please describe the issue","reportIssuePlaceholder":"Please provide details...","reportIssueSubmitBtn":"Submit Report","privacyPolicyTitle":"Privacy Policy","disclaimerTitle":"Disclaimer","loading":"Loading..."}};
 
-    // --- CORE FUNCTIONS ---
     const getI18nValue = (dataObject, baseKey, lang, fallbackLang = 'zh-TW') => {
         if (!dataObject) return '';
         return dataObject[`${baseKey}_${lang}`] || dataObject[`${baseKey}_${fallbackLang}`] || '';
     };
 
-    const showToast = (message, isSuccess = true) => { /* ... Implementation ... */ };
+    const showToast = (message, isSuccess = true) => {
+        ui.toastMessage.textContent = message;
+        if (isSuccess) {
+            ui.toastContent.className = 'flex items-center gap-4 p-4 mt-4 mx-2 rounded-lg shadow-lg bg-green-500 text-white';
+            ui.toastIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+        } else {
+            ui.toastContent.className = 'flex items-center gap-4 p-4 mt-4 mx-2 rounded-lg shadow-lg bg-red-500 text-white';
+            ui.toastIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+        }
+        ui.toast.style.transform = 'translate(-50%, 0)';
+        setTimeout(() => { ui.toast.style.transform = 'translate(-50%, -100%)'; }, 3000);
+    };
 
     async function apiRequest(action, payload) {
         try {
@@ -188,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // --- RENDER FUNCTIONS ---
     const setLanguage = (lang) => {
         currentLang = lang;
         localStorage.setItem('lang', lang);
@@ -196,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.dataset.i18n;
-            const translation = staticTranslations[lang][key] || staticTranslations['zh-TW'][key];
+            const translation = staticTranslations[lang]?.[key] || staticTranslations['zh-TW']?.[key] || `[${key}]`;
             if (el.placeholder) el.placeholder = translation; else el.textContent = translation;
         });
         
@@ -215,19 +221,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const privacy = policies.privacy ? (policies.privacy[currentLang] || policies.privacy['zh-TW']) : '';
         const disclaimer = policies.disclaimer ? (policies.disclaimer[currentLang] || policies.disclaimer['zh-TW']) : '';
+        const privacyTitle = staticTranslations[currentLang]?.privacyPolicyTitle || staticTranslations['zh-TW'].privacyPolicyTitle;
+        const disclaimerTitle = staticTranslations[currentLang]?.disclaimerTitle || staticTranslations['zh-TW'].disclaimerTitle;
         ui.policyContent.innerHTML = `
-            <h3 class="text-2xl font-bold text-center">${staticTranslations[currentLang].privacyPolicyTitle}</h3><div>${(privacy || '').replace(/\n/g, '<br>')}</div>
-            <h3 class="text-2xl font-bold text-center mt-8">${staticTranslations[currentLang].disclaimerTitle}</h3><div>${(disclaimer || '').replace(/\n/g, '<br>')}</div>`;
+            <h3 class="text-2xl font-bold text-center">${privacyTitle}</h3><div>${(privacy || '').replace(/\n/g, '<br>')}</div>
+            <h3 class="text-2xl font-bold text-center mt-8">${disclaimerTitle}</h3><div>${(disclaimer || '').replace(/\n/g, '<br>')}</div>`;
+        
+        ui.footer.innerHTML = `<div class="container mx-auto px-4 text-center text-gray-400 text-sm"><p>© ${new Date().getFullYear()} ${staticTranslations[currentLang].appName} - All Rights Reserved</p></div>`;
 
         renderFilterButtons();
     };
     
     const renderFilterButtons = () => {
-        const staticButtons = ui.filterButtonsContainer.querySelectorAll('button[data-category]');
+        const staticButtons = Array.from(ui.filterButtonsContainer.querySelectorAll('button[data-category]'));
         ui.filterButtonsContainer.innerHTML = '';
         staticButtons.forEach(btn => ui.filterButtonsContainer.appendChild(btn));
-
-        const uniqueTags = [...new Map(allShops.flatMap(s => s.tags).map(item => [item.id, item])).values()];
+        
+        const uniqueTags = [...new Map(allShops.flatMap(s => s.tags || []).filter(Boolean).map(item => [item.id, item])).values()];
         uniqueTags.forEach(tag => {
             const button = document.createElement('button');
             button.className = 'tag bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm';
@@ -237,9 +247,149 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // ... (rest of the complete, final JavaScript for map.html)
+    const filterAndDisplayShops = (reset = false) => {
+        if (reset) renderedShopCount = 0;
+        
+        const filtered = allShops.filter(shop => {
+            const matchesCategory = currentFilter.category === '' || (currentFilter.category === 'favorites' ? favoriteShops.includes(String(shop.id)) : false);
+            const matchesTag = currentFilter.tagId === '' || (shop.tags || []).some(t => String(t.id) === String(currentFilter.tagId));
+            const matchesQuery = currentFilter.query === '' || 
+                getI18nValue(shop, 'name', currentLang).toLowerCase().includes(currentFilter.query) ||
+                getI18nValue(shop, 'address', currentLang).toLowerCase().includes(currentFilter.query) ||
+                (shop.tags || []).some(t => getI18nValue(t, 'name', currentLang).toLowerCase().includes(currentFilter.query));
+            return (matchesCategory || matchesTag) && matchesQuery;
+        });
 
-    // --- INITIALIZATION ---
+        renderShopCards(filtered);
+        updateMapMarkers(filtered);
+    };
+
+    const renderShopCards = (filteredShops) => {
+        if (renderedShopCount === 0) ui.shopCardsContainer.innerHTML = '';
+        
+        const shopsToRender = filteredShops.slice(renderedShopCount, renderedShopCount + shopsPerPage);
+        
+        shopsToRender.forEach(shop => {
+            const card = document.createElement('div');
+            card.className = 'shop-card bg-white rounded-xl overflow-hidden shadow-md relative flex flex-col';
+            const isFavorited = favoriteShops.includes(String(shop.id));
+            card.innerHTML = `
+                <div class="h-48 bg-green-100 flex items-center justify-center text-green-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg></div>
+                <button class="favorite-btn absolute top-4 right-4 bg-white/80 rounded-full p-2 ${isFavorited ? 'favorited' : ''}" data-shop-id="${shop.id}">
+                    <svg class="w-6 h-6 stroke-gray-700 stroke-2 fill-none" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                </button>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h3 class="text-xl font-bold mb-2">${getI18nValue(shop, 'name', currentLang)}</h3>
+                    <p class="text-gray-600 mb-4 text-sm flex-grow">${getI18nValue(shop, 'description', currentLang)}</p>
+                    <button class="block w-full text-center py-2 bg-green-600 text-white rounded-lg font-medium mt-4" data-shop-id="${shop.id}">查看詳情</button>
+                </div>`;
+            card.querySelector('button[data-shop-id]').addEventListener('click', () => showShopDetail(shop.id));
+            card.querySelector('.favorite-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleFavorite(shop.id, e.currentTarget);
+            });
+            ui.shopCardsContainer.appendChild(card);
+        });
+        
+        renderedShopCount += shopsToRender.length;
+        ui.loadMoreButton.classList.toggle('hidden', renderedShopCount >= filteredShops.length);
+        
+        if (filteredShops.length === 0 && renderedShopCount === 0) {
+            ui.shopCardsContainer.innerHTML = `<p class="text-gray-500 md:col-span-2 lg:col-span-3 text-center">找不到符合條件的店家。</p>`;
+        }
+    };
+    
+    const updateMapMarkers = (filteredShops) => {
+        if (!mapInstance) return;
+        markersGroup.clearLayers();
+        filteredShops.forEach(shop => {
+            if (shop.lat && shop.lng) {
+                const marker = L.marker([shop.lat, shop.lng]);
+                marker.bindPopup(`<b>${getI18nValue(shop, 'name', currentLang)}</b><br><button class="text-green-600" onclick="document.getElementById('app').dispatchEvent(new CustomEvent('show-shop', {detail: '${shop.id}'}))">查看詳情</button>`);
+                markersGroup.addLayer(marker);
+            }
+        });
+        if (filteredShops.length > 0) mapInstance.fitBounds(markersGroup.getBounds().pad(0.1));
+    };
+
+    const toggleFavorite = (shopId, btnElement) => {
+        const id = String(shopId);
+        const index = favoriteShops.indexOf(id);
+        if (index > -1) favoriteShops.splice(index, 1);
+        else favoriteShops.push(id);
+        localStorage.setItem('favoriteShops', JSON.stringify(favoriteShops));
+        btnElement?.classList.toggle('favorited');
+        if (currentFilter.category === 'favorites') filterAndDisplayShops(true);
+    };
+
+    const showShopDetail = (shopId) => {
+        const shop = allShops.find(s => String(s.id) === String(shopId));
+        if (!shop) return;
+        const tagsHtml = (shop.tags || []).map(tag => `<span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">${getI18nValue(tag, 'name', currentLang)}</span>`).join('');
+        ui.shopDetailContent.innerHTML = `<div class="p-8 space-y-6">
+            <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">&times;</button>
+            <h2 class="text-3xl font-bold">${getI18nValue(shop, 'name', currentLang)}</h2>
+            <p class="text-gray-600">${getI18nValue(shop, 'longDescription', currentLang) || getI18nValue(shop, 'description', currentLang)}</p>
+            <div>${tagsHtml}</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
+                <div class="space-y-4">
+                    <h3 class="font-semibold">商店資訊</h3>
+                    <p><b>地址:</b> ${getI18nValue(shop, 'address', currentLang)}</p>
+                    <p><b>電話:</b> ${shop.phone || '未提供'}</p>
+                    <p><b>網站:</b> ${shop.website ? `<a href="${shop.website}" target="_blank" class="text-green-600">${shop.website}</a>` : '未提供'}</p>
+                </div>
+                <div id="detail-map" class="h-64 rounded-lg bg-gray-200"></div>
+            </div>
+        </div>`;
+        ui.shopDetailModal.querySelector('button').onclick = closeModal;
+        ui.shopDetailModal.classList.add('flex');
+        setTimeout(() => {
+            const detailMap = L.map('detail-map').setView([shop.lat, shop.lng], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(detailMap);
+            L.marker([shop.lat, shop.lng]).addTo(detailMap);
+        }, 100);
+    };
+    const closeModal = () => ui.shopDetailModal.classList.remove('flex');
+
+    const initializeMap = () => {
+        mapInstance = L.map(ui.sustainabilityMap).setView([25.0330, 121.5654], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
+        markersGroup.addTo(mapInstance);
+    };
+
+    // Event Listeners
+    ui.languageSelect.addEventListener('change', (e) => setLanguage(e.target.value));
+    ui.searchButton.addEventListener('click', () => {
+        currentFilter.query = ui.searchInput.value.toLowerCase().trim();
+        filterAndDisplayShops(true);
+    });
+    ui.searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') ui.searchButton.click(); });
+    ui.loadMoreButton.addEventListener('click', () => filterAndDisplayShops());
+    ui.filterButtonsContainer.addEventListener('click', (e) => {
+        const target = e.target.closest('button');
+        if (!target) return;
+        ui.filterButtonsContainer.querySelectorAll('button').forEach(btn => btn.className = 'tag bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm');
+        target.className = 'tag bg-green-600 text-white px-3 py-1 rounded-full text-sm';
+        currentFilter.category = target.dataset.category || '';
+        currentFilter.tagId = target.dataset.tagId || '';
+        filterAndDisplayShops(true);
+    });
+    ui.newsletterForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = new FormData(e.target).get('email');
+        await apiRequest('subscribe', { email });
+        showToast(staticTranslations[currentLang].newsletterSuccess);
+        e.target.reset();
+    });
+    ui.issueForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = Object.fromEntries(new FormData(e.target));
+        await apiRequest('submitFeedback', payload);
+        showToast(staticTranslations[currentLang].reportIssueSuccessMsg);
+        e.target.reset();
+    });
+    document.getElementById('app').addEventListener('show-shop', (e) => showShopDetail(e.detail));
+
     async function initialize() {
         try {
             const data = await apiRequest('getPublicData');
@@ -247,9 +397,8 @@ document.addEventListener('DOMContentLoaded', () => {
             allTags = data.tags || [];
             policies = data.policies || {};
             announcements = data.announcements || {};
-            
             initializeMap();
-            setLanguage(currentLang); // This will trigger the first render
+            setLanguage(currentLang);
         } catch (error) {
             ui.loadingOverlay.innerHTML = `<p class="text-red-500">資料載入失敗，請稍後重試。</p>`;
         } finally {
@@ -257,7 +406,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => ui.loadingOverlay.classList.add('hidden'), 300);
         }
     }
-
     initialize();
 });
 </script>
