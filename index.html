@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     document.getElementById('menu-toggle').addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('hidden'));
-    document.querySelectorAll('#language-select').forEach(sel => sel.addEventListener('change', e => setLanguage(e.target.value)));
+    document.querySelectorAll('#language-select, #language-select-mobile').forEach(sel => sel.addEventListener('change', e => setLanguage(e.target.value)));
     document.getElementById('search-input').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('search-button').click(); });
     document.getElementById('search-button').addEventListener('click', () => { currentSearchQuery = document.getElementById('search-input').value.toLowerCase(); shopsDisplayed = 0; filterAndRender(); });
     document.getElementById('filter-buttons-container').addEventListener('click', e => {
