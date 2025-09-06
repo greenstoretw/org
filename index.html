@@ -1,325 +1,544 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="pageTitle">永續商店地圖 - 首頁</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <!-- Security headers for static hosting (advisory via meta) -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://unpkg.com https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.gstatic.com https://*.tile.openstreetmap.org https://images.unsplash.com https://cdn.jsdelivr.net https://script.google.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net 'unsafe-eval'; connect-src https://script.google.com https://script.googleusercontent.com;">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理後台 - 永續商店地圖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+  <!-- Updated CSP to be more secure -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://script.google.com https://script.googleusercontent.com;">
   <style>
-    html, body { height: 100%; margin: 0; padding: 0; font-family: 'Noto Sans TC', sans-serif; }
-    #map { height: 100%; width: 100%; z-index: 10; }
-    .leaflet-popup-content-wrapper { border-radius: 8px; }
-    .leaflet-popup-content { margin: 15px; font-size: 14px; }
-    /* Custom modal backdrop */
+    body { font-family: 'Noto Sans TC', sans-serif; background: #f7fafc; }
+    .sidebar-link:hover { background: #2f855a; }
+    .sidebar-link.active { background: #38a169; color: #fff; }
     .modal-backdrop { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-    /* Hide scrollbar for sidebar */
-    #sidebar-content::-webkit-scrollbar { display: none; }
-    #sidebar-content { -ms-overflow-style: none; scrollbar-width: none; }
+    .tab-button { transition: all .2s; }
+    .tab-button.active { border-color: #38a169; color: #38a169; background: #f0fff4; font-weight: 500; }
+    .loader { border: 4px solid #f3f3f3; border-radius: 50%; border-top: 4px solid #3498db; width: 40px; height: 40px; -webkit-animation: spin 2s linear infinite; animation: spin 2s linear infinite; }
+    @-webkit-keyframes spin { 0% { -webkit-transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); } }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
-<body class="overflow-hidden">
+<body class="bg-gray-100">
 
-  <div class="relative h-screen w-screen flex">
+  <!-- Main container -->
+  <div id="app" class="flex h-screen">
     <!-- Sidebar -->
-    <aside id="sidebar" class="absolute md:relative top-0 left-0 h-full w-full md:w-96 bg-white shadow-lg z-20 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
-        <div class="p-4 border-b flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-green-800" data-i18n="sidebarTitle">永續商店地圖</h1>
-            <button id="close-sidebar-btn" class="md:hidden text-gray-600 hover:text-gray-900">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-        </div>
-        <div class="p-4">
-            <input type="text" id="search-box" data-i18n-placeholder="searchPlaceholder" placeholder="搜尋店名、地址或標籤..." class="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-green-500">
-        </div>
-        <div id="sidebar-content" class="flex-grow overflow-y-auto">
-            <div id="shop-list" class="divide-y divide-gray-200"></div>
-        </div>
-        <div class="p-4 border-t text-center text-sm">
-            <a href="#" id="feedback-link" data-i18n="reportIssue" class="text-gray-600 hover:text-green-700">回報問題 / 推薦店家</a>
-        </div>
+    <aside id="sidebar" class="w-64 bg-gray-800 text-white p-4 hidden md:block">
+      <h1 class="text-2xl font-bold mb-8">管理後台</h1>
+      <nav id="sidebar-nav">
+        <!-- Navigation links will be inserted here -->
+      </nav>
     </aside>
 
-    <!-- Map Area -->
-    <main class="flex-grow h-full relative">
-      <div id="map"></div>
-      <button id="open-sidebar-btn" class="md:hidden absolute top-4 left-4 z-10 bg-white p-2 rounded-full shadow-md">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
-      </button>
+    <!-- Main content -->
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+      <div id="login-view" class="max-w-md mx-auto mt-16">
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <h2 class="text-2xl font-bold mb-6 text-center">管理員登入</h2>
+          <form id="login-form">
+            <div class="mb-4">
+              <label for="username" class="block text-gray-700 mb-2">帳號</label>
+              <input type="text" id="username" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+            </div>
+            <div class="mb-6">
+              <label for="password" class="block text-gray-700 mb-2">密碼</label>
+              <input type="password" id="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+            </div>
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">登入</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="dashboard-view" class="hidden">
+        <h2 id="page-title" class="text-3xl font-bold mb-6 text-gray-800"></h2>
+        <div id="content"></div>
+      </div>
     </main>
   </div>
-  
-  <!-- Shop Details Modal -->
-  <div id="shop-modal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop items-center justify-center hidden z-30">
-    <div class="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full m-4 max-h-[90vh] flex flex-col">
-      <div class="flex justify-between items-center border-b pb-3">
-        <h2 id="modal-shop-name" class="text-2xl font-bold"></h2>
-        <button onclick="closeModal('shop-modal')" class="text-gray-500 hover:text-gray-800">&times;</button>
-      </div>
-      <div id="modal-content" class="overflow-y-auto mt-4">
-        <!-- Content injected by JS -->
-      </div>
-      <div class="border-t pt-4 mt-4 text-right">
-        <button onclick="closeModal('shop-modal')" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" data-i18n="closeBtn">關閉</button>
-      </div>
+
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-lg w-full m-4">
+      <div id="modal-content"></div>
     </div>
   </div>
 
-  <!-- Generic Message Modal -->
-  <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop items-center justify-center hidden z-40">
-      <div class="bg-white rounded-lg shadow-xl p-8 max-w-sm w-full m-4 text-center">
-          <p id="message-modal-text" class="mb-6"></p>
-          <button onclick="closeModal('message-modal')" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full" data-i18n="okBtn">確定</button>
-      </div>
-  </div>
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwU7dDTM-J0JIx-m-GqP15n1Pvo6_iil23Qk2Q-G0E9Q2i-aQjP_iV-LpXbY3Wd-B4w/exec';
+    const LANGUAGES = [
+      { code: 'zh-TW', name: '繁體中文' }, { code: 'en', name: 'English' },
+      { code: 'fr', name: 'Français' }, { code: 'de', name: 'Deutsch' },
+      { code: 'es', name: 'Español' }, { code: 'ja', name: '日本語' },
+      { code: 'la', name: 'Latina' }
+    ];
 
-  <!-- Feedback Modal -->
-  <div id="feedback-modal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop items-center justify-center hidden z-40">
-    <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full m-4">
-      <h2 class="text-xl font-bold mb-4" data-i18n="reportIssueModalTitle">回報問題 / 推薦店家</h2>
-      <form id="feedback-form">
-        <div class="mb-4">
-          <label for="feedback-email" class="block text-sm font-medium text-gray-700" data-i18n="contactEmail">您的 Email (選填)</label>
-          <input type="email" id="feedback-email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-        </div>
-        <div class="mb-4">
-          <label for="feedback-type" class="block text-sm font-medium text-gray-700" data-i18n="feedbackType">類型</label>
-          <select id="feedback-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
-            <option value="issue" data-i18n="typeIssue">店家資訊有誤</option>
-            <option value="recommendation" data-i18n="typeRecommendation">推薦新店家</option>
-            <option value="feedback" data-i18n="typeFeedback">網站功能建議</option>
-            <option value="other" data-i18n="typeOther">其他</option>
-          </select>
-        </div>
-        <div class="mb-4">
-          <label for="feedback-message" class="block text-sm font-medium text-gray-700" data-i18n="feedbackMessage">詳細說明</label>
-          <textarea id="feedback-message" rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" required></textarea>
-        </div>
-        <div class="flex justify-end space-x-2">
-          <button type="button" onclick="closeModal('feedback-modal')" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" data-i18n="cancelBtn">取消</button>
-          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" data-i18n="submitBtn">提交</button>
-        </div>
-      </form>
-    </div>
-  </div>
+    // ===== Security Utility =====
+    /**
+     * Escapes HTML special characters in a string to prevent XSS.
+     * @param {any} str The string to escape.
+     * @returns {string} The escaped string.
+     */
+    function escapeHTML(str) {
+      if (str === null || typeof str === 'undefined') return '';
+      return str.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+    
+    // ===== API Call Wrapper =====
+    async function apiCall(action, payload = {}) {
+      const token = sessionStorage.getItem('authToken');
+      if (!token && action !== 'login') throw new Error('未授權');
 
-
-<script>
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwU7dDTM-J0JIx-m-GqP15n1Pvo6_iil23Qk2Q-G0E9Q2i-aQjP_iV-LpXbY3Wd-B4w/exec';
-  let map, allShops = [], allTags = [], fuse;
-  let currentLang = 'zh-TW'; // Default language
-
-  // ===== Security & Formatting Utility =====
-  /**
-   * Escapes HTML special characters in a string to prevent XSS.
-   * Also converts newline characters to <br> tags for display.
-   * @param {any} str The string to escape and format.
-   * @returns {string} The formatted and safe HTML string.
-   */
-  function sanitizeAndFormat(str) {
-    if (str === null || typeof str === 'undefined') return '';
-    const escaped = str.toString()
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-    return escaped.replace(/\r\n|\r|\n/g, '<br>');
-  }
-  
-  // A simpler version for attributes or places where no line breaks are needed.
-  function escapeHTML(str) {
-    if (str === null || typeof str === 'undefined') return '';
-    return str.toString()
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-
-  // ===== Initialization =====
-  document.addEventListener('DOMContentLoaded', () => {
-    initMap();
-    fetchData();
-    setupEventListeners();
-  });
-
-  function initMap() {
-    map = L.map('map').setView([25.034, 121.565], 13); // Centered on Taipei
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-  }
-
-  async function fetchData() {
-    try {
       const response = await fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'getData', payload: { types: ['shops', 'tags'] } })
+        body: JSON.stringify({ action, token, payload })
       });
+
       const result = await response.json();
-      if (result.status === 'error') throw new Error(result.message);
-      
-      allShops = result.data.shops;
-      allTags = result.data.tags;
-
-      setupFuse();
-      renderShopList(allShops);
-      addMarkersToMap(allShops);
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-      showMessageModal('無法載入資料，請稍後再試。');
-    }
-  }
-
-  function setupFuse() {
-    const options = {
-      keys: [
-        'name_zh-TW', 'name_en',
-        'address_zh-TW', 'address_en',
-        'description_zh-TW', 'description_en',
-        'tags' // We'll search by tag IDs
-      ],
-      includeScore: true,
-      threshold: 0.4
-    };
-    fuse = new Fuse(allShops, options);
-  }
-
-  function setupEventListeners() {
-    document.getElementById('search-box').addEventListener('input', handleSearch);
-    document.getElementById('open-sidebar-btn').addEventListener('click', () => document.getElementById('sidebar').classList.remove('-translate-x-full'));
-    document.getElementById('close-sidebar-btn').addEventListener('click', () => document.getElementById('sidebar').classList.add('-translate-x-full'));
-    document.getElementById('feedback-link').addEventListener('click', (e) => { e.preventDefault(); openModal('feedback-modal'); });
-    document.getElementById('feedback-form').addEventListener('submit', handleFeedbackSubmit);
-  }
-
-  // ===== UI Rendering =====
-  function renderShopList(shops) {
-    const listElement = document.getElementById('shop-list');
-    if (shops.length === 0) {
-        listElement.innerHTML = `<div class="p-4 text-center text-gray-500">找不到符合條件的商店。</div>`;
-        return;
-    }
-    const tagsMap = allTags.reduce((acc, tag) => {
-      acc[tag.id] = tag['name_' + currentLang] || tag['name_zh-TW'];
-      return acc;
-    }, {});
-    listElement.innerHTML = shops.map(shop => `
-      <div class="p-4 cursor-pointer hover:bg-gray-100" onclick="openShopModal('${shop.id}')">
-        <h3 class="font-bold text-lg text-green-700">${escapeHTML(shop['name_' + currentLang] || shop['name_zh-TW'])}</h3>
-        <p class="text-sm text-gray-600">${escapeHTML(shop['address_' + currentLang] || shop['address_zh-TW'])}</p>
-        <div class="mt-2">
-          ${(shop.tags || '').split(',').map(tagId => {
-            const tagName = tagsMap[tagId.trim()];
-            return tagName ? `<span class="inline-block bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">${escapeHTML(tagName)}</span>` : '';
-          }).join('')}
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function addMarkersToMap(shops) {
-    shops.forEach(shop => {
-      if (shop.lat && shop.lng) {
-        const marker = L.marker([shop.lat, shop.lng]).addTo(map);
-        marker.on('click', () => openShopModal(shop.id));
+      if (result.status === 'error') {
+        if (result.message === 'Invalid token') handleLogout();
+        throw new Error(result.message);
       }
-    });
-  }
-
-  // ===== Modal Logic (with XSS protection) =====
-  function openModal(modalId) { document.getElementById(modalId).classList.replace('hidden', 'flex'); }
-  function closeModal(modalId) { document.getElementById(modalId).classList.replace('flex', 'hidden'); }
-
-  function showMessageModal(message) {
-      document.getElementById('message-modal-text').textContent = message; // .textContent is safe from XSS
-      openModal('message-modal');
-  }
-
-  function openShopModal(shopId) {
-    const shop = allShops.find(s => s.id === shopId);
-    if (!shop) return;
-    
-    document.getElementById('modal-shop-name').textContent = shop['name_' + currentLang] || shop['name_zh-TW']; // Safe
-    const contentElement = document.getElementById('modal-content');
-    
-    const tagsMap = allTags.reduce((acc, tag) => {
-        acc[tag.id] = tag['name_' + currentLang] || tag['name_zh-TW'];
-        return acc;
-    }, {});
-
-    contentElement.innerHTML = `
-      <p class="text-gray-700 mb-4">${sanitizeAndFormat(shop['longDescription_' + currentLang] || shop['description_' + currentLang] || shop['longDescription_zh-TW'] || shop['description_zh-TW'])}</p>
-      <div class="space-y-2 text-sm">
-        <p><strong>地址:</strong> ${escapeHTML(shop['address_' + currentLang] || shop['address_zh-TW'])}</p>
-        ${shop.phone ? `<p><strong>電話:</strong> ${escapeHTML(shop.phone)}</p>` : ''}
-        ${shop.website ? `<p><strong>網站:</strong> <a href="${escapeHTML(shop.website)}" target="_blank" class="text-blue-600 hover:underline">${escapeHTML(shop.website)}</a></p>` : ''}
-      </div>
-      <div class="mt-4">
-        <h4 class="font-semibold mb-2">標籤:</h4>
-        <div class="flex flex-wrap gap-2">
-          ${(shop.tags || '').split(',').map(tagId => {
-            const tagName = tagsMap[tagId.trim()];
-            return tagName ? `<span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">${escapeHTML(tagName)}</span>` : '';
-          }).join('')}
-        </div>
-      </div>
-    `;
-    openModal('shop-modal');
-  }
-
-  // ===== Search Logic =====
-  function handleSearch(e) {
-    const query = e.target.value.trim();
-    if (!query) {
-      renderShopList(allShops);
-      return;
-    }
-    const results = fuse.search(query);
-    const filteredShops = results.map(result => result.item);
-    renderShopList(filteredShops);
-  }
-
-    // ===== API Call Wrapper =====
-    async function apiCall(action, payload = {}) {
-      const response = await fetch(SCRIPT_URL, {
-        method: 'POST', mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, payload })
-      });
-      const result = await response.json();
-      if (result.status === 'error') throw new Error(result.message);
       return result.data;
     }
 
-    // ===== Feedback Submission =====
-    async function handleFeedbackSubmit(e) {
+    // ===== Authentication =====
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('feedback-email').value.trim();
-      const type = document.getElementById('feedback-type').value;
-      const message = document.getElementById('feedback-message').value.trim();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      try {
+        const data = await apiCall('login', { username, password });
+        sessionStorage.setItem('authToken', data.token);
+        document.getElementById('login-view').classList.add('hidden');
+        document.getElementById('dashboard-view').classList.remove('hidden');
+        document.getElementById('sidebar').classList.remove('hidden');
+        renderNavigation();
+        navigateTo('shops');
+      } catch (err) {
+        alert('登入失敗: ' + err.message);
+      }
+    });
 
-      if (!message) { showMessageModal('請填寫詳細說明欄位'); return; }
+    function handleLogout() {
+      sessionStorage.removeItem('authToken');
+      document.getElementById('login-view').classList.remove('hidden');
+      document.getElementById('dashboard-view').classList.add('hidden');
+      document.getElementById('sidebar').classList.add('hidden');
+    }
+
+    // ===== Navigation & Routing =====
+    const routes = {
+      shops: { title: '商店管理', render: renderShops, nav: true },
+      tags: { title: '標籤管理', render: renderTags, nav: true },
+      subscribers: { title: '訂閱者管理', render: renderSubscribers, nav: true },
+      logout: { title: '登出', action: handleLogout, nav: true }
+    };
+
+    function renderNavigation() {
+      const nav = document.getElementById('sidebar-nav');
+      nav.innerHTML = Object.keys(routes)
+        .filter(key => routes[key].nav)
+        .map(key => `
+        <a href="#${key}" data-route="${key}" class="sidebar-link block py-2.5 px-4 rounded transition duration-200 hover:bg-green-700 hover:text-white">
+          ${routes[key].title}
+        </a>
+      `).join('');
+    }
+
+    async function navigateTo(path) {
+      if (!routes[path]) path = 'shops';
+      const route = routes[path];
+
+      if (route.action) {
+        route.action();
+        return;
+      }
+      
+      document.querySelectorAll('.sidebar-link').forEach(link => {
+          link.classList.toggle('active', link.dataset.route === path);
+      });
+
+      document.getElementById('page-title').textContent = route.title;
+      const contentDiv = document.getElementById('content');
+      contentDiv.innerHTML = '<div class="flex justify-center items-center h-64"><div class="loader"></div></div>'; // Loader
       
       try {
-        await apiCall('submitFeedback', { email, type, message });
-        showMessageModal('感謝您的回饋，我們已收到您的訊息！');
-        closeModal('feedback-modal');
-        e.target.reset();
+        await route.render();
       } catch(err) {
-        showMessageModal('提交失敗：' + err.message);
+        contentDiv.innerHTML = `<div class="text-red-500">無法載入資料：${escapeHTML(err.message)}</div>`;
       }
     }
-</script>
+
+    window.addEventListener('hashchange', () => navigateTo(location.hash.slice(1)));
+    
+    // Initial check
+    if (sessionStorage.getItem('authToken')) {
+      document.getElementById('login-view').classList.add('hidden');
+      document.getElementById('dashboard-view').classList.remove('hidden');
+      document.getElementById('sidebar').classList.remove('hidden');
+      renderNavigation();
+      navigateTo(location.hash.slice(1) || 'shops');
+    }
+
+    // ===== Rendering Functions (with XSS protection) =====
+    async function renderShops() {
+      const { shops, tags } = await apiCall('getData', { types: ['shops', 'tags'] });
+      const tagsMap = tags.reduce((acc, tag) => {
+        acc[tag.id] = tag['name_zh-TW'] || tag.id;
+        return acc;
+      }, {});
+      const content = document.getElementById('content');
+      content.innerHTML = `
+        <div class="mb-4">
+          <button onclick="openShopEditModal()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">新增商店</button>
+          <button onclick="openBatchUploadModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2">批次上傳</button>
+        </div>
+        <div class="bg-white shadow-md rounded-lg overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">名稱</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">地址</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">標籤</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              ${shops.map(s => `
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">${escapeHTML(s['name_zh-TW'] || s.id)}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">${escapeHTML(s['address_zh-TW'] || '')}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${(s.tags || '').split(',').map(tid => escapeHTML(tagsMap[tid] || tid)).join(', ')}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button onclick="openShopEditModal('${s.id}')" class="text-indigo-600 hover:text-indigo-900">編輯</button>
+                    <button onclick="deleteItem('shop', '${s.id}')" class="text-red-600 hover:text-red-900 ml-4">刪除</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    async function renderTags() {
+      const { tags } = await apiCall('getData', { types: ['tags'] });
+      const content = document.getElementById('content');
+      content.innerHTML = `
+        <div class="mb-4"><button onclick="openTagEditModal()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">新增標籤</button></div>
+        <div class="bg-white shadow-md rounded-lg overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">名稱 (繁中)</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">名稱 (English)</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              ${tags.map(t => `
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">${escapeHTML(t.id)}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">${escapeHTML(t['name_zh-TW'])}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">${escapeHTML(t['name_en'])}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button onclick="openTagEditModal('${t.id}')" class="text-indigo-600 hover:text-indigo-900">編輯</button>
+                    <button onclick="deleteItem('tag', '${t.id}')" class="text-red-600 hover:text-red-900 ml-4">刪除</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    async function renderSubscribers() {
+      const { subscribers } = await apiCall('getData', { types: ['subscribers'] });
+      const content = document.getElementById('content');
+      content.innerHTML = `
+        <div class="bg-white shadow-md rounded-lg overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">訂閱時間</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              ${subscribers.map(s => `
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">${escapeHTML(s.Email)}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">${escapeHTML(s.Timestamp)}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                     <button onclick="deleteItem('subscriber', '${s.Email}')" class="text-red-600 hover:text-red-900 ml-4">刪除</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    // ===== Modal & Actions =====
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    async function deleteItem(type, id) {
+      if (!confirm(`確定要刪除這筆資料嗎？此操作無法復原。`)) return;
+      try {
+        const action = { shop: 'deleteShop', tag: 'deleteTag', subscriber: 'deleteSubscriber' }[type];
+        const payload = type === 'subscriber' ? { email: id } : { id };
+        await apiCall(action, payload);
+        alert('資料已刪除');
+        navigateTo(type === 'shop' ? 'shops' : type + 's');
+      } catch (err) {
+        alert('刪除失敗: ' + err.message);
+      }
+    }
+
+    async function openTagEditModal(id = '') {
+      let tag = {};
+      if (id) {
+        const { tags } = await apiCall('getData', { types: ['tags'] });
+        tag = tags.find(t => t.id === id) || {};
+      }
+      const modal = document.getElementById('modal');
+      const content = document.getElementById('modal-content');
+      content.innerHTML = `
+        <h2 class="text-2xl font-bold mb-4">${id ? '編輯' : '新增'}標籤</h2>
+        <form id="tag-form">
+          <input type="hidden" id="tag-id" value="${escapeHTML(id)}">
+          ${LANGUAGES.map(l => `
+            <div class="mb-4">
+              <label for="tag-name-${l.code}" class="block text-gray-700 mb-1">名稱 (${l.name})</label>
+              <input type="text" id="tag-name-${l.code}" value="${escapeHTML(tag['name_' + l.code] || '')}" class="w-full px-3 py-2 border rounded">
+            </div>
+          `).join('')}
+          <div class="flex justify-end mt-6">
+            <button type="button" onclick="closeModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-2">取消</button>
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">儲存</button>
+          </div>
+        </form>`;
+      
+      document.getElementById('tag-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const tagData = { id: document.getElementById('tag-id').value };
+        LANGUAGES.forEach(l => tagData['name_' + l.code] = document.getElementById('tag-name-' + l.code).value.trim());
+        try {
+          await apiCall('saveTag', { tagData });
+          alert('標籤已儲存');
+          closeModal();
+          navigateTo('tags');
+        } catch(err) {
+          alert('儲存失敗: ' + err.message);
+        }
+      });
+      modal.classList.remove('hidden');
+    }
+
+    // [FIXED] Batch Upload Modal with FileReader
+    function openBatchUploadModal() {
+      const modal = document.getElementById('modal');
+      const content = document.getElementById('modal-content');
+      content.innerHTML = `
+        <h2 class="text-2xl font-bold mb-4">批次上傳商店 (CSV)</h2>
+        <p class="mb-2 text-sm text-gray-600">請上傳包含標題列的 CSV 檔案。</p>
+        <p class="mb-4 text-xs text-gray-500">必要欄位: name_zh-TW, address_zh-TW, lat, lng</p>
+        <input type="file" id="csv-file-input" accept=".csv" class="mb-4 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"/>
+        <div id="upload-status" class="hidden text-sm"></div>
+        <div class="flex justify-end mt-6">
+          <button type="button" onclick="closeModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-2">取消</button>
+          <button id="upload-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">上傳</button>
+        </div>`;
+
+      document.getElementById('upload-btn').addEventListener('click', () => {
+        const fileInput = document.getElementById('csv-file-input');
+        const file = fileInput.files[0];
+        const uploadBtn = document.getElementById('upload-btn');
+        const statusDiv = document.getElementById('upload-status');
+
+        if (!file) {
+          alert('請選擇一個 CSV 檔案。');
+          return;
+        }
+
+        const reader = new FileReader();
+        
+        reader.onload = async (event) => {
+          const csvData = event.target.result;
+          try {
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = '上傳中...';
+            statusDiv.textContent = '正在處理檔案，請稍候...';
+            statusDiv.className = 'text-blue-600';
+            statusDiv.classList.remove('hidden');
+
+            const result = await apiCall('batchUploadShops', { csvData });
+            alert(`批次上傳完成！\n成功: ${result.success} 筆\n失敗: ${result.failed} 筆`);
+            closeModal();
+            navigateTo('shops');
+          } catch (err) {
+            statusDiv.textContent = '上傳失敗：' + err.message;
+            statusDiv.className = 'text-red-600';
+            alert('上傳失敗: ' + err.message);
+          } finally {
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = '上傳';
+          }
+        };
+
+        reader.onerror = () => {
+          alert('讀取檔案時發生錯誤。');
+          statusDiv.textContent = '讀取檔案時發生錯誤。';
+          statusDiv.className = 'text-red-600';
+          statusDiv.classList.remove('hidden');
+        };
+
+        reader.readAsText(file);
+      });
+      modal.classList.remove('hidden');
+    }
+
+    async function openShopEditModal(id = '') {
+        let shop = {};
+        const { tags } = await apiCall('getData', { types: ['tags'] });
+
+        if (id) {
+            const { shops } = await apiCall('getData', { types: ['shops'] });
+            shop = shops.find(s => s.id === id) || {};
+        }
+
+        const modal = document.getElementById('modal');
+        const content = document.getElementById('modal-content');
+        const shopTags = (shop.tags || '').split(',').map(t => t.trim());
+
+        // Basic Info Section
+        let basicInfoHtml = `
+            <h3 class="text-lg font-semibold border-b pb-2 mb-4">基本資訊</h3>
+            <input type="hidden" id="shop-id" value="${escapeHTML(shop.id || '')}">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="shop-lat" class="block text-gray-700 mb-1">緯度 (Lat)</label>
+                    <input type="number" step="any" id="shop-lat" value="${escapeHTML(shop.lat || '')}" class="w-full px-3 py-2 border rounded" required>
+                </div>
+                <div>
+                    <label for="shop-lng" class="block text-gray-700 mb-1">經度 (Lng)</label>
+                    <input type="number" step="any" id="shop-lng" value="${escapeHTML(shop.lng || '')}" class="w-full px-3 py-2 border rounded" required>
+                </div>
+                <div>
+                    <label for="shop-phone" class="block text-gray-700 mb-1">電話</label>
+                    <input type="tel" id="shop-phone" value="${escapeHTML(shop.phone || '')}" class="w-full px-3 py-2 border rounded">
+                </div>
+                <div>
+                    <label for="shop-website" class="block text-gray-700 mb-1">網站</label>
+                    <input type="url" id="shop-website" value="${escapeHTML(shop.website || '')}" class="w-full px-3 py-2 border rounded">
+                </div>
+            </div>
+            <div class="mt-4">
+                <label class="block text-gray-700 mb-2">標籤</label>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    ${tags.map(t => `
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="shop-tag" value="${escapeHTML(t.id)}" ${shopTags.includes(t.id) ? 'checked' : ''}>
+                            <span>${escapeHTML(t['name_zh-TW'])}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            </div>`;
+        
+        // Multi-language Section
+        let langTabs = LANGUAGES.map(l => `<button type="button" class="tab-button px-4 py-2 rounded-t-lg" data-lang="${l.code}">${l.name}</button>`).join('');
+        let langContents = LANGUAGES.map(l => `
+            <div id="lang-content-${l.code}" class="lang-content hidden p-4 border border-t-0 rounded-b-lg">
+                <div class="mb-4">
+                    <label for="shop-name-${l.code}" class="block text-gray-700 mb-1">名稱</label>
+                    <input type="text" id="shop-name-${l.code}" value="${escapeHTML(shop['name_' + l.code] || '')}" class="w-full px-3 py-2 border rounded">
+                </div>
+                <div class="mb-4">
+                    <label for="shop-address-${l.code}" class="block text-gray-700 mb-1">地址</label>
+                    <input type="text" id="shop-address-${l.code}" value="${escapeHTML(shop['address_' + l.code] || '')}" class="w-full px-3 py-2 border rounded">
+                </div>
+                <div class="mb-4">
+                    <label for="shop-desc-${l.code}" class="block text-gray-700 mb-1">短描述</label>
+                    <textarea id="shop-desc-${l.code}" rows="2" class="w-full px-3 py-2 border rounded">${escapeHTML(shop['description_' + l.code] || '')}</textarea>
+                </div>
+                <div>
+                    <label for="shop-long-desc-${l.code}" class="block text-gray-700 mb-1">長描述</label>
+                    <textarea id="shop-long-desc-${l.code}" rows="4" class="w-full px-3 py-2 border rounded">${escapeHTML(shop['longDescription_' + l.code] || '')}</textarea>
+                </div>
+            </div>`).join('');
+
+        content.innerHTML = `
+            <h2 class="text-2xl font-bold mb-6">${id ? '編輯' : '新增'}商店</h2>
+            <form id="shop-form" class="space-y-6">
+                ${basicInfoHtml}
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold border-b pb-2 mb-0">各語言資訊</h3>
+                    <div class="border-b border-gray-200">${langTabs}</div>
+                    <div>${langContents}</div>
+                </div>
+                <div class="flex justify-end mt-8">
+                    <button type="button" onclick="closeModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-2">取消</button>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">儲存</button>
+                </div>
+            </form>`;
+        
+        // Tab functionality
+        const tabButtons = content.querySelectorAll('.tab-button');
+        const tabContents = content.querySelectorAll('.lang-content');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                tabContents.forEach(content => content.classList.add('hidden'));
+                document.getElementById(`lang-content-${button.dataset.lang}`).classList.remove('hidden');
+            });
+        });
+        // Activate the first tab
+        if (tabButtons.length > 0) tabButtons[0].click();
+
+        // Form submission
+        document.getElementById('shop-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const shopData = {
+                id: document.getElementById('shop-id').value,
+                lat: document.getElementById('shop-lat').value,
+                lng: document.getElementById('shop-lng').value,
+                phone: document.getElementById('shop-phone').value,
+                website: document.getElementById('shop-website').value,
+                tags: Array.from(document.querySelectorAll('.shop-tag:checked')).map(el => el.value).join(',')
+            };
+
+            LANGUAGES.forEach(l => {
+                shopData['name_' + l.code] = document.getElementById(`shop-name-${l.code}`).value.trim();
+                shopData['address_' + l.code] = document.getElementById(`shop-address-${l.code}`).value.trim();
+                shopData['description_' + l.code] = document.getElementById(`shop-desc-${l.code}`).value.trim();
+                shopData['longDescription_' + l.code] = document.getElementById(`shop-long-desc-${l.code}`).value.trim();
+            });
+
+            try {
+                await apiCall('saveShop', { shopData });
+                alert('商店已儲存');
+                closeModal();
+                navigateTo('shops');
+            } catch (err) {
+                alert('儲存失敗: ' + err.message);
+            }
+        });
+
+        modal.classList.remove('hidden');
+    }
+  </script>
 </body>
 </html>
