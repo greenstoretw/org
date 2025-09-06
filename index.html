@@ -22,25 +22,15 @@
         .modal { z-index: 1000; }
         .modal-content { max-height: 90vh; overflow-y: auto; }
         .shop-detail-header { background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1200&q=80') center/cover; }
-        #sustainability-map-container { position: relative; width: 100%; height: 500px; }
-        #sustainability-map { width: 100%; height: 100%; z-index: 10; }
-        .map-placeholder { position: absolute; inset: 0; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center; z-index: 5; }
+        #sustainability-map { width: 100%; height: 500px; z-index: 10; }
         .favorite-btn { position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.8); border-radius: 50%; padding: 0.5rem; cursor: pointer; transition: transform 0.2s ease; }
         .favorite-btn:hover { transform: scale(1.1); }
         .favorite-btn svg { width: 1.5rem; height: 1.5rem; stroke: #4b5563; stroke-width: 1.5; fill: none; }
         .favorite-btn.favorited svg { fill: #ef4444; stroke: #ef4444; }
         #toast { transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #10B981; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="antialiased">
-    <!-- Fullscreen Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center">
-        <div class="spinner"></div>
-        <p class="mt-4 text-lg text-gray-700">載入中...</p>
-    </div>
-    
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
              <a href="#" class="flex items-center space-x-2">
@@ -56,6 +46,11 @@
                 <select id="language-select" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full cursor-pointer">
                     <option value="zh-TW" data-i18n="langChinese"></option>
                     <option value="en" data-i18n="langEnglish"></option>
+                    <option value="fr" data-i18n="langFrench"></option>
+                    <option value="de" data-i18n="langGerman"></option>
+                    <option value="es" data-i18n="langSpanish"></option>
+                    <option value="la" data-i18n="langLatin"></option>
+                    <option value="ja" data-i18n="langJapanese"></option>
                 </select>
             </div>
             <div class="md:hidden"><button id="menu-toggle" class="text-gray-700"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg></button></div>
@@ -84,9 +79,9 @@
         </div>
     </div></div></section>
 
-    <section id="map" class="py-12 bg-green-50"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-8" data-i18n="mapSectionTitle"></h2><div class="bg-white rounded-xl shadow-lg overflow-hidden"><div id="sustainability-map-container"><div class="map-placeholder">地圖載入中...</div><div id="sustainability-map"></div></div></div></div></section>
+    <section id="map" class="py-12 bg-green-50"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-8" data-i18n="mapSectionTitle"></h2><div class="bg-white rounded-xl shadow-lg overflow-hidden"><div id="sustainability-map"></div></div></div></section>
 
-    <section id="shops" class="py-12 bg-white"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-8" data-i18n="shopListSectionTitle"></h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="shop-cards-container"></div><div class="text-center mt-8"><button id="load-more-button" class="btn-primary px-8 py-3 rounded-lg hidden" data-i18n="loadMoreBtn"></button></div></div></section>
+    <section id="shops" class="py-12 bg-white"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-8" data-i18n="shopListSectionTitle"></h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="shop-cards-container"></div><div class="text-center mt-8"><button id="load-more-button" class="btn-primary px-8 py-3 rounded-lg hidden" data-i18n="loadMoreBtn"></button></div></div></section>
 
     <section id="newsletter" class="py-12 bg-green-600 text-white text-center"><h2 class="text-3xl font-bold mb-4" data-i18n="newsletterTitle"></h2><p class="mb-6" data-i18n="newsletterSubtitle"></p><form id="newsletter-form" class="max-w-md mx-auto flex gap-2"><input type="email" name="email" class="flex-1 px-4 py-3 rounded-lg text-gray-800" data-i18n-placeholder="newsletterPlaceholder" required><button type="submit" class="bg-white text-green-600 px-6 py-3 rounded-lg" data-i18n="subscribeBtn"></button></form></section>
 
@@ -94,7 +89,7 @@
     
     <footer class="bg-gray-800 text-white py-10"><div class="container mx-auto px-4 text-center"><button id="showPolicyFooter" class="hover:text-green-400" data-i18n="privacyPolicy"></button><div class="border-t border-gray-700 mt-6 pt-6 text-gray-400"><p data-i18n="copyright"></p></div></div></footer>
     
-    <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center modal p-4"><div class="bg-white rounded-xl max-w-5xl w-full modal-content"><div id="shop-detail-content" class="relative"></div></div></div>
+    <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center modal p-4"><div class="bg-white rounded-xl max-w-4xl w-full modal-content"><div id="shop-detail-content" class="relative"></div></div></div>
     <div id="policy-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center modal p-4"><div class="bg-white rounded-xl max-w-3xl w-full modal-content"><div id="policy-content" class="p-6 relative"></div></div></div>
     
     <div id="toast" class="fixed top-0 left-1/2 -translate-x-1/2 p-4 rounded-b-lg shadow-lg text-white flex items-center gap-3 transform -translate-y-full z-[2000] opacity-0"><span id="toast-icon"></span><span id="toast-message" class="font-medium"></span></div>
@@ -110,8 +105,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const shopsPerPage = 6;
 
     const translations = {
-        'zh-TW': { pageTitle: '永續商店地圖', appName: '永續商店地圖', home: '首頁', map: '地圖', shopList: '商店列表', newsletter: '訂閱電子報', reportIssueNavLink: '問題回報', langChinese: '繁體中文', langEnglish: 'English', heroTitle: '探索台灣永續商店', heroSubtitle: '找到支持環保、公平貿易和永續發展的商店', viewMapBtn: '查看地圖', browseShopsBtn: '瀏覽商店列表', searchTitle: '搜尋永續商店', searchPlaceholder: '輸入店名...', filterCategoryTitle: '依類別篩選', filterAll: '全部', filterFavorites: '❤️ 我的收藏', mapSectionTitle: '永續商店地圖', shopListSectionTitle: '永續商店列表', viewDetailsBtn: '查看詳情', loadMoreBtn: '載入更多', newsletterTitle: '訂閱電子報', newsletterSubtitle: '獲取最新永續資訊', newsletterPlaceholder: '您的電子郵件', subscribeBtn: '訂閱', reportIssueTitle: '問題回報', modalEmail: '您的Email', reportIssuePlaceholder: '請描述問題...', reportIssueSubmitBtn: '送出', copyright: '© 2025 版權所有', modalAddress: '地址', modalPhone: '電話', modalWebsite: '網站', notProvided: '未提供', newsletterSuccess: '訂閱成功！感謝您的加入', newsletterError: '訂閱失敗', reportIssueSuccess: '感謝回報！', reportIssueError: '回報失敗', privacyPolicy: '隱私權政策與聲明', privacyPolicyTitle: '隱私權政策', disclaimerTitle: '免責聲明', reportIssueSelectType: '請選擇類型', reportIssueDataError: '店家資訊錯誤', reportIssueFeatureRequest: '功能建議', reportIssueBugReport: '系統問題', reportIssueOther: '其他', modalAboutUs: '關於我們', modalSustainability: '永續理念' },
-        'en': { pageTitle: 'Sustainable Store Map', appName: 'Sustainable Store Map', home: 'Home', map: 'Map', shopList: 'Shops', newsletter: 'Newsletter', reportIssueNavLink: 'Report Issue', langChinese: '繁體中文', langEnglish: 'English', heroTitle: 'Explore Sustainable Stores', heroSubtitle: 'Find shops that support eco-friendly and fair trade practices', viewMapBtn: 'View Map', browseShopsBtn: 'Browse Shops', searchTitle: 'Search Stores', searchPlaceholder: 'Enter store name...', filterCategoryTitle: 'Filter by Category', filterAll: 'All', filterFavorites: '❤️ My Favorites', mapSectionTitle: 'Sustainable Store Map', shopListSectionTitle: 'Sustainable Shops', viewDetailsBtn: 'View Details', loadMoreBtn: 'Load More', newsletterTitle: 'Subscribe', newsletterSubtitle: 'Get the latest sustainable news', newsletterPlaceholder: 'Your email', subscribeBtn: 'Subscribe', reportIssueTitle: 'Report an Issue', modalEmail: 'Your Email', reportIssuePlaceholder: 'Describe the issue...', reportIssueSubmitBtn: 'Submit', copyright: '© 2025 All Rights Reserved', modalAddress: 'Address', modalPhone: 'Phone', modalWebsite: 'Website', notProvided: 'Not provided', newsletterSuccess: 'Subscription complete! Thank you.', newsletterError: 'Subscription failed', reportIssueSuccess: 'Thanks for the feedback!', reportIssueError: 'Submission failed', privacyPolicy: 'Privacy Policy & Disclaimer', privacyPolicyTitle: 'Privacy Policy', disclaimerTitle: 'Disclaimer', reportIssueSelectType: 'Select type', reportIssueDataError: 'Incorrect Store Info', reportIssueFeatureRequest: 'Feature Suggestion', reportIssueBugReport: 'System Bug', reportIssueOther: 'Other', modalAboutUs: 'About Us', modalSustainability: 'Sustainability' },
+        'zh-TW': { pageTitle: '永續商店地圖', appName: '永續商店地圖', home: '首頁', map: '地圖', shopList: '商店列表', newsletter: '訂閱電子報', reportIssueNavLink: '問題回報', langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langGerman: 'Deutsch', langSpanish: 'Español', langLatin: 'Latin', langJapanese: '日本語', heroTitle: '探索台灣永續商店', heroSubtitle: '找到支持環保、公平貿易和永續發展的商店', viewMapBtn: '查看地圖', browseShopsBtn: '瀏覽商店列表', searchTitle: '搜尋永續商店', searchPlaceholder: '輸入店名...', filterCategoryTitle: '依類別篩選', filterAll: '全部', filterFavorites: '❤️ 我的收藏', mapSectionTitle: '永續商店地圖', shopListSectionTitle: '永續商店列表', viewDetailsBtn: '查看詳情', loadMoreBtn: '載入更多', newsletterTitle: '訂閱電子報', newsletterSubtitle: '獲取最新永續資訊', newsletterPlaceholder: '您的電子郵件', subscribeBtn: '訂閱', reportIssueTitle: '問題回報', modalEmail: '您的Email', reportIssuePlaceholder: '請描述問題...', reportIssueSubmitBtn: '送出', copyright: '© 2025 版權所有', modalAddress: '地址', modalPhone: '電話', modalWebsite: '網站', notProvided: '未提供', newsletterSuccess: '感謝訂閱！', newsletterError: '訂閱失敗', reportIssueSuccess: '感謝回報！', reportIssueError: '回報失敗', privacyPolicy: '隱私權政策與聲明', reportIssueSelectType: '請選擇類型', reportIssueDataError: '店家資訊錯誤', reportIssueFeatureRequest: '功能建議', reportIssueBugReport: '系統問題', reportIssueOther: '其他', modalAboutUs: '關於我們', modalSustainability: '永續理念' },
+        'en': { pageTitle: 'Sustainable Store Map', appName: 'Sustainable Store Map', home: 'Home', map: 'Map', shopList: 'Shops', newsletter: 'Newsletter', reportIssueNavLink: 'Report Issue', langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langGerman: 'Deutsch', langSpanish: 'Español', langLatin: 'Latin', langJapanese: '日本語', heroTitle: 'Explore Sustainable Stores', heroSubtitle: 'Find shops that support eco-friendly and fair trade practices', viewMapBtn: 'View Map', browseShopsBtn: 'Browse Shops', searchTitle: 'Search Stores', searchPlaceholder: 'Enter store name...', filterCategoryTitle: 'Filter by Category', filterAll: 'All', filterFavorites: '❤️ My Favorites', mapSectionTitle: 'Sustainable Store Map', shopListSectionTitle: 'Sustainable Shops', viewDetailsBtn: 'View Details', loadMoreBtn: 'Load More', newsletterTitle: 'Subscribe', newsletterSubtitle: 'Get the latest sustainable news', newsletterPlaceholder: 'Your email', subscribeBtn: 'Subscribe', reportIssueTitle: 'Report an Issue', modalEmail: 'Your Email', reportIssuePlaceholder: 'Describe the issue...', reportIssueSubmitBtn: 'Submit', copyright: '© 2025 All Rights Reserved', modalAddress: 'Address', modalPhone: 'Phone', modalWebsite: 'Website', notProvided: 'Not provided', newsletterSuccess: 'Thanks for subscribing!', newsletterError: 'Subscription failed', reportIssueSuccess: 'Thanks for the feedback!', reportIssueError: 'Submission failed', privacyPolicy: 'Privacy Policy & Disclaimer', reportIssueSelectType: 'Select type', reportIssueDataError: 'Incorrect Store Info', reportIssueFeatureRequest: 'Feature Suggestion', reportIssueBugReport: 'System Bug', reportIssueOther: 'Other', modalAboutUs: 'About Us', modalSustainability: 'Sustainability' },
+        'fr': { pageTitle: 'Carte des Magasins Durables', appName: 'Carte des Magasins Durables', home: 'Accueil', map: 'Carte', shopList: 'Liste des Magasins', newsletter: 'Newsletter', reportIssueNavLink: 'Signaler un Problème', langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langGerman: 'Deutsch', langSpanish: 'Español', langLatin: 'Latin', langJapanese: '日本語', heroTitle: 'Découvrez les Magasins Durables', heroSubtitle: 'Trouvez des magasins qui soutiennent le développement durable.', viewMapBtn: 'Voir la Carte', browseShopsBtn: 'Parcourir les Magasins', searchTitle: 'Rechercher des Magasins', searchPlaceholder: 'Entrez le nom du magasin...', filterCategoryTitle: 'Filtrer par Catégorie', filterAll: 'Tous', filterFavorites: 'Mes Favoris', mapSectionTitle: 'Carte des Magasins Durables', shopListSectionTitle: 'Liste des Magasins', viewDetailsBtn: 'Voir les Détails', loadMoreBtn: 'Charger Plus', newsletterTitle: 'S\'abonner', newsletterSubtitle: 'Recevez les nouvelles durables.', newsletterPlaceholder: 'Votre email', subscribeBtn: 'S\'abonner', reportIssueTitle: 'Signaler un Problème', modalEmail: 'Votre Email', reportIssuePlaceholder: 'Décrivez le problème...', reportIssueSubmitBtn: 'Envoyer', copyright: '© 2025 Tous Droits Réservés', modalAddress: 'Adresse', modalPhone: 'Téléphone', modalWebsite: 'Site Web', notProvided: 'Non fourni', newsletterSuccess: 'Merci pour votre abonnement !', newsletterError: 'L\'abonnement a échoué', reportIssueSuccess: 'Merci pour vos commentaires !', reportIssueError: 'L\'envoi a échoué', privacyPolicy: 'Politique de Confidentialité', reportIssueSelectType: 'Sélectionner le type', reportIssueDataError: 'Info Magasin Incorrecte', reportIssueFeatureRequest: 'Suggestion de fonctionnalité', reportIssueBugReport: 'Bogue du système', reportIssueOther: 'Autre', modalAboutUs: 'À Propos', modalSustainability: 'Durabilité' },
+        'de': { pageTitle: 'Nachhaltigkeitsladen-Karte', appName: 'Nachhaltigkeitsladen-Karte', home: 'Start', map: 'Karte', shopList: 'Geschäfte', newsletter: 'Newsletter', reportIssueNavLink: 'Problem Melden', langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langGerman: 'Deutsch', langSpanish: 'Español', langLatin: 'Latin', langJapanese: '日本語', heroTitle: 'Entdecken Sie Nachhaltige Geschäfte', heroSubtitle: 'Finden Sie Geschäfte, die nachhaltige Praktiken unterstützen.', viewMapBtn: 'Karte Anzeigen', browseShopsBtn: 'Geschäfte Durchsuchen', searchTitle: 'Geschäfte Suchen', searchPlaceholder: 'Geschäftsnamen eingeben...', filterCategoryTitle: 'Nach Kategorie Filtern', filterAll: 'Alle', filterFavorites: 'Meine Favoriten', mapSectionTitle: 'Nachhaltigkeitsladen-Karte', shopListSectionTitle: 'Liste der Geschäfte', viewDetailsBtn: 'Details Anzeigen', loadMoreBtn: 'Mehr Laden', newsletterTitle: 'Abonnieren', newsletterSubtitle: 'Erhalten Sie die neuesten Nachrichten.', newsletterPlaceholder: 'Ihre E-Mail', subscribeBtn: 'Abonnieren', reportIssueTitle: 'Problem Melden', modalEmail: 'Ihre E-Mail', reportIssuePlaceholder: 'Problem beschreiben...', reportIssueSubmitBtn: 'Senden', copyright: '© 2025 Alle Rechte Vorbehalten', modalAddress: 'Adresse', modalPhone: 'Telefon', modalWebsite: 'Webseite', notProvided: 'Nicht vorhanden', newsletterSuccess: 'Danke für\'s Abonnieren!', newsletterError: 'Abonnement fehlgeschlagen', reportIssueSuccess: 'Danke für das Feedback!', reportIssueError: 'Senden fehlgeschlagen', privacyPolicy: 'Datenschutz-Bestimmungen', reportIssueSelectType: 'Typ auswählen', reportIssueDataError: 'Falsche Geschäftsinformationen', reportIssueFeatureRequest: 'Funktionsvorschlag', reportIssueBugReport: 'Systemfehler', reportIssueOther: 'Andere', modalAboutUs: 'Über Uns', modalSustainability: 'Nachhaltigkeit' },
+        'es': { pageTitle: 'Mapa de Tiendas Sostenibles', appName: 'Mapa de Tiendas Sostenibles', home: 'Inicio', map: 'Mapa', shopList: 'Tiendas', newsletter: 'Boletín', reportIssueNavLink: 'Reportar Problema', langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langGerman: 'Deutsch', langSpanish: 'Español', langLatin: 'Latin', langJapanese: '日本語', heroTitle: 'Explora Tiendas Sostenibles', heroSubtitle: 'Encuentra tiendas que apoyan prácticas sostenibles.', viewMapBtn: 'Ver Mapa', browseShopsBtn: 'Explorar Tiendas', searchTitle: 'Buscar Tiendas', searchPlaceholder: 'Introduce el nombre de la tienda...', filterCategoryTitle: 'Filtrar por Categoría', filterAll: 'Todas', filterFavorites: 'Mis Favoritos', mapSectionTitle: 'Mapa de Tiendas Sostenibles', shopListSectionTitle: 'Lista de Tiendas', viewDetailsBtn: 'Ver Detalles', loadMoreBtn: 'Cargar Más', newsletterTitle: 'Suscribirse', newsletterSubtitle: 'Recibe las últimas noticias.', newsletterPlaceholder: 'Tu correo', subscribeBtn: 'Suscribirse', reportIssueTitle: 'Reportar Problema', modalEmail: 'Tu Correo', reportIssuePlaceholder: 'Describe el problema...', reportIssueSubmitBtn: 'Enviar', copyright: '© 2025 Todos los Derechos Reservados', modalAddress: 'Dirección', modalPhone: 'Teléfono', modalWebsite: 'Sitio Web', notProvided: 'No proporcionado', newsletterSuccess: '¡Gracias por suscribirte!', newsletterError: 'Suscripción fallida', reportIssueSuccess: '¡Gracias por tus comentarios!', reportIssueError: 'Envío fallido', privacyPolicy: 'Política de Privacidad', reportIssueSelectType: 'Seleccionar tipo', reportIssueDataError: 'Información de la tienda incorrecta', reportIssueFeatureRequest: 'Sugerencia de función', reportIssueBugReport: 'Error del sistema', reportIssueOther: 'Otro', modalAboutUs: 'Sobre Nosotros', modalSustainability: 'Sostenibilidad' },
+        'la': { pageTitle: 'Tabula Tabernarum Durabilium', appName: 'Tabula Tabernarum Durabilium', home: 'Domus', map: 'Tabula', shopList: 'Tabernae', newsletter: 'Epistula', reportIssueNavLink: 'Nuntia Problema', langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langGerman: 'Deutsch', langSpanish: 'Español', langLatin: 'Latin', langJapanese: '日本語', heroTitle: 'Explora Tabernas Durabiles', heroSubtitle: 'Inveni tabernas quae sustinent opera durabilia.', viewMapBtn: 'Vide Tabulam', browseShopsBtn: 'Explora Tabernas', searchTitle: 'Quaere Tabernas', searchPlaceholder: 'Nomen tabernae inscribe...', filterCategoryTitle: 'Filtra per Genus', filterAll: 'Omnes', filterFavorites: 'Mea Favorita', mapSectionTitle: 'Tabula Tabernarum Durabilium', shopListSectionTitle: 'Index Tabernarum', viewDetailsBtn: 'Vide Singula', loadMoreBtn: 'Plus Onera', newsletterTitle: 'Scribe', newsletterSubtitle: 'Accipe novissimas.', newsletterPlaceholder: 'Tuum nomen', subscribeBtn: 'Scribe', reportIssueTitle: 'Nuntia Problema', modalEmail: 'Tuum Nomen', reportIssuePlaceholder: 'Describe problema...', reportIssueSubmitBtn: 'Mitte', copyright: '© 2025 Omnia Iura Reservata', modalAddress: 'Inscriptio', modalPhone: 'Telephonum', modalWebsite: 'Situs Web', notProvided: 'Non provisum', newsletterSuccess: 'Gratias tibi ago pro scribendo!', newsletterError: 'Scriptione defecit', reportIssueSuccess: 'Gratias pro commentariis tuis!', reportIssueError: 'Missio defecit', privacyPolicy: 'Consilium de Secretia', reportIssueSelectType: 'Genus selige', reportIssueDataError: 'Informatio tabernae falsa', reportIssueFeatureRequest: 'Suggere pluma', reportIssueBugReport: 'Error systematis', reportIssueOther: 'Aliud', modalAboutUs: 'De Nobis', modalSustainability: 'Durabilitas' },
+        'ja': { pageTitle: 'サステナブルストアマップ', appName: 'サステナブルストアマップ', home: 'ホーム', map: '地図', shopList: '店舗', newsletter: 'ニュースレター', reportIssueNavLink: '問題を報告', langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langGerman: 'Deutsch', langSpanish: 'Español', langLatin: 'Latin', langJapanese: '日本語', heroTitle: 'サステナブルストアを探す', heroSubtitle: '持続可能な取り組みを支援する店舗を見つけよう', viewMapBtn: '地図を見る', browseShopsBtn: '店舗を閲覧', searchTitle: '店舗を検索', searchPlaceholder: '店名を入力...', filterCategoryTitle: 'カテゴリーで絞り込む', filterAll: 'すべて', filterFavorites: 'お気に入り', mapSectionTitle: 'サステナブルストアマップ', shopListSectionTitle: '店舗一覧', viewDetailsBtn: '詳細を見る', loadMoreBtn: 'もっと読み込む', newsletterTitle: '購読する', newsletterSubtitle: '最新ニュースを受け取る', newsletterPlaceholder: 'あなたのメール', subscribeBtn: '購読', reportIssueTitle: '問題を報告', modalEmail: 'あなたのメール', reportIssuePlaceholder: '問題を説明...', reportIssueSubmitBtn: '送信', copyright: '© 2025 All Rights Reserved', modalAddress: '住所', modalPhone: '電話', modalWebsite: 'ウェブサイト', notProvided: '提供されていません', newsletterSuccess: 'ご購読ありがとうございます！', newsletterError: '購読に失敗しました', reportIssueSuccess: 'ご意見ありがとうございます！', reportIssueError: '送信に失敗しました', privacyPolicy: 'プライバシーポリシー', reportIssueSelectType: '種類を選択', reportIssueDataError: '店舗情報の間違い', reportIssueFeatureRequest: '機能の提案', reportIssueBugReport: 'システムのバグ', reportIssueOther: 'その他', modalAboutUs: '私たちについて', modalSustainability: 'サステナビリティ' }
     };
     
     const showToast = (message, type = 'success') => {
@@ -151,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST', body: JSON.stringify({ action: 'getPublicData' }),
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' }
             });
-            if(!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const result = await response.json();
             if (result.status !== 'success') throw new Error(result.message || 'Backend error');
             allShops = result.data.shops || [];
@@ -164,8 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Data fetch failed:", error);
             showToast('資料載入失敗，請稍後再試。', 'error');
-        } finally {
-            document.getElementById('loading-overlay').style.display = 'none';
         }
     }
 
@@ -173,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const types = [...new Set(allShops.map(s => s[`type_${currentLang}`] || s['type_zh-TW']).filter(Boolean))];
         const container = document.getElementById('filter-buttons-container');
         container.querySelectorAll('.tag:not([data-category=""]):not([data-category="favorites"])').forEach(btn => btn.remove());
+        const t = translations[currentLang] || translations['zh-TW'];
         types.forEach(type => {
             const btn = document.createElement('button');
             btn.className = 'tag px-3 py-1 rounded-full text-sm';
@@ -200,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const desc = shop[`description_${currentLang}`] || shop['description_zh-TW'];
             const address = shop[`address_${currentLang}`] || shop['address_zh-TW'];
             const isFavorited = favoriteShops.includes(String(shop.id));
-            container.innerHTML += `<div class="shop-card bg-white rounded-xl overflow-hidden shadow-md relative"><div class="h-48 bg-green-100 flex items-center justify-center"><svg class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg></div><button class="favorite-btn ${isFavorited ? 'favorited' : ''}" data-id="${shop.id}"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button><div class="p-6"><div><h3 class="text-xl font-bold mb-2">${name}</h3><span class="tag px-2 py-1 rounded-full text-xs">${type}</span><p class="text-gray-600 my-4">${desc}</p><p class="text-sm text-gray-500">${address}</p></div><button class="btn-primary py-2 rounded-lg mt-4" data-id="${shop.id}" data-action="details">${t.viewDetailsBtn}</button></div></div>`;
+            container.innerHTML += `<div class="shop-card bg-white rounded-xl overflow-hidden shadow-md relative"><div class="h-48 bg-green-100 flex items-center justify-center"><svg class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg></div><button class="favorite-btn ${isFavorited ? 'favorited' : ''}" data-id="${shop.id}"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button><div class="p-6"><div><h3 class="text-xl font-bold">${name}</h3><span class="tag px-2 py-1 rounded-full text-xs">${type}</span><p class="text-gray-600 my-2">${desc}</p><p class="text-sm text-gray-500">${address}</p></div><button class="btn-primary py-2 rounded-lg" data-id="${shop.id}" data-action="details">${t.viewDetailsBtn}</button></div></div>`;
         });
         shopsDisplayed += toDisplay.length;
         document.getElementById('load-more-button').classList.toggle('hidden', shopsDisplayed >= filtered.length);
@@ -228,30 +226,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const address = shop[`address_${currentLang}`] || shop['address_zh-TW'];
         const website = shop.website ? `<p><strong>${t.modalWebsite}:</strong> <a href="//${shop.website}" target="_blank" class="text-green-600">${shop.website}</a></p>` : '';
         document.getElementById('shop-detail-content').innerHTML = `
-            <div class="shop-detail-header p-6 text-white rounded-t-xl text-center relative flex justify-between items-center">
-                <h2 class="text-2xl font-bold">${name}</h2>
-                 <button id="close-modal" class="p-2 bg-white/30 hover:bg-white rounded-full text-white hover:text-black leading-none text-2xl">&times;</button>
+            <div class="shop-detail-header p-8 text-white rounded-t-xl text-center">
+                <h2 class="text-3xl font-bold">${name}</h2>
             </div>
-            <div class="p-8 space-y-6">
+            <div class="p-6 space-y-4">
                 <div><h3 class="text-xl font-bold mb-2">${t.modalAboutUs}</h3><p class="text-gray-700">${longDesc || t.notProvided}</p></div>
                 <div class="bg-gray-50 p-4 rounded-lg space-y-2">
                     <p><strong>${t.modalAddress}:</strong> ${address || t.notProvided}</p>
                     <p><strong>${t.modalPhone}:</strong> ${shop.phone || t.notProvided}</p>
                     ${website}
                 </div>
-            </div>`;
+            </div>
+            <button id="close-modal" class="absolute top-2 right-2 p-2 bg-white rounded-full shadow text-2xl">&times;</button>`;
         document.getElementById('shop-detail-modal').classList.remove('hidden');
     };
 
     const initMap = () => {
-        const mapContainer = document.getElementById('sustainability-map');
-        const placeholder = document.querySelector('.map-placeholder');
-        mapInstance = L.map(mapContainer).setView([25.03, 121.56], 12);
+        mapInstance = L.map('sustainability-map').setView([25.03, 121.56], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
         mapInstance.addLayer(markersGroup);
-        mapInstance.whenReady(() => {
-            if (placeholder) placeholder.style.display = 'none';
-        });
         mapInstance.on('popupopen', (e) => {
             const btn = e.popup._container.querySelector('button[data-action="details"]');
             if (btn) btn.onclick = () => showShopDetail(btn.dataset.id);
@@ -259,9 +252,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     document.body.addEventListener('click', e => {
-        const target = e.target;
-        const favBtn = target.closest('.favorite-btn');
-        if (target.closest('[data-action="details"]')) { showShopDetail(target.closest('[data-action="details"]').dataset.id); }
+        const favBtn = e.target.closest('.favorite-btn');
+        if (e.target.closest('[data-action="details"]')) { showShopDetail(e.target.closest('[data-action="details"]').dataset.id); }
         if (favBtn) {
             const shopId = String(favBtn.dataset.id);
             const index = favoriteShops.indexOf(shopId);
@@ -270,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
             favBtn.classList.toggle('favorited');
             if (currentFilterCategory === 'favorites') { shopsDisplayed = 0; filterAndRender(); }
         }
-        if (target.closest('#close-modal') || target.id === 'shop-detail-modal') { document.getElementById('shop-detail-modal').classList.add('hidden'); }
+        if (e.target.closest('#close-modal') || e.target.id === 'shop-detail-modal') { document.getElementById('shop-detail-modal').classList.add('hidden'); }
     });
     
     document.getElementById('menu-toggle').addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('hidden'));
@@ -289,8 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitApiForm = async (form, action, successKey, errorKey) => {
         const payload = Object.fromEntries(new FormData(form).entries());
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, payload }), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
-             if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, payload }) });
             const result = await res.json();
             if (result.status !== 'success') throw new Error(result.message);
             showToast((translations[currentLang] || translations['zh-TW'])[successKey], 'success');
@@ -302,22 +293,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('showPolicyFooter').addEventListener('click', () => {
         const policyModal = document.getElementById('policy-modal');
         const t = translations[currentLang] || translations['zh-TW'];
-        const privacyHTML = (policies.privacy || '').toString().replace(/\n/g, '<br>');
-        const disclaimerHTML = (policies.disclaimer || '').toString().replace(/\n/g, '<br>');
-        document.getElementById('policy-content').innerHTML = `
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold">${t.privacyPolicy}</h2>
-                <button id="close-policy" class="p-2 text-2xl">&times;</button>
-            </div>
-            <div class="space-y-4 text-left">
-                <h3 class="text-lg font-semibold">${t.privacyPolicyTitle}</h3>
-                <div>${privacyHTML || t.notProvided}</div>
-                <h3 class="text-lg font-semibold mt-4">${t.disclaimerTitle}</h3>
-                <div>${disclaimerHTML || t.notProvided}</div>
-            </div>`;
+        const privacyHTML = ((policies.privacy && (policies.privacy.value ?? policies.privacy)) || '').toString().replace(/\n/g, '<br>');
+        const disclaimerHTML = ((policies.disclaimer && (policies.disclaimer.value ?? policies.disclaimer)) || '').toString().replace(/\n/g, '<br>');
+        document.getElementById('policy-content').innerHTML = `<h2 class="text-2xl font-bold mb-4">${t.privacyPolicy}</h2><div class="space-y-4 text-left">${privacyHTML}<br><br>${disclaimerHTML}</div><button id="close-policy" class="absolute top-2 right-2 p-2 text-2xl">&times;</button>`;
         policyModal.classList.remove('hidden');
     });
-    document.getElementById('policy-modal').addEventListener('click', e => { if (e.target.closest('#close-policy') || e.target.id === 'policy-modal') e.currentTarget.classList.add('hidden'); });
+    document.getElementById('policy-modal').addEventListener('click', e => { if (e.target.matches('#policy-modal, #close-policy')) e.currentTarget.classList.add('hidden'); });
 
     initMap();
     fetchPublicData();
