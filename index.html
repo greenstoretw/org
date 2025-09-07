@@ -3,293 +3,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>永續商店地圖</title>
+    <title data-i18n="pageTitle">永續商店地圖</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        .leaflet-popup-content-wrapper { border-radius: 8px; }
-        .favorite-btn.active i { color: #ef4444; /* red-500 */ }
-        .modal-content { max-height: 80vh; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px;}
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0f7f4; }
+        .hero-section { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80') center/cover; }
+        .tag { background-color: #dcfce7; color: #16a34a; transition: all 0.2s ease; }
+        .tag.active, .tag:hover { background-color: #16a34a; color: white; }
+        .btn-primary { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); }
+        .shop-card { transition: all 0.3s ease; display: flex; flex-direction: column; }
+        .shop-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .shop-card .p-6 { display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
+        .shop-card button[data-action="details"] { margin-top: auto; }
+        .modal { z-index: 1000; }
+        .modal-content { max-height: 90vh; overflow-y: auto; }
+        .shop-detail-header { background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1200&q=80') center/cover; }
+        #sustainability-map-container { position: relative; width: 100%; height: 500px; }
+        #sustainability-map { width: 100%; height: 100%; z-index: 10; }
+        .map-placeholder { position: absolute; inset: 0; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center; z-index: 5; }
+        .favorite-btn { position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.8); border-radius: 50%; padding: 0.5rem; cursor: pointer; transition: transform 0.2s ease; }
+        .favorite-btn:hover { transform: scale(1.1); }
+        .favorite-btn svg { width: 1.5rem; height: 1.5rem; stroke: #4b5563; stroke-width: 1.5; fill: none; }
+        .favorite-btn.favorited svg { fill: #ef4444; stroke: #ef4444; }
+        #toast { transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #10B981; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
-    <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-80 z-50 flex items-center justify-center">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500"></div>
-    </div>
-
-    <!-- Header -->
-    <header class="bg-white shadow-md sticky top-0 z-40">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-green-700"><i class="fas fa-leaf mr-2"></i>永續商店地圖</h1>
-            <div class="flex items-center space-x-4">
-                <button id="favorites-list-btn" class="text-gray-600 hover:text-green-600 relative">
-                    <i class="fas fa-heart text-xl"></i>
-                    <span id="favorites-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <div class="container mx-auto p-4">
-        <!-- Search and Filter -->
-        <div class="bg-white p-4 rounded-lg shadow-md mb-4 flex flex-col md:flex-row gap-4 items-center">
-            <div class="relative flex-grow w-full">
-                <input type="text" id="search-input" placeholder="搜尋店家名稱、地址、類型..." class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            </div>
-        </div>
-
-        <!-- Announcement Bar -->
-        <div id="announcement-bar" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-md" role="alert">
-            <p class="font-bold">網站公告</p>
-            <p id="announcement-text"></p>
-        </div>
-
-        <!-- Main Content -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <!-- Map -->
-            <div class="lg:col-span-2 h-[60vh] lg:h-auto rounded-lg shadow-md overflow-hidden" id="map"></div>
-
-            <!-- Shop List -->
-            <div class="h-[60vh] lg:h-auto overflow-y-auto bg-white p-2 rounded-lg shadow-md">
-                <div id="shop-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-                    <!-- Shop cards will be injected here -->
-                </div>
-            </div>
-        </div>
+<body class="antialiased">
+    <!-- Fullscreen Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center">
+        <div class="spinner"></div>
+        <p class="mt-4 text-lg text-gray-700">載入中...</p>
     </div>
     
-    <!-- Modals -->
-    <!-- Shop Detail Modal -->
-    <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl modal-content overflow-y-auto">
-            <div class="p-6 relative">
-                <button onclick="closeModal('shop-detail-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-                <img id="modal-shop-image" src="" alt="店家圖片" class="w-full h-48 object-cover rounded-lg mb-4 bg-gray-200">
-                <h2 id="modal-shop-name" class="text-3xl font-bold mb-2 text-gray-800"></h2>
-                <p id="modal-shop-address" class="text-gray-600 mb-4"><i class="fas fa-map-marker-alt mr-2 text-green-600"></i></p>
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <span id="modal-shop-type" class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full"></span>
-                </div>
-                <div class="border-t border-gray-200 pt-4">
-                    <div class="space-y-3 text-gray-700">
-                        <p id="modal-shop-hours"><i class="fas fa-clock fa-fw mr-2 text-green-600"></i></p>
-                        <p id="modal-shop-phone"><i class="fas fa-phone fa-fw mr-2 text-green-600"></i></p>
-                        <p><i class="fas fa-globe fa-fw mr-2 text-green-600"></i><a id="modal-shop-website" href="#" target="_blank" class="text-blue-500 hover:underline"></a></p>
-                    </div>
-                </div>
-                <div class="mt-4 border-t border-gray-200 pt-4">
-                    <h3 class="font-semibold text-lg mb-2">永續特色</h3>
-                    <p id="modal-shop-sustainability" class="text-gray-600 whitespace-pre-wrap"></p>
-                </div>
-                <div class="mt-4 border-t border-gray-200 pt-4">
-                    <h3 class="font-semibold text-lg mb-2">標籤</h3>
-                    <div id="modal-shop-tags" class="flex flex-wrap gap-2"></div>
-                </div>
-                <div class="mt-6 flex flex-col sm:flex-row gap-3">
-                    <button id="recommend-btn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition"><i class="fas fa-share-square mr-2"></i>推薦給朋友</button>
-                    <button id="feedback-btn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition"><i class="fas fa-exclamation-triangle mr-2"></i>回報問題</button>
-                </div>
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+             <a href="#" class="flex items-center space-x-2">
+                <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span class="text-2xl font-bold text-gray-800" data-i18n="appName"></span>
+            </a>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#" class="text-gray-700 hover:text-green-600" data-i18n="home"></a>
+                <a href="#map" class="text-gray-700 hover:text-green-600" data-i18n="map"></a>
+                <a href="#shops" class="text-gray-700 hover:text-green-600" data-i18n="shopList"></a>
+                <a href="#newsletter" class="text-gray-700 hover:text-green-600" data-i18n="newsletter"></a>
+                <a href="#report-issue" class="text-gray-700 hover:text-green-600" data-i18n="reportIssueNavLink"></a>
+                <select id="language-select" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full cursor-pointer">
+                    <option value="zh-TW" data-i18n="langChinese"></option>
+                    <option value="en" data-i18n="langEnglish"></option>
+                </select>
             </div>
+            <div class="md:hidden"><button id="menu-toggle" class="text-gray-700"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg></button></div>
         </div>
-    </div>
-    <!-- Other Modals: Recommendation, Feedback, Favorites -->
-    <div id="recommend-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4"> <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6"> <h2 class="text-2xl font-bold mb-4">推薦店家</h2> <form id="recommend-form"> <input type="hidden" id="recommend-shop-id"> <label for="recipient-email" class="block mb-2">朋友的 Email</label> <input type="email" id="recipient-email" required class="w-full p-2 border rounded mb-4"> <div class="flex justify-end space-x-2"> <button type="button" onclick="closeModal('recommend-modal')" class="bg-gray-300 px-4 py-2 rounded">取消</button> <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">送出</button> </div> </form> </div> </div>
-    <div id="feedback-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4"> <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6"> <h2 class="text-2xl font-bold mb-4">回報問題</h2> <form id="feedback-form"> <input type="hidden" id="feedback-shop-id"> <p class="mb-2">店家: <span id="feedback-shop-name" class="font-semibold"></span></p> <label for="feedback-type" class="block mb-2">問題類型</label> <select id="feedback-type" class="w-full p-2 border rounded mb-4"> <option>資訊錯誤</option> <option>地點標示不準</option> <option>已歇業</option> <option>其他建議</option> </select> <label for="feedback-comment" class="block mb-2">詳細說明</label> <textarea id="feedback-comment" rows="4" required class="w-full p-2 border rounded mb-4"></textarea> <div class="flex justify-end space-x-2"> <button type="button" onclick="closeModal('feedback-modal')" class="bg-gray-300 px-4 py-2 rounded">取消</button> <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded">送出</button> </div> </form> </div> </div>
-    <div id="favorites-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4"> <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6"> <h2 class="text-2xl font-bold mb-4">我的最愛</h2> <div id="favorites-list-content" class="space-y-2 max-h-96 overflow-y-auto"></div> <div class="flex justify-end mt-4"> <button type="button" onclick="closeModal('favorites-modal')" class="bg-gray-500 text-white px-4 py-2 rounded">關閉</button> </div> </div> </div>
+        <div id="mobile-menu" class="hidden md:hidden px-4 py-2 bg-white"></div>
+    </nav>
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIcS0WXSQV0yNt5lyjvHy7hwDIUItkGeG78T_Yz2mKa83HJMgI9UxsfVIelU6PyKFwkw/exec";
-        let map, allShops = [], markers = [], favorites = [];
+    <div id="announcement-bar" class="hidden bg-yellow-200 text-yellow-800 p-3 text-center"><p id="announcement-text" class="font-medium whitespace-pre-wrap"></p></div>
 
-        // =================================================================
-        // INITIALIZATION
-        // =================================================================
-        document.addEventListener('DOMContentLoaded', async () => {
-            initMap();
-            loadFavorites();
-            try {
-                const data = await apiCall('getPublicData');
-                allShops = data.shops;
-                document.getElementById('announcement-text').innerText = data.announcements || '目前沒有新公告。';
-                renderShops(allShops);
-                addMarkers(allShops);
-            } catch (error) {
-                console.error("Failed to load initial data:", error);
-                alert("無法載入地圖資料，請稍後再試。");
-            } finally {
-                document.getElementById('loading-overlay').style.display = 'none';
-            }
-            setupEventListeners();
-        });
+    <section class="hero-section py-20 text-white text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6" data-i18n="heroTitle"></h1>
+        <p class="text-xl max-w-2xl mx-auto mb-8" data-i18n="heroSubtitle"></p>
+        <div class="flex flex-col md:flex-row justify-center gap-4">
+            <a href="#map" class="btn-primary px-8 py-3 rounded-lg font-medium" data-i18n="viewMapBtn"></a>
+            <a href="#shops" class="bg-white text-green-600 px-8 py-3 rounded-lg font-medium hover:bg-gray-100" data-i18n="browseShopsBtn"></a>
+        </div>
+    </section>
+    
+    <section class="py-12 bg-white"><div class="max-w-4xl mx-auto p-4"><div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-2xl font-bold mb-4" data-i18n="searchTitle"></h2>
+        <div class="flex"><input type="text" id="search-input" class="flex-1 px-4 py-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500" data-i18n-placeholder="searchPlaceholder"><button id="search-button" class="btn-primary px-6 py-3 rounded-r-lg"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></button></div>
+        <h3 class="font-medium mt-6 mb-3" data-i18n="filterCategoryTitle"></h3>
+        <div class="flex flex-wrap gap-2" id="filter-buttons-container">
+             <button class="tag px-3 py-1 rounded-full text-sm active" data-category="" data-i18n="filterAll"></button>
+             <button class="tag px-3 py-1 rounded-full text-sm" data-category="favorites" data-i18n="filterFavorites"></button>
+        </div>
+    </div></div></section>
 
-        const apiCall = async (action, payload = {}) => {
-            const response = await fetch(SCRIPT_URL, { method: 'POST', redirect: "follow", body: JSON.stringify({ action, ...payload }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
-            if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+    <section id="map" class="py-12 bg-green-50"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-8" data-i18n="mapSectionTitle"></h2><div class="bg-white rounded-xl shadow-lg overflow-hidden"><div id="sustainability-map-container"><div class="map-placeholder">地圖載入中...</div><div id="sustainability-map"></div></div></div></div></section>
+
+    <section id="shops" class="py-12 bg-white"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-8" data-i18n="shopListSectionTitle"></h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="shop-cards-container"></div><div class="text-center mt-8"><button id="load-more-button" class="btn-primary px-8 py-3 rounded-lg hidden" data-i18n="loadMoreBtn"></button></div></div></section>
+
+    <section id="newsletter" class="py-12 bg-green-600 text-white text-center"><h2 class="text-3xl font-bold mb-4" data-i18n="newsletterTitle"></h2><p class="mb-6" data-i18n="newsletterSubtitle"></p><form id="newsletter-form" class="max-w-md mx-auto flex gap-2"><input type="email" name="email" class="flex-1 px-4 py-3 rounded-lg text-gray-800" data-i18n-placeholder="newsletterPlaceholder" required><button type="submit" class="bg-white text-green-600 px-6 py-3 rounded-lg" data-i18n="subscribeBtn"></button></form></section>
+
+    <section id="report-issue" class="py-12 bg-yellow-50"><div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8"><h2 class="text-3xl font-bold text-center mb-6" data-i18n="reportIssueTitle"></h2><form id="issue-form" class="space-y-4"><input type="email" name="email" class="w-full p-2 border rounded" data-i18n-placeholder="modalEmail" required><select name="type" class="w-full p-2 border rounded" required><option value="" data-i18n="reportIssueSelectType"></option><option value="data_error" data-i18n="reportIssueDataError"></option><option value="feature_request" data-i18n="reportIssueFeatureRequest"></option><option value="bug_report" data-i18n="reportIssueBugReport"></option><option value="other" data-i18n="reportIssueOther"></option></select><textarea name="message" rows="4" class="w-full p-2 border rounded" data-i18n-placeholder="reportIssuePlaceholder" required></textarea><div class="text-center"><button type="submit" class="btn-primary px-6 py-2 rounded-lg" data-i18n="reportIssueSubmitBtn"></button></div></form></div></section>
+    
+    <footer class="bg-gray-800 text-white py-10"><div class="container mx-auto px-4 text-center"><button id="showPolicyFooter" class="hover:text-green-400" data-i18n="privacyPolicy"></button><div class="border-t border-gray-700 mt-6 pt-6 text-gray-400"><p data-i18n="copyright"></p></div></div></footer>
+    
+    <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center modal p-4"><div class="bg-white rounded-xl max-w-5xl w-full modal-content"><div id="shop-detail-content" class="relative"></div></div></div>
+    <div id="policy-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center modal p-4"><div class="bg-white rounded-xl max-w-3xl w-full modal-content"><div id="policy-content" class="p-6 relative"></div></div></div>
+    
+    <div id="toast" class="fixed top-0 left-1/2 -translate-x-1/2 p-4 rounded-b-lg shadow-lg text-white flex items-center gap-3 transform -translate-y-full z-[2000] opacity-0"><span id="toast-icon"></span><span id="toast-message" class="font-medium"></span></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyJ76tpxJ2eeRRqcv3qUqx3Z8nWLqrNsAIxgMR5vnkfmJOXulhhu1Av2T9w4AzDLg83gA/exec';
+    
+    let allShops = [], policies = {}, mapInstance, markersGroup = L.featureGroup();
+    let favoriteShops = JSON.parse(localStorage.getItem('favoriteShops')) || [];
+    let currentLang = localStorage.getItem('lang') || 'zh-TW';
+    let currentFilterCategory = '', currentSearchQuery = '', shopsDisplayed = 0;
+    const shopsPerPage = 6;
+
+    const translations = {
+        'zh-TW': { pageTitle: '永續商店地圖', appName: '永續商店地圖', home: '首頁', map: '地圖', shopList: '商店列表', newsletter: '訂閱電子報', reportIssueNavLink: '問題回報', langChinese: '繁體中文', langEnglish: 'English', heroTitle: '探索台灣永續商店', heroSubtitle: '找到支持環保、公平貿易和永續發展的商店', viewMapBtn: '查看地圖', browseShopsBtn: '瀏覽商店列表', searchTitle: '搜尋永續商店', searchPlaceholder: '輸入店名...', filterCategoryTitle: '依類別篩選', filterAll: '全部', filterFavorites: '❤️ 我的收藏', mapSectionTitle: '永續商店地圖', shopListSectionTitle: '永續商店列表', viewDetailsBtn: '查看詳情', loadMoreBtn: '載入更多', newsletterTitle: '訂閱電子報', newsletterSubtitle: '獲取最新永續資訊', newsletterPlaceholder: '您的電子郵件', subscribeBtn: '訂閱', reportIssueTitle: '問題回報', modalEmail: '您的Email', reportIssuePlaceholder: '請描述問題...', reportIssueSubmitBtn: '送出', copyright: '© 2025 版權所有', modalAddress: '地址', modalPhone: '電話', modalWebsite: '網站', notProvided: '未提供', newsletterSuccess: '訂閱成功！感謝您的加入', newsletterError: '訂閱失敗', reportIssueSuccess: '感謝回報！', reportIssueError: '回報失敗', privacyPolicy: '隱私權政策與聲明', privacyPolicyTitle: '隱私權政策', disclaimerTitle: '免責聲明', reportIssueSelectType: '請選擇類型', reportIssueDataError: '店家資訊錯誤', reportIssueFeatureRequest: '功能建議', reportIssueBugReport: '系統問題', reportIssueOther: '其他', modalAboutUs: '關於我們', modalSustainability: '永續理念' },
+        'en': { pageTitle: 'Sustainable Store Map', appName: 'Sustainable Store Map', home: 'Home', map: 'Map', shopList: 'Shops', newsletter: 'Newsletter', reportIssueNavLink: 'Report Issue', langChinese: '繁體中文', langEnglish: 'English', heroTitle: 'Explore Sustainable Stores', heroSubtitle: 'Find shops that support eco-friendly and fair trade practices', viewMapBtn: 'View Map', browseShopsBtn: 'Browse Shops', searchTitle: 'Search Stores', searchPlaceholder: 'Enter store name...', filterCategoryTitle: 'Filter by Category', filterAll: 'All', filterFavorites: '❤️ My Favorites', mapSectionTitle: 'Sustainable Store Map', shopListSectionTitle: 'Sustainable Shops', viewDetailsBtn: 'View Details', loadMoreBtn: 'Load More', newsletterTitle: 'Subscribe', newsletterSubtitle: 'Get the latest sustainable news', newsletterPlaceholder: 'Your email', subscribeBtn: 'Subscribe', reportIssueTitle: 'Report an Issue', modalEmail: 'Your Email', reportIssuePlaceholder: 'Describe the issue...', reportIssueSubmitBtn: 'Submit', copyright: '© 2025 All Rights Reserved', modalAddress: 'Address', modalPhone: 'Phone', modalWebsite: 'Website', notProvided: 'Not provided', newsletterSuccess: 'Subscription complete! Thank you.', newsletterError: 'Subscription failed', reportIssueSuccess: 'Thanks for the feedback!', reportIssueError: 'Submission failed', privacyPolicy: 'Privacy Policy & Disclaimer', privacyPolicyTitle: 'Privacy Policy', disclaimerTitle: 'Disclaimer', reportIssueSelectType: 'Select type', reportIssueDataError: 'Incorrect Store Info', reportIssueFeatureRequest: 'Feature Suggestion', reportIssueBugReport: 'System Bug', reportIssueOther: 'Other', modalAboutUs: 'About Us', modalSustainability: 'Sustainability' },
+    };
+    
+    const showToast = (message, type = 'success') => {
+        const toast = document.getElementById('toast');
+        const toastIcon = document.getElementById('toast-icon');
+        const toastMessage = document.getElementById('toast-message');
+        toastMessage.textContent = message;
+        if (type === 'success') {
+            toast.className = toast.className.replace(/bg-\w+-\d+/g, 'bg-green-600');
+            toastIcon.innerHTML = `<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+        } else {
+            toast.className = toast.className.replace(/bg-\w+-\d+/g, 'bg-red-600');
+            toastIcon.innerHTML = `<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
+        }
+        toast.classList.remove('-translate-y-full', 'opacity-0');
+        setTimeout(() => { toast.classList.add('-translate-y-full', 'opacity-0'); }, 3000);
+    };
+
+    const setLanguage = (lang) => {
+        currentLang = lang;
+        localStorage.setItem('lang', lang);
+        const t = translations[lang] || translations['zh-TW'];
+        document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t[el.dataset.i18n] || ''; });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t[el.dataset.i18nPlaceholder] || ''; });
+        document.querySelectorAll('#language-select, #language-select-mobile').forEach(sel => sel.value = lang);
+        document.documentElement.lang = lang.split('-')[0];
+        shopsDisplayed = 0;
+        populateFilters();
+        filterAndRender();
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.innerHTML = document.querySelector('nav .hidden.md\\:flex').innerHTML;
+    };
+
+    async function fetchPublicData() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST', body: JSON.stringify({ action: 'getPublicData' }),
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            });
+            if(!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const result = await response.json();
-            if (result.status === 'error') throw new Error(result.message);
-            return result.data;
-        };
-
-        function initMap() {
-            map = L.map('map').setView([25.0330, 121.5654], 13); // Taipei
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-        }
-
-        // =================================================================
-        // RENDERING & MAP FUNCTIONS
-        // =================================================================
-        function renderShops(shops) {
-            const list = document.getElementById('shop-list');
-            list.innerHTML = shops.length ? shops.map(shop => {
-                const isFavorite = favorites.includes(shop.id);
-                const imageUrl = shop.imageUrl || `https://placehold.co/400x300/e2e8f0/4a5568?text=${encodeURIComponent(shop['name_zh-TW'])}`;
-                return `
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-                        <img src="${imageUrl}" alt="${shop['name_zh-TW']}" class="w-full h-40 object-cover cursor-pointer" onclick="showShopDetail('${shop.id}')" onerror="this.onerror=null;this.src='https://placehold.co/400x300/e2e8f0/4a5568?text=圖片錯誤';">
-                        <div class="p-4">
-                            <h3 class="font-bold text-lg truncate cursor-pointer hover:text-green-700" onclick="showShopDetail('${shop.id}')">${shop['name_zh-TW']}</h3>
-                            <p class="text-gray-600 text-sm truncate"><i class="fas fa-map-marker-alt fa-fw mr-1"></i>${shop['address_zh-TW']}</p>
-                            <div class="mt-2 flex justify-between items-center">
-                                <span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">${shop['type_zh-TW']}</span>
-                                <button onclick="toggleFavorite('${shop.id}', event)" class="favorite-btn ${isFavorite ? 'active' : ''} text-gray-400 hover:text-red-500 text-xl p-1">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>`;
-            }).join('') : '<p class="text-center text-gray-500 col-span-full">找不到店家資訊。</p>';
-        }
-
-        function addMarkers(shops) {
-            markers.forEach(marker => map.removeLayer(marker));
-            markers = [];
-            shops.forEach(shop => {
-                if (shop.lat && shop.lng) {
-                    const marker = L.marker([shop.lat, shop.lng]).addTo(map);
-                    marker.bindPopup(`<b>${shop['name_zh-TW']}</b><br>${shop['address_zh-TW']}`);
-                    marker.on('click', () => showShopDetail(shop.id));
-                    markers.push(marker);
-                }
-            });
-        }
-        
-        function showShopDetail(shopId) {
-            const shop = allShops.find(s => s.id === shopId);
-            if (!shop) return;
-            const textOrDefault = (text) => text || '未提供';
-            document.getElementById('modal-shop-name').textContent = textOrDefault(shop['name_zh-TW']);
-            document.getElementById('modal-shop-address').innerHTML = `<i class="fas fa-map-marker-alt mr-2 text-green-600"></i>${textOrDefault(shop['address_zh-TW'])}`;
-            document.getElementById('modal-shop-type').textContent = textOrDefault(shop['type_zh-TW']);
-            document.getElementById('modal-shop-hours').innerHTML = `<i class="fas fa-clock fa-fw mr-2 text-green-600"></i>${textOrDefault(shop['hours_zh-TW'])}`;
-            document.getElementById('modal-shop-phone').innerHTML = `<i class="fas fa-phone fa-fw mr-2 text-green-600"></i>${textOrDefault(shop.phone)}`;
-            const websiteLink = document.getElementById('modal-shop-website');
-            websiteLink.href = shop.website ? `http://${shop.website.replace(/^https?:\/\//,'')}` : '#';
-            websiteLink.textContent = textOrDefault(shop.website);
-            document.getElementById('modal-shop-sustainability').textContent = textOrDefault(shop['sustainability_zh-TW']);
-            document.getElementById('modal-shop-tags').innerHTML = (shop['tags_zh-TW'] || '').split(',')
-                .map(tag => tag.trim() ? `<span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${tag.trim()}</span>` : '').join('');
-            document.getElementById('recommend-btn').onclick = () => openRecommendModal(shop.id);
-            document.getElementById('feedback-btn').onclick = () => openFeedbackModal(shop.id);
-
-            const modalImage = document.getElementById('modal-shop-image');
-            const imageUrl = shop.imageUrl || `https://placehold.co/600x400/e2e8f0/4a5568?text=${encodeURIComponent(shop['name_zh-TW'])}`;
-            modalImage.src = imageUrl;
-            modalImage.alt = shop['name_zh-TW'];
-            modalImage.onerror = () => { modalImage.src = `https://placehold.co/600x400/e2e8f0/4a5568?text=圖片載入失敗`; };
-            
-            openModal('shop-detail-modal');
-        }
-
-        // =================================================================
-        // EVENT HANDLERS & MODAL LOGIC
-        // =================================================================
-        function setupEventListeners() {
-            document.getElementById('search-input').addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                const filtered = allShops.filter(shop => 
-                    (shop['name_zh-TW'] && shop['name_zh-TW'].toLowerCase().includes(searchTerm)) ||
-                    (shop['address_zh-TW'] && shop['address_zh-TW'].toLowerCase().includes(searchTerm)) ||
-                    (shop['type_zh-TW'] && shop['type_zh-TW'].toLowerCase().includes(searchTerm))
-                );
-                renderShops(filtered);
-                addMarkers(filtered);
-            });
-            document.getElementById('favorites-list-btn').addEventListener('click', showFavoritesModal);
-            document.getElementById('recommend-form').addEventListener('submit', handleRecommendSubmit);
-            document.getElementById('feedback-form').addEventListener('submit', handleFeedbackSubmit);
-        }
-
-        function openModal(id) { document.getElementById(id).classList.replace('hidden', 'flex'); }
-        function closeModal(id) { document.getElementById(id).classList.replace('flex', 'hidden'); }
-
-        function openRecommendModal(shopId) { document.getElementById('recommend-shop-id').value = shopId; openModal('recommend-modal'); }
-        async function handleRecommendSubmit(e) {
-            e.preventDefault();
-            const shopId = document.getElementById('recommend-shop-id').value;
-            const shop = allShops.find(s => s.id === shopId);
-            const recipientEmail = document.getElementById('recipient-email').value;
-            try {
-                await apiCall('sendRecommendation', { recipientEmail, shopName: shop['name_zh-TW'], shopAddress: shop['address_zh-TW'], shopWebsite: shop.website });
-                alert('推薦信已成功寄出！');
-                closeModal('recommend-modal');
-                e.target.reset();
-            } catch (error) { alert(`推薦失敗: ${error.message}`); }
-        }
-
-        function openFeedbackModal(shopId) { const shop = allShops.find(s => s.id === shopId); document.getElementById('feedback-shop-id').value = shopId; document.getElementById('feedback-shop-name').textContent = shop['name_zh-TW']; openModal('feedback-modal'); }
-        async function handleFeedbackSubmit(e) {
-            e.preventDefault();
-            const payload = { shopId: document.getElementById('feedback-shop-id').value, feedbackType: document.getElementById('feedback-type').value, comment: document.getElementById('feedback-comment').value, shopName: document.getElementById('feedback-shop-name').textContent };
-            try {
-                await apiCall('submitFeedback', payload);
-                alert('感謝您的回報！');
-                closeModal('feedback-modal');
-                e.target.reset();
-            } catch (error) { alert(`回報失敗: ${error.message}`); }
-        }
-        
-        // =================================================================
-        // FAVORITES LOGIC
-        // =================================================================
-        function loadFavorites() { favorites = JSON.parse(localStorage.getItem('favorites')) || []; updateFavoritesCount(); }
-        function saveFavorites() { localStorage.setItem('favorites', JSON.stringify(favorites)); updateFavoritesCount(); }
-        function updateFavoritesCount() { document.getElementById('favorites-count').textContent = favorites.length; }
-        function toggleFavorite(shopId, event) {
-            event.stopPropagation();
-            const index = favorites.indexOf(shopId);
-            if (index > -1) favorites.splice(index, 1);
-            else favorites.push(shopId);
-            saveFavorites();
-            const btn = event.currentTarget;
-            btn.classList.toggle('active', index === -1);
-        }
-        function showFavoritesModal() {
-            const content = document.getElementById('favorites-list-content');
-            const favoriteShops = allShops.filter(s => favorites.includes(s.id));
-            if (favoriteShops.length) {
-                content.innerHTML = favoriteShops.map(shop => `<div class="flex items-center justify-between p-2 border-b"><span class="cursor-pointer hover:underline" onclick="showShopDetail('${shop.id}');closeModal('favorites-modal');">${shop['name_zh-TW']}</span><button onclick="removeFavoriteFromList('${shop.id}')" class="text-red-500 text-sm">移除</button></div>`).join('');
-            } else {
-                content.innerHTML = '<p class="text-gray-500">您尚未加入任何最愛店家。</p>';
+            if (result.status !== 'success') throw new Error(result.message || 'Backend error');
+            allShops = result.data.shops || [];
+            policies = result.data.policies || {};
+            if (result.data.announcements) {
+                document.getElementById('announcement-text').textContent = result.data.announcements;
+                document.getElementById('announcement-bar').classList.remove('hidden');
             }
-            openModal('favorites-modal');
+            setLanguage(currentLang);
+        } catch (error) {
+            console.error("Data fetch failed:", error);
+            showToast('資料載入失敗，請稍後再試。', 'error');
+        } finally {
+            document.getElementById('loading-overlay').style.display = 'none';
         }
-        function removeFavoriteFromList(shopId) {
-            const index = favorites.indexOf(shopId);
-            if (index > -1) favorites.splice(index, 1);
-            saveFavorites();
-            showFavoritesModal(); // Refresh list
-            renderShops(allShops); // Refresh main view button states
+    }
+
+    const populateFilters = () => {
+        const types = [...new Set(allShops.map(s => s[`type_${currentLang}`] || s['type_zh-TW']).filter(Boolean))];
+        const container = document.getElementById('filter-buttons-container');
+        container.querySelectorAll('.tag:not([data-category=""]):not([data-category="favorites"])').forEach(btn => btn.remove());
+        types.forEach(type => {
+            const btn = document.createElement('button');
+            btn.className = 'tag px-3 py-1 rounded-full text-sm';
+            btn.dataset.category = type;
+            btn.textContent = type;
+            container.appendChild(btn);
+        });
+    };
+
+    const filterAndRender = () => {
+        const container = document.getElementById('shop-cards-container');
+        if (shopsDisplayed === 0) container.innerHTML = '';
+        const filtered = allShops.filter(shop => {
+            const name = (shop[`name_${currentLang}`] || shop['name_zh-TW'] || '').toLowerCase();
+            const type = shop[`type_${currentLang}`] || shop['type_zh-TW'] || '';
+            const categoryMatch = !currentFilterCategory || (currentFilterCategory === 'favorites' ? favoriteShops.includes(String(shop.id)) : type === currentFilterCategory);
+            const searchMatch = !currentSearchQuery || name.includes(currentSearchQuery);
+            return categoryMatch && searchMatch;
+        });
+        const toDisplay = filtered.slice(shopsDisplayed, shopsDisplayed + shopsPerPage);
+        toDisplay.forEach(shop => {
+            const t = translations[currentLang] || translations['zh-TW'];
+            const name = shop[`name_${currentLang}`] || shop['name_zh-TW'];
+            const type = shop[`type_${currentLang}`] || shop['type_zh-TW'];
+            const desc = shop[`description_${currentLang}`] || shop['description_zh-TW'];
+            const address = shop[`address_${currentLang}`] || shop['address_zh-TW'];
+            const isFavorited = favoriteShops.includes(String(shop.id));
+            container.innerHTML += `<div class="shop-card bg-white rounded-xl overflow-hidden shadow-md relative"><div class="h-48 bg-green-100 flex items-center justify-center"><svg class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg></div><button class="favorite-btn ${isFavorited ? 'favorited' : ''}" data-id="${shop.id}"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button><div class="p-6"><div><h3 class="text-xl font-bold mb-2">${name}</h3><span class="tag px-2 py-1 rounded-full text-xs">${type}</span><p class="text-gray-600 my-4">${desc}</p><p class="text-sm text-gray-500">${address}</p></div><button class="btn-primary py-2 rounded-lg mt-4" data-id="${shop.id}" data-action="details">${t.viewDetailsBtn}</button></div></div>`;
+        });
+        shopsDisplayed += toDisplay.length;
+        document.getElementById('load-more-button').classList.toggle('hidden', shopsDisplayed >= filtered.length);
+        updateMapMarkers(filtered);
+    };
+    
+    const updateMapMarkers = (shops) => {
+        if (!mapInstance) return;
+        markersGroup.clearLayers();
+        shops.forEach(shop => {
+            if (shop.lat && shop.lng) {
+                const name = shop[`name_${currentLang}`] || shop['name_zh-TW'];
+                const marker = L.marker([shop.lat, shop.lng]).bindPopup(`<b>${name}</b><br><button class='text-green-600' data-action='details' data-id='${shop.id}'>${(translations[currentLang] || translations['zh-TW']).viewDetailsBtn}</button>`);
+                markersGroup.addLayer(marker);
+            }
+        });
+    };
+
+    const showShopDetail = (shopId) => {
+        const shop = allShops.find(s => String(s.id) === String(shopId));
+        if (!shop) return;
+        const t = translations[currentLang] || translations['zh-TW'];
+        const name = shop[`name_${currentLang}`] || shop['name_zh-TW'];
+        const longDesc = shop[`longDescription_${currentLang}`] || shop['longDescription_zh-TW'] || shop[`description_${currentLang}`] || shop['description_zh-TW'];
+        const address = shop[`address_${currentLang}`] || shop['address_zh-TW'];
+        const website = shop.website ? `<p><strong>${t.modalWebsite}:</strong> <a href="//${shop.website}" target="_blank" class="text-green-600">${shop.website}</a></p>` : '';
+        document.getElementById('shop-detail-content').innerHTML = `
+            <div class="shop-detail-header p-6 text-white rounded-t-xl text-center relative flex justify-between items-center">
+                <h2 class="text-2xl font-bold">${name}</h2>
+                 <button id="close-modal" class="p-2 bg-white/30 hover:bg-white rounded-full text-white hover:text-black leading-none text-2xl">&times;</button>
+            </div>
+            <div class="p-8 space-y-6">
+                <div><h3 class="text-xl font-bold mb-2">${t.modalAboutUs}</h3><p class="text-gray-700">${longDesc || t.notProvided}</p></div>
+                <div class="bg-gray-50 p-4 rounded-lg space-y-2">
+                    <p><strong>${t.modalAddress}:</strong> ${address || t.notProvided}</p>
+                    <p><strong>${t.modalPhone}:</strong> ${shop.phone || t.notProvided}</p>
+                    ${website}
+                </div>
+            </div>`;
+        document.getElementById('shop-detail-modal').classList.remove('hidden');
+    };
+
+    const initMap = () => {
+        const mapContainer = document.getElementById('sustainability-map');
+        const placeholder = document.querySelector('.map-placeholder');
+        mapInstance = L.map(mapContainer).setView([25.03, 121.56], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
+        mapInstance.addLayer(markersGroup);
+        mapInstance.whenReady(() => {
+            if (placeholder) placeholder.style.display = 'none';
+        });
+        mapInstance.on('popupopen', (e) => {
+            const btn = e.popup._container.querySelector('button[data-action="details"]');
+            if (btn) btn.onclick = () => showShopDetail(btn.dataset.id);
+        });
+    };
+    
+    document.body.addEventListener('click', e => {
+        const target = e.target;
+        const favBtn = target.closest('.favorite-btn');
+        if (target.closest('[data-action="details"]')) { showShopDetail(target.closest('[data-action="details"]').dataset.id); }
+        if (favBtn) {
+            const shopId = String(favBtn.dataset.id);
+            const index = favoriteShops.indexOf(shopId);
+            if (index > -1) favoriteShops.splice(index, 1); else favoriteShops.push(shopId);
+            localStorage.setItem('favoriteShops', JSON.stringify(favoriteShops));
+            favBtn.classList.toggle('favorited');
+            if (currentFilterCategory === 'favorites') { shopsDisplayed = 0; filterAndRender(); }
         }
-    </script>
+        if (target.closest('#close-modal') || target.id === 'shop-detail-modal') { document.getElementById('shop-detail-modal').classList.add('hidden'); }
+    });
+    
+    document.getElementById('menu-toggle').addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('hidden'));
+    document.querySelectorAll('#language-select, #language-select-mobile').forEach(sel => sel.addEventListener('change', e => setLanguage(e.target.value)));
+    document.getElementById('search-input').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('search-button').click(); });
+    document.getElementById('search-button').addEventListener('click', () => { currentSearchQuery = document.getElementById('search-input').value.toLowerCase(); shopsDisplayed = 0; filterAndRender(); });
+    document.getElementById('filter-buttons-container').addEventListener('click', e => {
+        if (!e.target.matches('.tag')) return;
+        document.querySelectorAll('#filter-buttons-container .tag').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilterCategory = e.target.dataset.category;
+        shopsDisplayed = 0;
+        filterAndRender();
+    });
+    document.getElementById('load-more-button').addEventListener('click', filterAndRender);
+    const submitApiForm = async (form, action, successKey, errorKey) => {
+        const payload = Object.fromEntries(new FormData(form).entries());
+        try {
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, payload }), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
+             if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            const result = await res.json();
+            if (result.status !== 'success') throw new Error(result.message);
+            showToast((translations[currentLang] || translations['zh-TW'])[successKey], 'success');
+            form.reset();
+        } catch (err) { showToast((translations[currentLang] || translations['zh-TW'])[errorKey] + `: ${err.message}`, 'error'); }
+    };
+    document.getElementById('newsletter-form').addEventListener('submit', e => { e.preventDefault(); submitApiForm(e.target, 'subscribe', 'newsletterSuccess', 'newsletterError'); });
+    document.getElementById('issue-form').addEventListener('submit', e => { e.preventDefault(); submitApiForm(e.target, 'submitFeedback', 'reportIssueSuccess', 'reportIssueError'); });
+    document.getElementById('showPolicyFooter').addEventListener('click', () => {
+        const policyModal = document.getElementById('policy-modal');
+        const t = translations[currentLang] || translations['zh-TW'];
+        const privacyHTML = (policies.privacy || '').toString().replace(/\n/g, '<br>');
+        const disclaimerHTML = (policies.disclaimer || '').toString().replace(/\n/g, '<br>');
+        document.getElementById('policy-content').innerHTML = `
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">${t.privacyPolicy}</h2>
+                <button id="close-policy" class="p-2 text-2xl">&times;</button>
+            </div>
+            <div class="space-y-4 text-left">
+                <h3 class="text-lg font-semibold">${t.privacyPolicyTitle}</h3>
+                <div>${privacyHTML || t.notProvided}</div>
+                <h3 class="text-lg font-semibold mt-4">${t.disclaimerTitle}</h3>
+                <div>${disclaimerHTML || t.notProvided}</div>
+            </div>`;
+        policyModal.classList.remove('hidden');
+    });
+    document.getElementById('policy-modal').addEventListener('click', e => { if (e.target.closest('#close-policy') || e.target.id === 'policy-modal') e.currentTarget.classList.add('hidden'); });
+
+    initMap();
+    fetchPublicData();
+});
+</script>
 </body>
 </html>
-
