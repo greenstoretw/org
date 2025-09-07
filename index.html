@@ -6,122 +6,589 @@
     <title data-i18n="pageTitle">永續商店地圖</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <!-- [重要] EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
-        /* ... same styles as before ... */
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F8F9FA; }
+        .hero-section { background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=2874&auto=format&fit=crop') no-repeat center center; background-size: cover; }
+        #map { height: 100%; min-height: 400px; border-radius: 0.5rem; z-index: 10; }
+        .leaflet-popup-content-wrapper { border-radius: 0.5rem; }
+        .shop-card { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .shop-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .favorite-btn.favorited { color: #ef4444; }
+        .modal-backdrop { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
     </style>
 </head>
-<body class="antialiased">
-    <!-- Fullscreen Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center">
-        <!-- ... spinner ... -->
-    </div>
-    
-    <!-- Main content structure is the same -->
-    <nav>...</nav>
-    <section class="hero-section">...</section>
-    <section class="search-section">
-        <!-- Filter buttons container will be populated dynamically -->
-        <div class="flex flex-wrap gap-2" id="filter-buttons-container">
-             <button class="tag px-3 py-1 rounded-full text-sm active" data-category="" data-i18n="filterAll"></button>
-             <button class="tag px-3 py-1 rounded-full text-sm" data-category="favorites" data-i18n="filterFavorites"></button>
-             <!-- Dynamic tags will be inserted here -->
+<body class="text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-green-700" data-i18n="headerTitle">永續商店地圖</h1>
+            <div class="flex items-center space-x-4">
+                <a href="#map-section" class="text-gray-600 hover:text-green-600" data-i18n="navMap">地圖</a>
+                <a href="#footer" class="text-gray-600 hover:text-green-600" data-i18n="navContact">聯絡我們</a>
+                <select id="lang-switcher" class="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-white py-20 md:py-32">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4" data-i18n="heroTitle">探索您附近的永續生活</h2>
+            <p class="text-lg md:text-xl mb-8" data-i18n="heroSubtitle">一個致力於連結消費者與環保、在地、公平貿易商店的平台。</p>
+            <a href="#map-section" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full transition duration-300" data-i18n="heroCta">開始探索</a>
         </div>
     </section>
-    <section id="map">...</section>
-    <section id="shops">...</section>
-    <!-- ... other sections ... -->
-    
-    <!-- Modals and Toast -->
-    <!-- ... all modals are the same ... -->
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // ... initial variables are the same ...
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzIcS0WXSQV0yNt5lyjvHy7hwDIUItkGeG78T_Yz2mKa83HJMgI9UxsfVIelU6PyKFwkw/exec';
-    let allShops = [], policies = {}; // etc.
+    <!-- Map & Shops Section -->
+    <main id="map-section" class="container mx-auto px-4 md:px-6 py-12">
+        <!-- Filters -->
+        <div class="bg-white p-4 rounded-lg shadow-md mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input type="text" id="search-input" data-i18n-placeholder="searchPlaceholder" placeholder="搜尋店家名稱、地址..." class="col-span-1 md:col-span-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                <select id="tag-filter" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <option value="all" data-i18n="allTags">所有標籤</option>
+                </select>
+            </div>
+        </div>
 
-    // ... translations object remains the same ...
-    const translations = { 'zh-TW': { /* ... */ }, 'en': { /* ... */ } };
+        <!-- Main Content -->
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Shops List -->
+            <div id="shops-list-container" class="w-full lg:w-1/3">
+                 <h3 class="text-2xl font-bold mb-4" data-i18n="storeListTitle">商店列表</h3>
+                 <div id="shops-list" class="space-y-4 max-h-[1000px] overflow-y-auto pr-2">
+                    <!-- Shop cards will be inserted here -->
+                 </div>
+            </div>
+            <!-- Map -->
+            <div class="w-full lg:w-2/3">
+                <div id="map" class="shadow-lg"></div>
+            </div>
+        </div>
+    </main>
 
-    // ... showToast, setLanguage are the same ...
-    
-    async function fetchPublicData() {
-        try {
-            // ... same fetch logic ...
-            const result = await response.json();
-            // ... same result handling ...
-            allShops = result.data.shops || []; // Now shops will contain a `tags` array of objects
-            policies = result.data.policies || {};
-            // ...
-            setLanguage(currentLang); // This will now call the updated populateFilters
-        } catch (error) {
-            // ... error handling ...
-        } finally {
-            document.getElementById('loading-overlay').style.display = 'none';
-        }
-    }
+    <!-- Footer -->
+    <footer id="footer" class="bg-gray-800 text-white pt-12 pb-8">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Subscription -->
+            <div>
+                <h4 class="text-lg font-semibold mb-3" data-i18n="subscribeTitle">訂閱電子報</h4>
+                <p class="text-sm text-gray-400 mb-4" data-i18n="subscribeDesc">獲取最新的永續商店資訊與環保生活技巧。</p>
+                <form id="subscribe-form" class="flex">
+                    <input type="email" name="email" data-i18n-placeholder="emailPlaceholder" placeholder="您的電子郵件" class="w-full rounded-l-md p-2 text-gray-800 focus:outline-none" required>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-r-md" data-i18n="subscribeBtn">訂閱</button>
+                </form>
+            </div>
+            <!-- Report Issue -->
+            <div>
+                <h4 class="text-lg font-semibold mb-3" data-i18n="reportIssueTitle">回報問題</h4>
+                <p class="text-sm text-gray-400 mb-4" data-i18n="reportIssueDesc">發現資訊有誤或想推薦店家？請告訴我們！</p>
+                <!-- [重要] 請將 action 中的網址換成您在 formsubmit.co 建立的端點 -->
+                <form id="issue-form" action="https://formsubmit.co/YOUR_EMAIL_HERE" method="POST">
+                     <input type="hidden" name="_subject" value="永續地圖問題回報!">
+                     <input type="hidden" name="_captcha" value="false">
+                     <!-- [可選] 成功後跳轉的頁面 -->
+                     <!-- <input type="hidden" name="_next" value="https://yourdomain.co/thanks.html"> -->
+                     <textarea name="message" data-i18n-placeholder="issuePlaceholder" placeholder="請在此描述您的問題..." class="w-full rounded-md p-2 text-gray-800 h-16 mb-2 focus:outline-none" required></textarea>
+                     <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md w-full" data-i18n="reportIssueBtn">送出回報</button>
+                </form>
+                 <p id="issue-message" class="text-green-400 text-sm mt-2 hidden" data-i18n="reportSuccessMsg">感謝您的回報！</p>
+            </div>
+            <!-- Links -->
+            <div>
+                <h4 class="text-lg font-semibold mb-3" data-i18n="linksTitle">相關連結</h4>
+                <ul class="text-sm space-y-2">
+                    <li><a href="#" id="privacy-link" class="text-gray-400 hover:text-white" data-i18n="privacyPolicy">隱私權政策</a></li>
+                    <li><a href="#" id="disclaimer-link" class="text-gray-400 hover:text-white" data-i18n="disclaimer">免責聲明</a></li>
+                    <li><a href="admin.html" class="text-gray-400 hover:text-white" data-i18n="adminLogin">管理員登入</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="text-center text-gray-500 text-sm mt-8 border-t border-gray-700 pt-6">
+            <p>&copy; 2025 Sustainable Store Map. All Rights Reserved.</p>
+        </div>
+    </footer>
 
-    const populateFilters = () => {
-        const container = document.getElementById('filter-buttons-container');
-        // Clear only dynamic tags
-        container.querySelectorAll('.tag:not([data-category=""]):not([data-category="favorites"])').forEach(btn => btn.remove());
+    <!-- Modals -->
+    <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden modal-backdrop">
+        <!-- Generic Message Modal -->
+        <div id="message-modal" class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center hidden">
+            <p id="message-modal-text" class="mb-4"></p>
+            <button onclick="closeAllModals()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-md" data-i18n="closeBtn">關閉</button>
+        </div>
+
+        <!-- Policy Modal -->
+        <div id="policy-modal" class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl hidden">
+            <h2 id="policy-modal-title" class="text-2xl font-bold mb-4"></h2>
+            <div id="policy-modal-content" class="prose max-h-[70vh] overflow-y-auto"></div>
+            <div class="text-right mt-6">
+                <button onclick="closeAllModals()" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-md" data-i18n="closeBtn">關閉</button>
+            </div>
+        </div>
         
-        // Collect all unique tags from all shops
-        const allTagsInUse = new Map();
-        allShops.forEach(shop => {
-            (shop.tags || []).forEach(tag => {
-                if (!allTagsInUse.has(tag.id)) {
-                    allTagsInUse.set(tag.id, tag);
+        <!-- Shop Detail Modal -->
+        <div id="shop-detail-modal" class="bg-white rounded-lg shadow-xl w-full max-w-3xl hidden">
+            <div class="relative">
+                <button onclick="closeAllModals()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 z-10">&times;</button>
+                <div id="shop-detail-content" class="p-6 md:p-8 max-h-[80vh] overflow-y-auto">
+                    <!-- Details will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // =================================================================
+        // CONFIGURATION
+        // =================================================================
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIcS0WXSQV0yNt5lyjvHy7hwDIUItkGeG78T_Yz2mKa83HJMgI9UxsfVIelU6PyKFwkw/exec';
+        
+        // [重要] EmailJS 設定 - 請替換成您自己的金鑰
+        const EMAILJS_CONFIG = {
+            serviceID: 'YOUR_SERVICE_ID',
+            templateID: 'YOUR_TEMPLATE_ID',
+            publicKey: 'YOUR_PUBLIC_KEY'
+        };
+
+        // =================================================================
+        // STATE & INITIALIZATION
+        // =================================================================
+        let map;
+        let allShops = [];
+        let allTags = [];
+        let policies = {};
+        let currentLang = 'zh-TW';
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        let markers = {};
+
+        const translations = {
+            'zh-TW': {
+                pageTitle: "永續商店地圖",
+                headerTitle: "永續商店地圖",
+                navMap: "地圖",
+                navContact: "聯絡我們",
+                heroTitle: "探索您附近的永續生活",
+                heroSubtitle: "一個致力於連結消費者與環保、在地、公平貿易商店的平台。",
+                heroCta: "開始探索",
+                searchPlaceholder: "搜尋店家名稱、地址...",
+                allTags: "所有標籤",
+                storeListTitle: "商店列表",
+                subscribeTitle: "訂閱電子報",
+                subscribeDesc: "獲取最新的永續商店資訊與環保生活技巧。",
+                emailPlaceholder: "您的電子郵件",
+                subscribeBtn: "訂閱",
+                reportIssueTitle: "回報問題",
+                reportIssueDesc: "發現資訊有誤或想推薦店家？請告訴我們！",
+                issuePlaceholder: "請在此描述您的問題...",
+                reportIssueBtn: "送出回報",
+                linksTitle: "相關連結",
+                privacyPolicy: "隱私權政策",
+                disclaimer: "免責聲明",
+                adminLogin: "管理員登入",
+                closeBtn: "關閉",
+                subscribeSuccess: "訂閱成功！感謝您的支持。",
+                subscribeError: "訂閱失敗，請稍後再試。",
+                reportSuccessMsg: "感謝您的回報！",
+                reportIssueErrorMsg: "回報失敗，請稍後再試。",
+                loadingData: "正在載入資料...",
+                noShopsFound: "找不到符合條件的商店。",
+                recommendationMailSent: "推薦信已寄出！",
+                recommendationMailError: "推薦信寄送失敗。",
+                recommendationEmailLabel: "收件人 Email (多個請用逗號分隔)",
+                recommendationSubjectLabel: "郵件主旨",
+                recommendationSendBtn: "寄送推薦信",
+            },
+            'en': {
+                pageTitle: "Sustainable Store Map",
+                headerTitle: "Sustainable Store Map",
+                navMap: "Map",
+                navContact: "Contact",
+                heroTitle: "Discover Sustainable Living Near You",
+                heroSubtitle: "A platform dedicated to connecting consumers with eco-friendly, local, and fair-trade stores.",
+                heroCta: "Start Exploring",
+                searchPlaceholder: "Search store name, address...",
+                allTags: "All Tags",
+                storeListTitle: "Store List",
+                subscribeTitle: "Subscribe to Newsletter",
+                subscribeDesc: "Get the latest sustainable store info and eco-living tips.",
+                emailPlaceholder: "Your Email",
+                subscribeBtn: "Subscribe",
+                reportIssueTitle: "Report an Issue",
+                reportIssueDesc: "Found incorrect info or want to recommend a store? Let us know!",
+                issuePlaceholder: "Please describe your issue here...",
+                reportIssueBtn: "Submit Report",
+                linksTitle: "Links",
+                privacyPolicy: "Privacy Policy",
+                disclaimer: "Disclaimer",
+                adminLogin: "Admin Login",
+                closeBtn: "Close",
+                subscribeSuccess: "Subscription successful! Thank you for your support.",
+                subscribeError: "Subscription failed, please try again later.",
+                reportSuccessMsg: "Thank you for your report!",
+                reportIssueErrorMsg: "Failed to submit, please try again later.",
+                loadingData: "Loading data...",
+                noShopsFound: "No matching stores found.",
+                recommendationMailSent: "Recommendation email sent!",
+                recommendationMailError: "Failed to send recommendation email.",
+                recommendationEmailLabel: "Recipient Email(s) (comma-separated)",
+                recommendationSubjectLabel: "Email Subject",
+                recommendationSendBtn: "Send Recommendation",
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            setupEventListeners();
+        });
+
+        async function initApp() {
+            initMap();
+            await fetchData();
+            updateLanguage(localStorage.getItem('lang') || 'zh-TW');
+            emailjs.init(EMAILJS_CONFIG.publicKey);
+        }
+
+        // =================================================================
+        // MAP FUNCTIONS
+        // =================================================================
+        function initMap() {
+            map = L.map('map').setView([25.034, 121.565], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+        }
+        
+        function updateMarkers(shopsToDisplay) {
+            Object.values(markers).forEach(marker => map.removeLayer(marker));
+            markers = {};
+
+            shopsToDisplay.forEach(shop => {
+                if (shop.lat && shop.lng) {
+                    const marker = L.marker([shop.lat, shop.lng]).addTo(map);
+                    marker.bindPopup(`<b>${shop['name_' + currentLang] || shop['name_zh-TW']}</b>`);
+                    marker.on('click', () => showShopDetail(shop.id));
+                    markers[shop.id] = marker;
                 }
             });
-        });
+        }
+        
+        // =================================================================
+        // DATA FETCHING & HANDLING
+        // =================================================================
+        async function apiCall(action, payload = {}) {
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, ...payload })
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const result = await response.json();
+                if (result.status === 'error') throw new Error(result.message);
+                return result.data;
+            } catch (error) {
+                console.error(`API call failed for action "${action}":`, error);
+                showMessageModal(`Error with action ${action}: ${error.message}`);
+                throw error;
+            }
+        }
 
-        // Create buttons from the unique tags
-        allTagsInUse.forEach(tag => {
-            const tagName = tag[`name_${currentLang}`] || tag['name_zh-TW'];
-            const btn = document.createElement('button');
-            btn.className = 'tag px-3 py-1 rounded-full text-sm';
-            btn.dataset.category = tagName; // Filter by the tag name in the current language
-            btn.textContent = tagName;
-            container.appendChild(btn);
-        });
-    };
+        async function fetchData() {
+            try {
+                const data = await apiCall('getPublicData');
+                allShops = data.shops;
+                allTags = data.tags;
+                policies = data.policies;
+                renderTagFilter();
+                renderShops(allShops);
+            } catch (error) {
+                console.error("Failed to fetch initial data:", error);
+            }
+        }
 
-    const filterAndRender = () => {
-        // ... container setup ...
-        const filtered = allShops.filter(shop => {
-            const name = (shop[`name_${currentLang}`] || shop['name_zh-TW'] || '').toLowerCase();
-            const shopTags = (shop.tags || []).map(t => t[`name_${currentLang}`] || t['name_zh-TW']);
-            
-            // Updated category matching logic
-            const categoryMatch = !currentFilterCategory || 
-                                  (currentFilterCategory === 'favorites' ? favoriteShops.includes(String(shop.id)) : shopTags.includes(currentFilterCategory));
-            
-            // Updated search logic to include tags
-            const searchMatch = !currentSearchQuery || 
-                                name.includes(currentSearchQuery) || 
-                                shopTags.some(t => t.toLowerCase().includes(currentSearchQuery));
-            
-            return categoryMatch && searchMatch;
-        });
+        // =================================================================
+        // RENDERING & UI UPDATES
+        // =================================================================
+        function renderShops(shopsToDisplay) {
+            const listElement = document.getElementById('shops-list');
+            listElement.innerHTML = '';
 
-        // ... rendering logic for toDisplay is largely the same, but the `type` can now be derived from tags ...
-        // For simplicity, I'll display the first tag as the "type" on the card.
-        toDisplay.forEach(shop => {
-            // ...
-            const type = (shop.tags && shop.tags[0]) ? (shop.tags[0][`name_${currentLang}`] || shop.tags[0]['name_zh-TW']) : '';
-            // The rest of the card HTML generation is the same
-        });
-        // ...
-    };
-    
-    // ... all other functions (updateMapMarkers, showShopDetail, initMap, event listeners) remain largely the same ...
-    
-    initMap();
-    fetchPublicData();
-});
-</script>
+            if (shopsToDisplay.length === 0) {
+                listElement.innerHTML = `<p class="text-gray-500">${translations[currentLang].noShopsFound}</p>`;
+                updateMarkers([]);
+                return;
+            }
+
+            shopsToDisplay.forEach(shop => {
+                const isFavorite = favorites.includes(shop.id);
+                const tagNames = shop.tags.map(tagId => {
+                    const tag = allTags.find(t => t.id === tagId);
+                    return tag ? (tag['name_' + currentLang] || tag['name_zh-TW']) : '';
+                }).filter(Boolean);
+
+                const card = `
+                    <div class="shop-card bg-white rounded-lg shadow p-4 cursor-pointer" onclick="showShopDetail('${shop.id}')">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-lg">${shop['name_' + currentLang] || shop['name_zh-TW']}</h4>
+                                <p class="text-sm text-gray-600">${shop['address_' + currentLang] || shop['address_zh-TW']}</p>
+                            </div>
+                            <button onclick="event.stopPropagation(); toggleFavorite('${shop.id}')" class="favorite-btn text-2xl ${isFavorite ? 'favorited' : 'text-gray-300 hover:text-red-400'}">&hearts;</button>
+                        </div>
+                        <div class="mt-2">
+                            ${tagNames.map(name => `<span class="inline-block bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">${name}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                listElement.insertAdjacentHTML('beforeend', card);
+            });
+            updateMarkers(shopsToDisplay);
+        }
+
+        function renderTagFilter() {
+            const filterElement = document.getElementById('tag-filter');
+            allTags.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag.id;
+                option.textContent = tag['name_' + currentLang] || tag['name_zh-TW'];
+                filterElement.appendChild(option);
+            });
+        }
+        
+        function showShopDetail(shopId) {
+            const shop = allShops.find(s => s.id === shopId);
+            if (!shop) return;
+            
+            const contentEl = document.getElementById('shop-detail-content');
+            const isFavorite = favorites.includes(shop.id);
+            const tagNames = shop.tags.map(tagId => {
+                const tag = allTags.find(t => t.id === tagId);
+                return tag ? (tag['name_' + currentLang] || tag['name_zh-TW']) : '';
+            }).filter(Boolean);
+
+            contentEl.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-3xl font-bold">${shop['name_' + currentLang] || shop['name_zh-TW']}</h2>
+                    <button onclick="event.stopPropagation(); toggleFavorite('${shop.id}')" class="favorite-btn text-3xl ${isFavorite ? 'favorited' : 'text-gray-300 hover:text-red-400'}">&hearts;</button>
+                </div>
+                <p class="text-gray-600 mb-2">${shop['address_' + currentLang] || shop['address_zh-TW']}</p>
+                <div class="mb-4">
+                    ${tagNames.map(name => `<span class="inline-block bg-green-100 text-green-800 text-sm font-semibold mr-2 px-2.5 py-0.5 rounded-full">${name}</span>`).join('')}
+                </div>
+                <p class="mb-4">${shop['longDescription_' + currentLang] || shop['longDescription_zh-TW'] || shop['description_' + currentLang] || shop['description_zh-TW']}</p>
+                <div class="border-t pt-4">
+                    ${shop.phone ? `<p><b>電話:</b> <a href="tel:${shop.phone}" class="text-green-600 hover:underline">${shop.phone}</a></p>` : ''}
+                    ${shop.website ? `<p><b>網站:</b> <a href="${shop.website}" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:underline">${shop.website}</a></p>` : ''}
+                </div>
+                <div class="mt-6">
+                    <h4 class="font-bold mb-2" data-i18n="recommendationSubjectLabel">${translations[currentLang].recommendationSubjectLabel}</h4>
+                    <input type="text" id="recommend-subject" class="w-full p-2 border rounded-md mb-2" value="推薦一間好店給你：${shop['name_' + currentLang] || shop['name_zh-TW']}">
+                    <h4 class="font-bold mb-2" data-i18n="recommendationEmailLabel">${translations[currentLang].recommendationEmailLabel}</h4>
+                    <input type="email" id="recommend-email" class="w-full p-2 border rounded-md mb-4" placeholder="friend@example.com">
+                    <button onclick="sendRecommendationEmail('${shop.id}')" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md" data-i18n="recommendationSendBtn">${translations[currentLang].recommendationSendBtn}</button>
+                </div>
+            `;
+            openModal('shop-detail-modal');
+            if (markers[shop.id]) {
+                map.setView([shop.lat, shop.lng], 15);
+                markers[shop.id].openPopup();
+            }
+        }
+
+        function updateLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+            document.documentElement.lang = lang;
+            document.getElementById('lang-switcher').value = lang;
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+
+            // Re-render dynamic content
+            renderTagFilter();
+            filterShops();
+        }
+        
+        // =================================================================
+        // ACTIONS & EVENT LISTENERS
+        // =================================================================
+        function setupEventListeners() {
+            document.getElementById('lang-switcher').addEventListener('change', (e) => updateLanguage(e.target.value));
+            document.getElementById('search-input').addEventListener('input', filterShops);
+            document.getElementById('tag-filter').addEventListener('change', filterShops);
+            
+            document.getElementById('privacy-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                showPolicy('privacy');
+            });
+            document.getElementById('disclaimer-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                showPolicy('disclaimer');
+            });
+            
+            document.getElementById('subscribe-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = e.target.email.value;
+                try {
+                    await apiCall('subscribe', { email });
+                    showMessageModal(translations[currentLang].subscribeSuccess);
+                    e.target.reset();
+                } catch (error) {
+                    showMessageModal(`${translations[currentLang].subscribeError}: ${error.message}`);
+                }
+            });
+
+            document.getElementById('issue-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const submitButton = form.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Sending...';
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: { 'Accept': 'application/json' }
+                }).then(response => {
+                    if (response.ok) {
+                        document.getElementById('issue-message').classList.remove('hidden');
+                        form.reset();
+                        setTimeout(() => { document.getElementById('issue-message').classList.add('hidden'); }, 5000);
+                    } else {
+                        throw new Error('Form submission failed.');
+                    }
+                }).catch(error => {
+                    console.error("Issue report error:", error);
+                    showMessageModal(translations[currentLang].reportIssueErrorMsg);
+                }).finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.textContent = translations[currentLang].reportIssueBtn;
+                });
+            });
+        }
+        
+        function filterShops() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const selectedTag = document.getElementById('tag-filter').value;
+            
+            let filtered = allShops;
+
+            if (searchTerm) {
+                filtered = filtered.filter(shop => 
+                    (shop['name_' + currentLang] || shop['name_zh-TW']).toLowerCase().includes(searchTerm) ||
+                    (shop['address_' + currentLang] || shop['address_zh-TW']).toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (selectedTag !== 'all') {
+                filtered = filtered.filter(shop => shop.tags.includes(selectedTag));
+            }
+            renderShops(filtered);
+        }
+
+        function toggleFavorite(shopId) {
+            const index = favorites.indexOf(shopId);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(shopId);
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            
+            // Re-render currently displayed shops to update favorite icons
+            filterShops();
+
+            // Also update icon in modal if it's open
+            const modalFavoriteBtn = document.querySelector('#shop-detail-modal .favorite-btn');
+            if(modalFavoriteBtn) {
+                 const isFavorite = favorites.includes(shopId);
+                 modalFavoriteBtn.classList.toggle('favorited', isFavorite);
+                 modalFavoriteBtn.classList.toggle('text-gray-300', !isFavorite);
+            }
+        }
+
+        async function sendRecommendationEmail(shopId) {
+            const shop = allShops.find(s => s.id === shopId);
+            const to_email = document.getElementById('recommend-email').value;
+            const subject = document.getElementById('recommend-subject').value;
+            
+            if (!to_email) {
+                alert('請輸入收件人 Email');
+                return;
+            }
+
+            const templateParams = {
+                to_email: to_email,
+                subject: subject,
+                shop_name: shop['name_' + currentLang] || shop['name_zh-TW'],
+                shop_address: shop['address_' + currentLang] || shop['address_zh-TW'],
+                shop_description: shop['description_' + currentLang] || shop['description_zh-TW'],
+                shop_website: shop.website || '無',
+            };
+
+            try {
+                await emailjs.send(EMAILJS_CONFIG.serviceID, EMAILJS_CONFIG.templateID, templateParams);
+                showMessageModal(translations[currentLang].recommendationMailSent);
+            } catch (error) {
+                console.error('EmailJS send failed:', error);
+                showMessageModal(translations[currentLang].recommendationMailError);
+            }
+        }
+
+        // =================================================================
+        // MODAL & UTILITY FUNCTIONS
+        // =================================================================
+        function openModal(modalId) {
+            document.getElementById('modal-container').classList.remove('hidden');
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeAllModals() {
+            document.getElementById('modal-container').classList.add('hidden');
+            document.querySelectorAll('#modal-container > div').forEach(modal => modal.classList.add('hidden'));
+        }
+
+        function showMessageModal(message) {
+            document.getElementById('message-modal-text').textContent = message;
+            openModal('message-modal');
+        }
+
+        function showPolicy(key) {
+            const policy = policies[key];
+            if (policy) {
+                document.getElementById('policy-modal-title').textContent = policy['value_' + currentLang].split('\n')[0];
+                document.getElementById('policy-modal-content').innerHTML = policy['value_' + currentLang].replace(/\n/g, '<br>');
+                openModal('policy-modal');
+            }
+        }
+
+        // Make functions globally accessible for inline onclick handlers
+        window.showShopDetail = showShopDetail;
+        window.sendRecommendationEmail = sendRecommendationEmail;
+        window.toggleFavorite = toggleFavorite;
+        window.closeAllModals = closeAllModals;
+    </script>
 </body>
 </html>
