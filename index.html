@@ -1,127 +1,122 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="pageTitle">永續商店地圖</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <style>
-        /* ... same styles as before ... */
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>北台灣永續商店平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body { font-family: 'Noto Sans TC', sans-serif; }
+    #map { height: 480px; }
+    .skeleton { background: linear-gradient(90deg,#e5e7eb 25%,#f3f4f6 50%,#e5e7eb 75%); background-size:200% 100%; animation: shimmer 1.5s infinite; }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    .fade-in { animation: fadeIn 0.6s ease-in-out; }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+    .modal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:100; }
+    .modal.active { display:flex; }
+  </style>
 </head>
-<body class="antialiased">
-    <!-- Fullscreen Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center">
-        <!-- ... spinner ... -->
+<body class="bg-gray-100 dark:bg-gray-900 dark:text-gray-100">
+
+<header class="flex justify-between items-center p-4 bg-white dark:bg-gray-800 shadow">
+  <h1 class="text-2xl font-bold text-green-600 dark:text-green-400">北台灣永續商店平台</h1>
+  <div class="flex gap-2">
+    <select id="lang" class="border rounded p-1 dark:bg-gray-700 dark:text-white">
+      <option value="zh-TW">中文</option>
+      <option value="en">English</option>
+    </select>
+    <button id="toggleDark" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700">🌙/☀️</button>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto p-4">
+  <!-- Hero -->
+  <section class="text-center mb-6">
+    <h2 class="text-3xl font-bold mb-2" data-i18n="heroTitle">尋找永續商店，支持綠色生活</h2>
+    <p class="text-gray-600 dark:text-gray-300" data-i18n="heroSubtitle">探索您附近的永續商店，發現更多環保選擇</p>
+  </section>
+
+  <!-- 公告 -->
+  <div id="announcement" class="hidden bg-yellow-100 text-yellow-900 dark:bg-yellow-800 dark:text-yellow-100 px-4 py-2 rounded mb-4"></div>
+
+  <!-- 搜尋與分類 -->
+  <div class="flex gap-2 mb-4">
+    <input id="q" class="flex-1 border rounded p-2 dark:bg-gray-800" placeholder="輸入關鍵字…">
+    <button id="search" class="bg-green-600 text-white px-4 py-2 rounded">搜尋</button>
+  </div>
+
+  <div class="flex gap-2 mb-6" id="cats">
+    <button class="tag px-3 py-1 rounded bg-green-100 dark:bg-green-800 active" data-cat="all">全部</button>
+    <button class="tag px-3 py-1 rounded bg-green-100 dark:bg-green-800" data-cat="食品">食品</button>
+    <button class="tag px-3 py-1 rounded bg-green-100 dark:bg-green-800" data-cat="咖啡廳">咖啡廳</button>
+    <button class="tag px-3 py-1 rounded bg-green-100 dark:bg-green-800" data-cat="二手商店">二手商店</button>
+  </div>
+
+  <!-- 地圖 -->
+  <div class="rounded shadow overflow-hidden mb-6"><div id="map" class="skeleton"></div></div>
+
+  <!-- 卡片區 -->
+  <div id="cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  <div class="text-center mt-4"><button id="loadMore" class="bg-green-600 text-white px-4 py-2 rounded hidden">載入更多</button></div>
+
+  <!-- 詳細資訊 Modal -->
+  <div id="shopModal" class="modal">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl p-6 overflow-y-auto max-h-[90vh]">
+      <button id="closeModal" class="float-right text-gray-600 dark:text-gray-300">✖</button>
+      <h3 id="modalTitle" class="text-2xl font-bold mb-4"></h3>
+      <p id="modalDescription" class="mb-4 text-gray-700 dark:text-gray-300"></p>
+      <div id="modalLongDescription" class="mb-4 text-sm text-gray-600 dark:text-gray-400"></div>
+      <div id="modalSustainability" class="mb-4 p-3 bg-green-50 dark:bg-green-900 rounded"></div>
+      <div id="modalContact" class="mb-4 text-sm"></div>
+      <!-- 留言區 -->
+      <div class="mt-6">
+        <h4 class="font-bold mb-2">留言</h4>
+        <div id="comments" class="space-y-2 mb-2"></div>
+        <textarea id="commentInput" class="w-full border rounded p-2 dark:bg-gray-700 dark:text-white mb-2" placeholder="輸入您的留言..."></textarea>
+        <button id="submitComment" class="bg-green-600 text-white px-4 py-2 rounded">送出留言</button>
+      </div>
     </div>
-    
-    <!-- Main content structure is the same -->
-    <nav>...</nav>
-    <section class="hero-section">...</section>
-    <section class="search-section">
-        <!-- Filter buttons container will be populated dynamically -->
-        <div class="flex flex-wrap gap-2" id="filter-buttons-container">
-             <button class="tag px-3 py-1 rounded-full text-sm active" data-category="" data-i18n="filterAll"></button>
-             <button class="tag px-3 py-1 rounded-full text-sm" data-category="favorites" data-i18n="filterFavorites"></button>
-             <!-- Dynamic tags will be inserted here -->
-        </div>
-    </section>
-    <section id="map">...</section>
-    <section id="shops">...</section>
-    <!-- ... other sections ... -->
-    
-    <!-- Modals and Toast -->
-    <!-- ... all modals are the same ... -->
+  </div>
+
+  <!-- 訂閱電子報區塊 -->
+  <section class="mt-10 max-w-3xl mx-auto">
+    <h2 class="text-xl font-bold mb-2" data-i18n="newsletterTitle">訂閱電子報</h2>
+    <p class="text-sm text-gray-600 dark:text-gray-300 mb-3" data-i18n="newsletterHint">輸入您的 Email 以接收最新永續店家資訊。</p>
+    <div class="flex gap-2">
+      <input id="email" type="email" class="flex-1 border rounded p-2 dark:bg-gray-800" placeholder="you@example.com">
+      <button id="subscribe" class="bg-green-700 text-white px-4 py-2 rounded" data-i18n="subscribeBtn">訂閱</button>
+    </div>
+    <div id="subMsg" class="text-sm mt-2"></div>
+  </section>
+</main>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // ... initial variables are the same ...
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzIcS0WXSQV0yNt5lyjvHy7hwDIUItkGeG78T_Yz2mKa83HJMgI9UxsfVIelU6PyKFwkw/exec';
-    let allShops = [], policies = {}; // etc.
-
-    // ... translations object remains the same ...
-    const translations = { 'zh-TW': { /* ... */ }, 'en': { /* ... */ } };
-
-    // ... showToast, setLanguage are the same ...
-    
-    async function fetchPublicData() {
-        try {
-            // ... same fetch logic ...
-            const result = await response.json();
-            // ... same result handling ...
-            allShops = result.data.shops || []; // Now shops will contain a `tags` array of objects
-            policies = result.data.policies || {};
-            // ...
-            setLanguage(currentLang); // This will now call the updated populateFilters
-        } catch (error) {
-            // ... error handling ...
-        } finally {
-            document.getElementById('loading-overlay').style.display = 'none';
-        }
-    }
-
-    const populateFilters = () => {
-        const container = document.getElementById('filter-buttons-container');
-        // Clear only dynamic tags
-        container.querySelectorAll('.tag:not([data-category=""]):not([data-category="favorites"])').forEach(btn => btn.remove());
-        
-        // Collect all unique tags from all shops
-        const allTagsInUse = new Map();
-        allShops.forEach(shop => {
-            (shop.tags || []).forEach(tag => {
-                if (!allTagsInUse.has(tag.id)) {
-                    allTagsInUse.set(tag.id, tag);
-                }
-            });
-        });
-
-        // Create buttons from the unique tags
-        allTagsInUse.forEach(tag => {
-            const tagName = tag[`name_${currentLang}`] || tag['name_zh-TW'];
-            const btn = document.createElement('button');
-            btn.className = 'tag px-3 py-1 rounded-full text-sm';
-            btn.dataset.category = tagName; // Filter by the tag name in the current language
-            btn.textContent = tagName;
-            container.appendChild(btn);
-        });
-    };
-
-    const filterAndRender = () => {
-        // ... container setup ...
-        const filtered = allShops.filter(shop => {
-            const name = (shop[`name_${currentLang}`] || shop['name_zh-TW'] || '').toLowerCase();
-            const shopTags = (shop.tags || []).map(t => t[`name_${currentLang}`] || t['name_zh-TW']);
-            
-            // Updated category matching logic
-            const categoryMatch = !currentFilterCategory || 
-                                  (currentFilterCategory === 'favorites' ? favoriteShops.includes(String(shop.id)) : shopTags.includes(currentFilterCategory));
-            
-            // Updated search logic to include tags
-            const searchMatch = !currentSearchQuery || 
-                                name.includes(currentSearchQuery) || 
-                                shopTags.some(t => t.toLowerCase().includes(currentSearchQuery));
-            
-            return categoryMatch && searchMatch;
-        });
-
-        // ... rendering logic for toDisplay is largely the same, but the `type` can now be derived from tags ...
-        // For simplicity, I'll display the first tag as the "type" on the card.
-        toDisplay.forEach(shop => {
-            // ...
-            const type = (shop.tags && shop.tags[0]) ? (shop.tags[0][`name_${currentLang}`] || shop.tags[0]['name_zh-TW']) : '';
-            // The rest of the card HTML generation is the same
-        });
-        // ...
-    };
-    
-    // ... all other functions (updateMapMarkers, showShopDetail, initMap, event listeners) remain largely the same ...
-    
-    initMap();
-    fetchPublicData();
-});
+// 翻譯字典
+const translations = {
+  "zh-TW": {
+    heroTitle: "尋找永續商店，支持綠色生活",
+    heroSubtitle: "探索您附近的永續商店，發現更多環保選擇",
+    newsletterTitle: "訂閱電子報",
+    newsletterHint: "輸入您的 Email 以接收最新永續店家資訊。",
+    subscribeBtn: "訂閱",
+    toastSubscribed: "訂閱成功！",
+    toastSubFail: "訂閱失敗，請稍後再試。",
+    all: "全部",
+  },
+  en: {
+    heroTitle: "Find sustainable shops & go greener",
+    heroSubtitle: "Discover eco-friendly options around you",
+    newsletterTitle: "Newsletter",
+    newsletterHint: "Enter your email to receive updates.",
+    subscribeBtn: "Subscribe",
+    toastSubscribed: "Subscribed!",
+    toastSubFail: "Subscribe failed, try again.",
+    all: "All",
+  }
+};
 </script>
 </body>
 </html>
