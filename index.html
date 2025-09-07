@@ -4,142 +4,165 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>永續商店地圖</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- LeafletJS Map Library -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <!-- ShowdownJS for Markdown -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
-    <!-- Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* Custom Styles */
-        html, body {
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f7f4;
+        }
+        .main-container {
+            height: calc(100vh - 80px); /* Adjust based on header height */
+        }
+        #map-container {
             height: 100%;
-            margin: 0;
-            font-family: 'Inter', 'Noto Sans TC', sans-serif;
-            overflow: hidden; /* Prevent scrolling of the whole page */
+            width: 100%;
         }
-        #map {
-             height: 100%;
-             width: 100%;
-             z-index: 10;
+        #shops-container {
+            height: 100%;
+            overflow-y: auto;
         }
+        .shop-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .shop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        .favorite-btn.active i {
+            color: #ef4444; /* red-500 */
+            font-weight: 900;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
         .leaflet-popup-content-wrapper {
+            background-color: #ffffff;
+            color: #1f2937;
             border-radius: 8px;
         }
-        .leaflet-popup-content {
-            margin: 12px;
-            font-size: 14px;
-        }
-        .shop-popup-content h3 {
-            margin: 0 0 5px;
-            font-weight: bold;
-        }
-        .shop-popup-content p {
-            margin: 3px 0;
-        }
-        /* Custom scrollbar for search results */
-        #search-results::-webkit-scrollbar {
-            width: 5px;
-        }
-        #search-results::-webkit-scrollbar-thumb {
-            background-color: #4b5563;
-            border-radius: 10px;
-        }
-        #search-results::-webkit-scrollbar-track {
-            background-color: #1f2937;
+        .leaflet-popup-tip {
+            background-color: #ffffff;
         }
     </style>
 </head>
-<body class="bg-gray-800 text-white">
+<body class="text-gray-800">
 
-    <div id="app-container" class="relative h-screen w-screen flex flex-col">
-        <!-- Header -->
-        <header class="bg-gray-900 shadow-lg p-2 flex items-center space-x-4 z-30">
-            <h1 class="text-xl md:text-2xl font-bold text-green-400">永續商店地圖</h1>
-            <div class="relative flex-grow max-w-lg">
-                <input type="text" id="search-input" placeholder="搜尋店名、地址或標籤..." class="w-full bg-gray-700 text-white placeholder-gray-400 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-green-500">
-                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <div id="search-results" class="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-md shadow-lg max-h-60 overflow-y-auto hidden z-40"></div>
-            </div>
-            <select id="type-filter" class="bg-gray-700 text-white rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                <option value="all">所有類型</option>
-            </select>
-        </header>
+    <!-- Header -->
+    <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-40 h-[80px]">
+        <h1 class="text-2xl font-bold text-green-700"><i class="fas fa-leaf mr-2"></i>永續商店地圖</h1>
+        <nav class="space-x-4">
+            <button id="show-favorites-btn" class="text-gray-600 hover:text-green-600"><i class="fas fa-heart mr-1"></i> 我的最愛</button>
+            <button id="show-report-issue-btn" class="text-gray-600 hover:text-green-600"><i class="fas fa-exclamation-circle mr-1"></i> 問題回報</button>
+        </nav>
+    </header>
 
-        <!-- Main Content (Map) -->
-        <main class="flex-grow relative">
-            <div id="map"></div>
-            <!-- Loading Indicator -->
-            <div id="loading-indicator" class="absolute inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
-                <div class="text-center">
-                    <i class="fas fa-spinner fa-spin fa-3x text-green-400"></i>
-                    <p class="mt-4 text-lg">正在載入地圖資料...</p>
+    <!-- Main Content -->
+    <div class="main-container grid grid-cols-1 md:grid-cols-12">
+        <!-- Shops Panel -->
+        <div class="md:col-span-4 lg:col-span-3 bg-white border-r border-gray-200 flex flex-col">
+            <!-- Search & Filter -->
+            <div class="p-4 border-b border-gray-200">
+                <input type="text" id="search-input" placeholder="搜尋店家、地址、類型..." class="w-full border border-gray-300 rounded-lg p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                <div class="flex space-x-2">
+                    <select id="type-filter" class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="all">所有類型</option>
+                    </select>
+                    <button id="reset-filters-btn" class="p-2 bg-gray-200 hover:bg-gray-300 rounded-md" title="重設"><i class="fas fa-undo"></i></button>
                 </div>
             </div>
-        </main>
-
-        <!-- Footer & Modals Trigger -->
-        <footer class="bg-gray-900 p-2 text-center text-sm text-gray-400 z-30">
-            <button id="open-subscribe-modal" class="hover:text-green-400">訂閱電子報</button> |
-            <button id="open-feedback-modal" class="hover:text-green-400">問題回報</button> |
-            <a href="#" onclick="showPolicy('privacy'); return false;" class="hover:text-green-400">隱私權政策</a> |
-            <a href="#" onclick="showPolicy('disclaimer'); return false;" class="hover:text-green-400">免責聲明</a>
-        </footer>
-
-        <!-- Announcement Banner -->
-        <div id="announcement-banner" class="absolute top-16 left-1/2 -translate-x-1/2 bg-blue-600 bg-opacity-90 text-white p-3 rounded-lg shadow-xl z-20 hidden w-11/12 md:w-auto max-w-2xl">
-            <p id="announcement-content" class="text-center"></p>
+            <!-- Shops List -->
+            <div id="shops-container" class="flex-grow p-2">
+                <!-- Shop cards will be injected here -->
+            </div>
         </div>
-    </div>
 
+        <!-- Map Panel -->
+        <div class="md:col-span-8 lg:col-span-9" id="map-container"></div>
+    </div>
+    
     <!-- Modals -->
-    <!-- Subscription Modal -->
-    <div id="subscribe-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-11/12 max-w-md">
-            <h2 class="text-2xl font-bold mb-4 text-green-400">訂閱電子報</h2>
-            <p class="mb-4 text-gray-300">獲取最新的永續商店資訊、環保生活技巧和特別優惠。</p>
-            <form id="subscribe-form">
-                <input type="email" id="subscribe-email" placeholder="請輸入您的電子郵件" class="w-full bg-gray-700 text-white rounded-md p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-green-500" required>
-                <div class="flex justify-end space-x-4">
-                    <button type="button" class="close-modal px-4 py-2 bg-gray-600 rounded-md hover:bg-gray-500">取消</button>
-                    <button type="submit" id="subscribe-submit-btn" class="px-4 py-2 bg-green-600 rounded-md hover:bg-green-500">訂閱</button>
-                </div>
-            </form>
-            <div id="subscribe-message" class="mt-4 text-center"></div>
-        </div>
-    </div>
-
-    <!-- Feedback Modal -->
-    <div id="feedback-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-11/12 max-w-md">
-            <h2 class="text-2xl font-bold mb-4 text-green-400">問題回報</h2>
-            <p class="mb-4 text-gray-300">發現地圖資料有誤、網站有 Bug 或有任何建議？請告訴我們！</p>
-            <form id="feedback-form">
-                <input type="email" id="feedback-email" placeholder="您的電子郵件（方便我們回覆）" class="w-full bg-gray-700 text-white rounded-md p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-green-500" required>
-                <textarea id="feedback-text" placeholder="請詳細描述您的問題或建議" rows="4" class="w-full bg-gray-700 text-white rounded-md p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-green-500" required></textarea>
-                <div class="flex justify-end space-x-4">
-                    <button type="button" class="close-modal px-4 py-2 bg-gray-600 rounded-md hover:bg-gray-500">取消</button>
-                    <button type="submit" id="feedback-submit-btn" class="px-4 py-2 bg-green-600 rounded-md hover:bg-green-500">送出</button>
-                </div>
-            </form>
-            <div id="feedback-message" class="mt-4 text-center"></div>
+    <!-- Shop Detail Modal -->
+    <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center">
+                <h2 id="shop-detail-title" class="text-2xl font-bold text-green-700"></h2>
+                <button onclick="closeModal('shop-detail-modal')" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="shop-detail-content" class="p-6 overflow-y-auto" ></div>
+            <div class="p-4 bg-gray-50 border-t flex justify-end space-x-2">
+                 <button id="shop-detail-recommend-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"><i class="fas fa-share-square mr-2"></i>推薦給朋友</button>
+                <button onclick="closeModal('shop-detail-modal')" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">關閉</button>
+            </div>
         </div>
     </div>
     
-    <!-- Policy Modal -->
-    <div id="policy-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-11/12 max-w-2xl max-h-[80vh] flex flex-col">
-            <h2 id="policy-title" class="text-2xl font-bold mb-4 text-green-400"></h2>
-            <div id="policy-loading" class="text-center py-8 hidden">
-                <i class="fas fa-spinner fa-spin fa-2x text-green-400"></i>
+    <!-- Recommendation Modal -->
+    <div id="recommend-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 max-w-md">
+             <div class="p-4 border-b flex justify-between items-center">
+                <h2 class="text-xl font-bold text-blue-600">推薦店家</h2>
+                <button onclick="closeModal('recommend-modal')" class="text-gray-500 hover:text-gray-800">&times;</button>
             </div>
-            <div id="policy-content" class="overflow-y-auto text-gray-300 prose prose-invert max-w-none"></div>
-            <div class="flex justify-end mt-6">
-                <button type="button" class="close-modal px-4 py-2 bg-gray-600 rounded-md hover:bg-gray-500">關閉</button>
+            <div class="p-6">
+                <form id="recommend-form">
+                    <input type="hidden" id="recommend-shop-id">
+                    <p class="mb-4">將 <strong id="recommend-shop-name" class="text-green-700"></strong> 的資訊分享給朋友！</p>
+                    <label for="recipient-email" class="block text-sm font-medium text-gray-700">朋友的 Email</label>
+                    <input type="email" id="recipient-email" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    <div class="mt-4 flex justify-end">
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">送出推薦</button>
+                    </div>
+                </form>
             </div>
+        </div>
+    </div>
+    
+    <!-- Issue Report Modal -->
+    <div id="report-issue-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 max-w-lg">
+             <div class="p-4 border-b flex justify-between items-center">
+                <h2 class="text-xl font-bold text-orange-600">問題回報</h2>
+                <button onclick="closeModal('report-issue-modal')" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div class="p-6">
+                 <form id="issue-form">
+                    <div class="mb-4">
+                        <label for="issue-shop-id" class="block text-sm font-medium">回報店家 (可選填)</label>
+                        <input type="text" id="issue-shop-id" placeholder="輸入店家名稱或ID" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div class="mb-4">
+                        <label for="issue-type" class="block text-sm font-medium">問題類型 *</label>
+                        <select id="issue-type" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white focus:outline-none focus:ring-green-500 focus:border-green-500">
+                            <option value="info-correction">資訊錯誤</option>
+                            <option value="shop-closed">店家已歇業</option>
+                            <option value="suggestion">功能建議</option>
+                            <option value="other">其他問題</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="issue-comment" class="block text-sm font-medium">詳細說明 *</label>
+                        <textarea id="issue-comment" rows="4" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-green-500 focus:border-green-500"></textarea>
+                    </div>
+                     <div class="mt-4 flex justify-end">
+                        <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">送出回報</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic Message Modal -->
+    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 max-w-sm text-center p-6">
+            <p id="message-modal-text" class="text-lg"></p>
+            <button onclick="closeModal('message-modal')" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">確定</button>
         </div>
     </div>
 
@@ -148,385 +171,304 @@
         // =================================================================
         // CONFIGURATION
         // =================================================================
-        // !!! VERY IMPORTANT !!!
-        // Replace this URL with the one you get after deploying the Google Apps Script.
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQz6D5P90b4d45p6QN_J5iUaIpjU0Xz6P5eF8B8D7k9R6J3s9S9a7Z8c7K6v5B4N3d/exec';
-        
-        // =================================================================
-        // STATE VARIABLES
-        // =================================================================
-        let map;
-        let allShops = [];
-        let markers = [];
-        const currentLang = 'zh-TW'; // Could be made dynamic in the future
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIcS0WXSQV0yNt5lyjvHy7hwDIUItkGeG78T_Yz2mKa83HJMgI9UxsfVIelU6PyKFwkw/exec';
+        const MAP_CENTER = [25.034, 121.564]; // Taipei 101
+        const DEFAULT_ZOOM = 13;
 
         // =================================================================
-        // DOM ELEMENTS
+        // STATE
         // =================================================================
-        const searchInput = document.getElementById('search-input');
-        const searchResults = document.getElementById('search-results');
-        const typeFilter = document.getElementById('type-filter');
+        let allShops = [];
+        let map;
+        let markers = L.layerGroup();
+        let favorites = [];
 
         // =================================================================
         // INITIALIZATION
         // =================================================================
         document.addEventListener('DOMContentLoaded', () => {
+            loadFavorites();
+            initializeMap();
             fetchData();
             setupEventListeners();
         });
 
-        /**
-         * [✅ FIXED] Fetches initial data from the backend.
-         * Now calls a single, public endpoint 'getPublicData' to get all necessary data,
-         * resolving the permission issue.
-         */
-        function fetchData() {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            loadingIndicator.classList.remove('hidden');
-
-            // Call the new, consolidated public endpoint
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                // [🔧 FIXED] Added redirect and headers for better compatibility with Apps Script
-                redirect: "follow", 
-                body: JSON.stringify({ action: 'getPublicData' }),
-                headers: { "Content-Type": "text/plain;charset=utf-8" } 
-            })
-            .then(res => res.json())
-            .then(response => {
-                if (response.status === 'success' && response.data) {
-                    allShops = response.data.shops;
-                    
-                    // Render announcements
-                    const announcementBanner = document.getElementById('announcement-banner');
-                    const announcementContent = document.getElementById('announcement-content');
-                    if (response.data.announcements) {
-                        announcementContent.textContent = response.data.announcements;
-                        announcementBanner.classList.remove('hidden');
-                         // Auto-hide banner after 10 seconds
-                        setTimeout(() => announcementBanner.classList.add('hidden'), 10000);
-                    } else {
-                        announcementBanner.classList.add('hidden');
-                    }
-                    
-                    if (!map) initMap();
-                    renderMarkers(allShops);
-                    populateFilter();
-
-                } else {
-                    console.error('Failed to fetch public data:', response.message);
-                    alert('無法載入商店資料，請稍後再試。');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                alert('載入資料時發生錯誤，請檢查您的網路連線。');
-            })
-            .finally(() => {
-                loadingIndicator.classList.add('hidden');
-            });
-        }
-        
-        /**
-         * Initializes the Leaflet map.
-         */
-        function initMap() {
-            map = L.map('map').setView([25.034, 121.565], 13); // Centered on Taipei
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                subdomains: 'abcd',
-                maxZoom: 20
+        function initializeMap() {
+            map = L.map('map-container').setView(MAP_CENTER, DEFAULT_ZOOM);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
+            markers.addTo(map);
         }
 
-        // =================================================================
-        // MAP & MARKER LOGIC
-        // =================================================================
-
-        /**
-         * Renders shop markers on the map.
-         * @param {Array} shops - An array of shop objects.
-         */
-        function renderMarkers(shops) {
-            markers.forEach(marker => marker.remove());
-            markers = [];
-            
-            shops.forEach(shop => {
-                if (shop.lat && shop.lng) {
-                    const marker = L.marker([shop.lat, shop.lng]).addTo(map);
-                    marker.bindPopup(createPopupContent(shop));
-                    markers.push(marker);
-                }
-            });
-        }
-        
-        /**
-         * Creates HTML content for a shop's popup.
-         * @param {object} shop - The shop object.
-         * @returns {string} HTML content for the popup.
-         */
-        function createPopupContent(shop) {
-            const name = shop[`name_${currentLang}`] || shop.name_zh_TW;
-            const address = shop[`address_${currentLang}`] || shop.address_zh_TW;
-            const description = shop[`description_${currentLang}`] || shop.description_zh_TW;
-            
-            return `
-                <div class="shop-popup-content">
-                    <h3>${name}</h3>
-                    <p><i class="fas fa-map-marker-alt fa-fw"></i> ${address}</p>
-                    <p><i class="fas fa-info-circle fa-fw"></i> ${description}</p>
-                    ${shop.website ? `<p><i class="fas fa-globe fa-fw"></i> <a href="http://${shop.website}" target="_blank" class="text-blue-500 hover:underline">${shop.website}</a></p>` : ''}
-                </div>
-            `;
-        }
-
-        /**
-         * Pans the map to a specific shop's location and opens its popup.
-         * @param {string} shopId - The ID of the shop to focus on.
-         */
-        function focusOnShop(shopId) {
-            const shop = allShops.find(s => s.id === shopId);
-            if (shop && shop.lat && shop.lng) {
-                const latLng = [shop.lat, shop.lng];
-                map.flyTo(latLng, 17);
-                // Find the corresponding marker and open its popup
-                const marker = markers.find(m => {
-                    const markerLatLng = m.getLatLng();
-                    return markerLatLng.lat == shop.lat && markerLatLng.lng == shop.lng;
-                });
-                if (marker) {
-                    marker.openPopup();
-                }
-            }
-        }
-
-        // =================================================================
-        // FILTER & SEARCH LOGIC
-        // =================================================================
-
-        /**
-         * Populates the type filter dropdown with unique shop types.
-         */
-        function populateFilter() {
-            const types = [...new Set(allShops.map(shop => shop[`type_${currentLang}`]))];
-            typeFilter.innerHTML = '<option value="all">所有類型</option>';
-            types.forEach(type => {
-                if(type) {
-                    const option = document.createElement('option');
-                    option.value = type;
-                    option.textContent = type;
-                    typeFilter.appendChild(option);
-                }
-            });
-        }
-        
-        /**
-         * Filters shops based on search input and type filter, then re-renders markers.
-         */
-        function filterAndRender() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const selectedType = typeFilter.value;
-
-            const filteredShops = allShops.filter(shop => {
-                const name = (shop[`name_${currentLang}`] || '').toLowerCase();
-                const address = (shop[`address_${currentLang}`] || '').toLowerCase();
-                const tags = (shop[`tags_${currentLang}`] || '').toLowerCase();
-                const type = shop[`type_${currentLang}`] || '';
-
-                const matchesSearch = name.includes(searchTerm) || address.includes(searchTerm) || tags.includes(searchTerm);
-                const matchesType = selectedType === 'all' || type === selectedType;
-
-                return matchesSearch && matchesType;
-            });
-
-            renderMarkers(filteredShops);
-            updateSearchResults(filteredShops, searchTerm);
-        }
-
-        /**
-         * Updates the search results dropdown.
-         * @param {Array} shops - The filtered list of shops.
-         * @param {string} searchTerm - The current search term.
-         */
-        function updateSearchResults(shops, searchTerm) {
-            if (searchTerm.length < 1 || shops.length === 0) {
-                searchResults.classList.add('hidden');
-                return;
-            }
-            searchResults.innerHTML = '';
-            shops.slice(0, 10).forEach(shop => { // Show max 10 results
-                const item = document.createElement('div');
-                item.className = 'p-3 hover:bg-gray-700 cursor-pointer';
-                item.textContent = shop[`name_${currentLang}`];
-                item.onclick = () => {
-                    searchInput.value = shop[`name_${currentLang}`];
-                    searchResults.classList.add('hidden');
-                    focusOnShop(shop.id);
-                };
-                searchResults.appendChild(item);
-            });
-            searchResults.classList.remove('hidden');
-        }
-        
-        // =================================================================
-        // MODAL & FORM HANDLING
-        // =================================================================
-
-        function setupEventListeners() {
-            searchInput.addEventListener('input', filterAndRender);
-            typeFilter.addEventListener('change', filterAndRender);
-            
-            // Hide search results when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.relative')) {
-                    searchResults.classList.add('hidden');
-                }
-            });
-
-            // Modal Triggers
-            document.getElementById('open-subscribe-modal').addEventListener('click', () => document.getElementById('subscribe-modal').classList.remove('hidden'));
-            document.getElementById('open-feedback-modal').addEventListener('click', () => document.getElementById('feedback-modal').classList.remove('hidden'));
-
-            // Close Modals
-            document.querySelectorAll('.close-modal').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    btn.closest('.fixed').classList.add('hidden');
-                });
-            });
-
-            // Form Submissions
-            document.getElementById('subscribe-form').addEventListener('submit', handleSubscription);
-            document.getElementById('feedback-form').addEventListener('submit', handleFeedback);
-        }
-
-        function handleSubscription(e) {
-            e.preventDefault();
-            const emailInput = document.getElementById('subscribe-email');
-            const messageDiv = document.getElementById('subscribe-message');
-            const submitBtn = document.getElementById('subscribe-submit-btn');
-            
-            submitBtn.disabled = true;
-            submitBtn.textContent = '處理中...';
-            messageDiv.textContent = '';
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                // [🔧 FIXED] Added redirect and headers
-                redirect: "follow",
-                body: JSON.stringify({ action: 'subscribe', email: emailInput.value }),
-                headers: { "Content-Type": "text/plain;charset=utf-8" }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    messageDiv.textContent = data.data.message;
-                    messageDiv.className = 'mt-4 text-center text-green-400';
-                    emailInput.value = '';
-                } else {
-                    throw new Error(data.message);
-                }
-            })
-            .catch(error => {
-                messageDiv.textContent = `訂閱失敗：${error.message}`;
-                messageDiv.className = 'mt-4 text-center text-red-400';
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = '訂閱';
-            });
-        }
-        
-        function handleFeedback(e) {
-            e.preventDefault();
-            const emailInput = document.getElementById('feedback-email');
-            const textInput = document.getElementById('feedback-text');
-            const messageDiv = document.getElementById('feedback-message');
-            const submitBtn = document.getElementById('feedback-submit-btn');
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = '傳送中...';
-            messageDiv.textContent = '';
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                // [🔧 FIXED] Added redirect and headers
-                redirect: "follow",
-                body: JSON.stringify({ action: 'submitFeedback', email: emailInput.value, feedback: textInput.value }),
-                headers: { "Content-Type": "text/plain;charset=utf-8" }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    messageDiv.textContent = data.data.message;
-                    messageDiv.className = 'mt-4 text-center text-green-400';
-                    emailInput.value = '';
-                    textInput.value = '';
-                } else {
-                    throw new Error(data.message);
-                }
-            })
-            .catch(error => {
-                messageDiv.textContent = `傳送失敗：${error.message}`;
-                messageDiv.className = 'mt-4 text-center text-red-400';
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = '送出';
-            });
-        }
-        
-        /**
-         * [✅ FIXED] Fetches and displays a policy in a modal.
-         * Now uses the new 'getPublicPolicies' endpoint.
-         * @param {string} policyType - The key of the policy to display (e.g., 'privacy').
-         */
-        async function showPolicy(policyType) {
-            const modal = document.getElementById('policy-modal');
-            const title = document.getElementById('policy-title');
-            const content = document.getElementById('policy-content');
-            const loading = document.getElementById('policy-loading');
-
-            title.textContent = '載入中...';
-            content.innerHTML = '';
-            loading.classList.remove('hidden');
-            modal.classList.remove('hidden');
-
+        async function fetchData() {
             try {
-                const res = await fetch(SCRIPT_URL, {
+                // 前端發送 fetch 請求。瀏覽器會自動附加 'Origin' 標頭。
+                // 後端 (code.gs) 將會驗證這個標頭是否符合安全指南中定義的白名單。
+                const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     redirect: "follow",
-                    body: JSON.stringify({ action: 'getPublicPolicies' }),
+                    body: JSON.stringify({ action: 'getPublicData' }),
                     headers: { "Content-Type": "text/plain;charset=utf-8" }
                 });
-                const response = await res.json();
-
-                if (response.status === 'success') {
-                    const policyText = response.data[policyType];
-                    title.textContent = policyType === 'privacy' ? '隱私權政策' : '免責聲明';
-                    
-                    if (policyText) {
-                        // Use showdown to render markdown-like text with newlines
-                        if (window.showdown) {
-                            const converter = new showdown.Converter();
-                            content.innerHTML = converter.makeHtml(policyText);
-                        } else {
-                            content.innerHTML = policyText.replace(/\n/g, '<br>');
-                        }
-                    } else {
-                        content.textContent = '目前沒有相關內容。';
-                    }
+                const result = await response.json();
+                if (result.status === 'success') {
+                    allShops = result.data.shops;
+                    populateTypeFilter();
+                    renderFilteredShops();
                 } else {
-                    throw new Error(response.message || '無法載入政策內容。');
+                    throw new Error(result.message);
                 }
             } catch (error) {
-                console.error(`Error fetching policy (${policyType}):`, error);
-                title.textContent = '錯誤';
-                content.textContent = '無法載入內容，請稍後再試。';
-            } finally {
-                loading.classList.add('hidden');
+                console.error("無法獲取商店資料:", error);
+                showMessageModal("無法載入商店資料，請稍後再試。");
             }
         }
+
+        function setupEventListeners() {
+            document.getElementById('search-input').addEventListener('input', renderFilteredShops);
+            document.getElementById('type-filter').addEventListener('input', renderFilteredShops);
+            document.getElementById('reset-filters-btn').addEventListener('click', () => {
+                document.getElementById('search-input').value = '';
+                document.getElementById('type-filter').value = 'all';
+                renderFilteredShops();
+            });
+
+            document.getElementById('show-favorites-btn').addEventListener('click', showFavorites);
+            document.getElementById('show-report-issue-btn').addEventListener('click', () => openModal('report-issue-modal'));
+
+            document.getElementById('recommend-form').addEventListener('submit', handleRecommendSubmit);
+            document.getElementById('issue-form').addEventListener('submit', handleIssueSubmit);
+        }
+
+        // =================================================================
+        // RENDERING & FILTERING
+        // =================================================================
+        function populateTypeFilter() {
+            const typeFilterEl = document.getElementById('type-filter');
+            const types = [...new Set(allShops.map(shop => shop['type_zh-TW']).filter(Boolean))].sort();
+            types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                typeFilterEl.appendChild(option);
+            });
+        }
+        
+        function renderFilteredShops() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const selectedType = document.getElementById('type-filter').value;
+
+            const filteredShops = allShops.filter(shop => {
+                const matchesSearch = searchTerm === '' ||
+                    (shop['name_zh-TW'] || '').toLowerCase().includes(searchTerm) ||
+                    (shop['address_zh-TW'] || '').toLowerCase().includes(searchTerm) ||
+                    (shop['type_zh-TW'] || '').toLowerCase().includes(searchTerm);
+                const matchesType = selectedType === 'all' || shop['type_zh-TW'] === selectedType;
+                return matchesSearch && matchesType;
+            });
+            
+            renderShopCards(filteredShops);
+            addMarkers(filteredShops);
+        }
+
+        function renderShopCards(shops) {
+            const container = document.getElementById('shops-container');
+            if (shops.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 p-4">找不到符合條件的店家。</p>';
+                return;
+            }
+            container.innerHTML = shops.map(shop => {
+                const isFavorite = favorites.includes(shop.id);
+                return `
+                    <div class="shop-card border-b border-gray-200 p-4 cursor-pointer hover:bg-green-50">
+                        <div class="flex justify-between items-start">
+                            <div onclick="showShopDetail('${shop.id}')">
+                                <h3 class="font-bold text-lg text-green-800">${shop['name_zh-TW']}</h3>
+                                <p class="text-sm text-gray-600">${shop['type_zh-TW']}</p>
+                                <p class="text-sm text-gray-500 mt-1">${shop['address_zh-TW']}</p>
+                            </div>
+                            <button onclick="toggleFavorite('${shop.id}')" class="favorite-btn ${isFavorite ? 'active' : ''} p-2 text-gray-400 hover:text-red-500">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // =================================================================
+        // MAP & MARKERS
+        // =================================================================
+        function addMarkers(shops) {
+            markers.clearLayers();
+            shops.forEach(shop => {
+                if (shop.lat && shop.lng) {
+                    const popupContent = `
+                        <div class="text-center">
+                            <h4 class="font-bold">${shop['name_zh-TW']}</h4>
+                            <p>${shop['type_zh-TW']}</p>
+                            <button class="mt-2 text-blue-500 hover:underline" onclick="showShopDetail('${shop.id}')">查看詳情</button>
+                        </div>
+                    `;
+                    const marker = L.marker([shop.lat, shop.lng])
+                        .bindPopup(popupContent);
+                    
+                    marker.on('click', () => {
+                        map.setView([shop.lat, shop.lng], 16);
+                    });
+
+                    markers.addLayer(marker);
+                }
+            });
+        }
+        
+        // =================================================================
+        // FAVORITES
+        // =================================================================
+        function loadFavorites() {
+            favorites = JSON.parse(localStorage.getItem('greenMapFavorites')) || [];
+        }
+
+        function saveFavorites() {
+            localStorage.setItem('greenMapFavorites', JSON.stringify(favorites));
+        }
+
+        function toggleFavorite(shopId) {
+            const index = favorites.indexOf(shopId);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(shopId);
+            }
+            saveFavorites();
+            renderFilteredShops(); // Re-render to update heart icons
+        }
+        
+        function showFavorites() {
+            const favoriteShops = allShops.filter(shop => favorites.includes(shop.id));
+            renderShopCards(favoriteShops);
+            addMarkers(favoriteShops);
+            document.getElementById('search-input').value = '我的最愛';
+            document.getElementById('type-filter').value = 'all';
+        }
+
+        // =================================================================
+        // MODALS
+        // =================================================================
+        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+        function showMessageModal(message) {
+            document.getElementById('message-modal-text').textContent = message;
+            openModal('message-modal');
+        }
+
+        function showShopDetail(shopId) {
+            const shop = allShops.find(s => s.id === shopId);
+            if (!shop) return;
+            
+            document.getElementById('shop-detail-title').textContent = shop['name_zh-TW'];
+            const contentEl = document.getElementById('shop-detail-content');
+            
+            contentEl.innerHTML = `
+                <p class="text-lg text-gray-600 mb-4">${shop['description_zh-TW']}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div><strong>類型:</strong> ${shop['type_zh-TW']}</div>
+                    <div><strong>地址:</strong> ${shop['address_zh-TW']}</div>
+                    <div><strong>營業時間:</strong> ${shop['hours_zh-TW']}</div>
+                    <div><strong>電話:</strong> <a href="tel:${shop.phone}" class="text-blue-500 hover:underline">${shop.phone}</a></div>
+                    <div><strong>網站:</strong> <a href="${shop.website}" target="_blank" class="text-blue-500 hover:underline">${shop.website}</a></div>
+                    <div><strong>Email:</strong> <a href="mailto:${shop.email}" class="text-blue-500 hover:underline">${shop.email}</a></div>
+                </div>
+                <div class="mt-4 pt-4 border-t">
+                    <h4 class="font-bold text-green-700">永續特色</h4>
+                    <p class="mt-1">${(shop['sustainability_zh-TW'] || '').replace(/\n/g, '<br>')}</p>
+                </div>
+                <div class="mt-4">
+                    <h4 class="font-bold text-green-700">標籤</h4>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        ${(shop['tags_zh-TW'] || '').split(',').map(tag => `<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${tag.trim()}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('shop-detail-recommend-btn').onclick = () => showRecommendModal(shop.id);
+            openModal('shop-detail-modal');
+        }
+        
+        function showRecommendModal(shopId) {
+            const shop = allShops.find(s => s.id === shopId);
+            if (!shop) return;
+            closeModal('shop-detail-modal'); // Close detail modal first
+            document.getElementById('recommend-shop-id').value = shop.id;
+            document.getElementById('recommend-shop-name').textContent = shop['name_zh-TW'];
+            document.getElementById('recommend-form').reset();
+            openModal('recommend-modal');
+        }
+
+        // =================================================================
+        // FORM SUBMISSIONS
+        // =================================================================
+        async function handleApiFormSubmit(action, payload, successMessage, form) {
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = '傳送中...';
+            
+             try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    redirect: 'follow',
+                    body: JSON.stringify({ action, ...payload }),
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }
+                });
+                const result = await response.json();
+                if (result.status !== 'success') throw new Error(result.message);
+                
+                closeModal(form.closest('.fixed').id);
+                showMessageModal(successMessage);
+                form.reset();
+             } catch (error) {
+                console.error(`Form submission error for action ${action}:`, error);
+                showMessageModal(`操作失敗：${error.message}`);
+             } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+             }
+        }
+        
+        function handleRecommendSubmit(e) {
+            e.preventDefault();
+            const shopId = document.getElementById('recommend-shop-id').value;
+            const shop = allShops.find(s => s.id === shopId);
+            const payload = {
+                recipientEmail: document.getElementById('recipient-email').value,
+                shopName: shop['name_zh-TW'],
+                shopAddress: shop['address_zh-TW'],
+                shopWebsite: shop.website
+            };
+            handleApiFormSubmit('sendRecommendation', payload, '推薦信已成功寄出！', e.target);
+        }
+        
+        function handleIssueSubmit(e) {
+            e.preventDefault();
+            const shopIdentifier = document.getElementById('issue-shop-id').value;
+            const shop = allShops.find(s => s.id === shopIdentifier || s['name_zh-TW'] === shopIdentifier);
+            const payload = {
+                shopId: shop ? shop.id : 'N/A',
+                shopName: shop ? shop['name_zh-TW'] : shopIdentifier,
+                feedbackType: document.getElementById('issue-type').value,
+                comment: document.getElementById('issue-comment').value,
+            };
+            handleApiFormSubmit('submitFeedback', payload, '感謝您的回報，我們將盡快處理！', e.target);
+        }
+
+        // Make some functions globally accessible for inline HTML calls
+        window.showShopDetail = showShopDetail;
+        window.toggleFavorite = toggleFavorite;
+        window.closeModal = closeModal;
 
     </script>
 </body>
 </html>
+
