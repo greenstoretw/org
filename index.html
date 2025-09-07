@@ -5,469 +5,290 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>永續商店地圖</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background-color: #f0f7f4;
-        }
-        .main-container {
-            height: calc(100vh - 80px); /* Adjust based on header height */
-        }
-        #map-container {
-            height: 100%;
-            width: 100%;
-        }
-        #shops-container {
-            height: 100%;
-            overflow-y: auto;
-        }
-        .shop-card {
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .shop-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-        }
-        .favorite-btn.active i {
-            color: #ef4444; /* red-500 */
-            font-weight: 900;
-        }
-        /* Custom scrollbar */
+        .leaflet-popup-content-wrapper { border-radius: 8px; }
+        .favorite-btn.active i { color: #ef4444; /* red-500 */ }
+        .modal-content { max-height: 80vh; }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #e2e8f0; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-
-        .leaflet-popup-content-wrapper {
-            background-color: #ffffff;
-            color: #1f2937;
-            border-radius: 8px;
-        }
-        .leaflet-popup-tip {
-            background-color: #ffffff;
-        }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px;}
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
     </style>
 </head>
-<body class="text-gray-800">
+<body class="bg-gray-100 font-sans">
+    <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-80 z-50 flex items-center justify-center">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500"></div>
+    </div>
 
     <!-- Header -->
-    <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-40 h-[80px]">
-        <h1 class="text-2xl font-bold text-green-700"><i class="fas fa-leaf mr-2"></i>永續商店地圖</h1>
-        <nav class="space-x-4">
-            <button id="show-favorites-btn" class="text-gray-600 hover:text-green-600"><i class="fas fa-heart mr-1"></i> 我的最愛</button>
-            <button id="show-report-issue-btn" class="text-gray-600 hover:text-green-600"><i class="fas fa-exclamation-circle mr-1"></i> 問題回報</button>
-        </nav>
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-green-700"><i class="fas fa-leaf mr-2"></i>永續商店地圖</h1>
+            <div class="flex items-center space-x-4">
+                <button id="favorites-list-btn" class="text-gray-600 hover:text-green-600 relative">
+                    <i class="fas fa-heart text-xl"></i>
+                    <span id="favorites-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="main-container grid grid-cols-1 md:grid-cols-12">
-        <!-- Shops Panel -->
-        <div class="md:col-span-4 lg:col-span-3 bg-white border-r border-gray-200 flex flex-col">
-            <!-- Search & Filter -->
-            <div class="p-4 border-b border-gray-200">
-                <input type="text" id="search-input" placeholder="搜尋店家、地址、類型..." class="w-full border border-gray-300 rounded-lg p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                <div class="flex space-x-2">
-                    <select id="type-filter" class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <option value="all">所有類型</option>
-                    </select>
-                    <button id="reset-filters-btn" class="p-2 bg-gray-200 hover:bg-gray-300 rounded-md" title="重設"><i class="fas fa-undo"></i></button>
-                </div>
-            </div>
-            <!-- Shops List -->
-            <div id="shops-container" class="flex-grow p-2">
-                <!-- Shop cards will be injected here -->
+    <div class="container mx-auto p-4">
+        <!-- Search and Filter -->
+        <div class="bg-white p-4 rounded-lg shadow-md mb-4 flex flex-col md:flex-row gap-4 items-center">
+            <div class="relative flex-grow w-full">
+                <input type="text" id="search-input" placeholder="搜尋店家名稱、地址、類型..." class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
             </div>
         </div>
 
-        <!-- Map Panel -->
-        <div class="md:col-span-8 lg:col-span-9" id="map-container"></div>
+        <!-- Announcement Bar -->
+        <div id="announcement-bar" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-md" role="alert">
+            <p class="font-bold">網站公告</p>
+            <p id="announcement-text"></p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <!-- Map -->
+            <div class="lg:col-span-2 h-[60vh] lg:h-auto rounded-lg shadow-md overflow-hidden" id="map"></div>
+
+            <!-- Shop List -->
+            <div class="h-[60vh] lg:h-auto overflow-y-auto bg-white p-2 rounded-lg shadow-md">
+                <div id="shop-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                    <!-- Shop cards will be injected here -->
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Modals -->
     <!-- Shop Detail Modal -->
-    <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-xl w-11/12 max-w-4xl max-h-[90vh] flex flex-col">
-            <div class="p-4 border-b flex justify-between items-center">
-                <h2 id="shop-detail-title" class="text-2xl font-bold text-green-700"></h2>
-                <button onclick="closeModal('shop-detail-modal')" class="text-gray-500 hover:text-gray-800">&times;</button>
-            </div>
-            <div id="shop-detail-content" class="p-6 overflow-y-auto" ></div>
-            <div class="p-4 bg-gray-50 border-t flex justify-end space-x-2">
-                 <button id="shop-detail-recommend-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"><i class="fas fa-share-square mr-2"></i>推薦給朋友</button>
-                <button onclick="closeModal('shop-detail-modal')" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">關閉</button>
+    <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl modal-content overflow-y-auto">
+            <div class="p-6 relative">
+                <button onclick="closeModal('shop-detail-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                <img id="modal-shop-image" src="" alt="店家圖片" class="w-full h-48 object-cover rounded-lg mb-4 bg-gray-200">
+                <h2 id="modal-shop-name" class="text-3xl font-bold mb-2 text-gray-800"></h2>
+                <p id="modal-shop-address" class="text-gray-600 mb-4"><i class="fas fa-map-marker-alt mr-2 text-green-600"></i></p>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span id="modal-shop-type" class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full"></span>
+                </div>
+                <div class="border-t border-gray-200 pt-4">
+                    <div class="space-y-3 text-gray-700">
+                        <p id="modal-shop-hours"><i class="fas fa-clock fa-fw mr-2 text-green-600"></i></p>
+                        <p id="modal-shop-phone"><i class="fas fa-phone fa-fw mr-2 text-green-600"></i></p>
+                        <p><i class="fas fa-globe fa-fw mr-2 text-green-600"></i><a id="modal-shop-website" href="#" target="_blank" class="text-blue-500 hover:underline"></a></p>
+                    </div>
+                </div>
+                <div class="mt-4 border-t border-gray-200 pt-4">
+                    <h3 class="font-semibold text-lg mb-2">永續特色</h3>
+                    <p id="modal-shop-sustainability" class="text-gray-600 whitespace-pre-wrap"></p>
+                </div>
+                <div class="mt-4 border-t border-gray-200 pt-4">
+                    <h3 class="font-semibold text-lg mb-2">標籤</h3>
+                    <div id="modal-shop-tags" class="flex flex-wrap gap-2"></div>
+                </div>
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                    <button id="recommend-btn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition"><i class="fas fa-share-square mr-2"></i>推薦給朋友</button>
+                    <button id="feedback-btn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition"><i class="fas fa-exclamation-triangle mr-2"></i>回報問題</button>
+                </div>
             </div>
         </div>
     </div>
-    
-    <!-- Recommendation Modal -->
-    <div id="recommend-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-xl w-11/12 max-w-md">
-             <div class="p-4 border-b flex justify-between items-center">
-                <h2 class="text-xl font-bold text-blue-600">推薦店家</h2>
-                <button onclick="closeModal('recommend-modal')" class="text-gray-500 hover:text-gray-800">&times;</button>
-            </div>
-            <div class="p-6">
-                <form id="recommend-form">
-                    <input type="hidden" id="recommend-shop-id">
-                    <p class="mb-4">將 <strong id="recommend-shop-name" class="text-green-700"></strong> 的資訊分享給朋友！</p>
-                    <label for="recipient-email" class="block text-sm font-medium text-gray-700">朋友的 Email</label>
-                    <input type="email" id="recipient-email" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
-                    <div class="mt-4 flex justify-end">
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">送出推薦</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Issue Report Modal -->
-    <div id="report-issue-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-xl w-11/12 max-w-lg">
-             <div class="p-4 border-b flex justify-between items-center">
-                <h2 class="text-xl font-bold text-orange-600">問題回報</h2>
-                <button onclick="closeModal('report-issue-modal')" class="text-gray-500 hover:text-gray-800">&times;</button>
-            </div>
-            <div class="p-6">
-                 <form id="issue-form">
-                    <div class="mb-4">
-                        <label for="issue-shop-id" class="block text-sm font-medium">回報店家 (可選填)</label>
-                        <input type="text" id="issue-shop-id" placeholder="輸入店家名稱或ID" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
-                    </div>
-                    <div class="mb-4">
-                        <label for="issue-type" class="block text-sm font-medium">問題類型 *</label>
-                        <select id="issue-type" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white focus:outline-none focus:ring-green-500 focus:border-green-500">
-                            <option value="info-correction">資訊錯誤</option>
-                            <option value="shop-closed">店家已歇業</option>
-                            <option value="suggestion">功能建議</option>
-                            <option value="other">其他問題</option>
-                        </select>
-                    </div>
-                    <div class="mb-4">
-                        <label for="issue-comment" class="block text-sm font-medium">詳細說明 *</label>
-                        <textarea id="issue-comment" rows="4" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-green-500 focus:border-green-500"></textarea>
-                    </div>
-                     <div class="mt-4 flex justify-end">
-                        <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">送出回報</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Generic Message Modal -->
-    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-xl w-11/12 max-w-sm text-center p-6">
-            <p id="message-modal-text" class="text-lg"></p>
-            <button onclick="closeModal('message-modal')" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">確定</button>
-        </div>
-    </div>
-
+    <!-- Other Modals: Recommendation, Feedback, Favorites -->
+    <div id="recommend-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4"> <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6"> <h2 class="text-2xl font-bold mb-4">推薦店家</h2> <form id="recommend-form"> <input type="hidden" id="recommend-shop-id"> <label for="recipient-email" class="block mb-2">朋友的 Email</label> <input type="email" id="recipient-email" required class="w-full p-2 border rounded mb-4"> <div class="flex justify-end space-x-2"> <button type="button" onclick="closeModal('recommend-modal')" class="bg-gray-300 px-4 py-2 rounded">取消</button> <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">送出</button> </div> </form> </div> </div>
+    <div id="feedback-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4"> <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6"> <h2 class="text-2xl font-bold mb-4">回報問題</h2> <form id="feedback-form"> <input type="hidden" id="feedback-shop-id"> <p class="mb-2">店家: <span id="feedback-shop-name" class="font-semibold"></span></p> <label for="feedback-type" class="block mb-2">問題類型</label> <select id="feedback-type" class="w-full p-2 border rounded mb-4"> <option>資訊錯誤</option> <option>地點標示不準</option> <option>已歇業</option> <option>其他建議</option> </select> <label for="feedback-comment" class="block mb-2">詳細說明</label> <textarea id="feedback-comment" rows="4" required class="w-full p-2 border rounded mb-4"></textarea> <div class="flex justify-end space-x-2"> <button type="button" onclick="closeModal('feedback-modal')" class="bg-gray-300 px-4 py-2 rounded">取消</button> <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded">送出</button> </div> </form> </div> </div>
+    <div id="favorites-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4"> <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6"> <h2 class="text-2xl font-bold mb-4">我的最愛</h2> <div id="favorites-list-content" class="space-y-2 max-h-96 overflow-y-auto"></div> <div class="flex justify-end mt-4"> <button type="button" onclick="closeModal('favorites-modal')" class="bg-gray-500 text-white px-4 py-2 rounded">關閉</button> </div> </div> </div>
 
     <script>
-        // =================================================================
-        // CONFIGURATION
-        // =================================================================
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIcS0WXSQV0yNt5lyjvHy7hwDIUItkGeG78T_Yz2mKa83HJMgI9UxsfVIelU6PyKFwkw/exec';
-        const MAP_CENTER = [25.034, 121.564]; // Taipei 101
-        const DEFAULT_ZOOM = 13;
-
-        // =================================================================
-        // STATE
-        // =================================================================
-        let allShops = [];
-        let map;
-        let markers = L.layerGroup();
-        let favorites = [];
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIcS0WXSQV0yNt5lyjvHy7hwDIUItkGeG78T_Yz2mKa83HJMgI9UxsfVIelU6PyKFwkw/exec";
+        let map, allShops = [], markers = [], favorites = [];
 
         // =================================================================
         // INITIALIZATION
         // =================================================================
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            initMap();
             loadFavorites();
-            initializeMap();
-            fetchData();
+            try {
+                const data = await apiCall('getPublicData');
+                allShops = data.shops;
+                document.getElementById('announcement-text').innerText = data.announcements || '目前沒有新公告。';
+                renderShops(allShops);
+                addMarkers(allShops);
+            } catch (error) {
+                console.error("Failed to load initial data:", error);
+                alert("無法載入地圖資料，請稍後再試。");
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
             setupEventListeners();
         });
 
-        function initializeMap() {
-            map = L.map('map-container').setView(MAP_CENTER, DEFAULT_ZOOM);
+        const apiCall = async (action, payload = {}) => {
+            const response = await fetch(SCRIPT_URL, { method: 'POST', redirect: "follow", body: JSON.stringify({ action, ...payload }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
+            if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+            const result = await response.json();
+            if (result.status === 'error') throw new Error(result.message);
+            return result.data;
+        };
+
+        function initMap() {
+            map = L.map('map').setView([25.0330, 121.5654], 13); // Taipei
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
-            markers.addTo(map);
-        }
-
-        async function fetchData() {
-            try {
-                // 前端發送 fetch 請求。瀏覽器會自動附加 'Origin' 標頭。
-                // 後端 (code.gs) 將會驗證這個標頭是否符合安全指南中定義的白名單。
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    redirect: "follow",
-                    body: JSON.stringify({ action: 'getPublicData' }),
-                    headers: { "Content-Type": "text/plain;charset=utf-8" }
-                });
-                const result = await response.json();
-                if (result.status === 'success') {
-                    allShops = result.data.shops;
-                    populateTypeFilter();
-                    renderFilteredShops();
-                } else {
-                    throw new Error(result.message);
-                }
-            } catch (error) {
-                console.error("無法獲取商店資料:", error);
-                showMessageModal("無法載入商店資料，請稍後再試。");
-            }
-        }
-
-        function setupEventListeners() {
-            document.getElementById('search-input').addEventListener('input', renderFilteredShops);
-            document.getElementById('type-filter').addEventListener('input', renderFilteredShops);
-            document.getElementById('reset-filters-btn').addEventListener('click', () => {
-                document.getElementById('search-input').value = '';
-                document.getElementById('type-filter').value = 'all';
-                renderFilteredShops();
-            });
-
-            document.getElementById('show-favorites-btn').addEventListener('click', showFavorites);
-            document.getElementById('show-report-issue-btn').addEventListener('click', () => openModal('report-issue-modal'));
-
-            document.getElementById('recommend-form').addEventListener('submit', handleRecommendSubmit);
-            document.getElementById('issue-form').addEventListener('submit', handleIssueSubmit);
         }
 
         // =================================================================
-        // RENDERING & FILTERING
+        // RENDERING & MAP FUNCTIONS
         // =================================================================
-        function populateTypeFilter() {
-            const typeFilterEl = document.getElementById('type-filter');
-            const types = [...new Set(allShops.map(shop => shop['type_zh-TW']).filter(Boolean))].sort();
-            types.forEach(type => {
-                const option = document.createElement('option');
-                option.value = type;
-                option.textContent = type;
-                typeFilterEl.appendChild(option);
-            });
-        }
-        
-        function renderFilteredShops() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const selectedType = document.getElementById('type-filter').value;
-
-            const filteredShops = allShops.filter(shop => {
-                const matchesSearch = searchTerm === '' ||
-                    (shop['name_zh-TW'] || '').toLowerCase().includes(searchTerm) ||
-                    (shop['address_zh-TW'] || '').toLowerCase().includes(searchTerm) ||
-                    (shop['type_zh-TW'] || '').toLowerCase().includes(searchTerm);
-                const matchesType = selectedType === 'all' || shop['type_zh-TW'] === selectedType;
-                return matchesSearch && matchesType;
-            });
-            
-            renderShopCards(filteredShops);
-            addMarkers(filteredShops);
-        }
-
-        function renderShopCards(shops) {
-            const container = document.getElementById('shops-container');
-            if (shops.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 p-4">找不到符合條件的店家。</p>';
-                return;
-            }
-            container.innerHTML = shops.map(shop => {
+        function renderShops(shops) {
+            const list = document.getElementById('shop-list');
+            list.innerHTML = shops.length ? shops.map(shop => {
                 const isFavorite = favorites.includes(shop.id);
+                const imageUrl = shop.imageUrl || `https://placehold.co/400x300/e2e8f0/4a5568?text=${encodeURIComponent(shop['name_zh-TW'])}`;
                 return `
-                    <div class="shop-card border-b border-gray-200 p-4 cursor-pointer hover:bg-green-50">
-                        <div class="flex justify-between items-start">
-                            <div onclick="showShopDetail('${shop.id}')">
-                                <h3 class="font-bold text-lg text-green-800">${shop['name_zh-TW']}</h3>
-                                <p class="text-sm text-gray-600">${shop['type_zh-TW']}</p>
-                                <p class="text-sm text-gray-500 mt-1">${shop['address_zh-TW']}</p>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+                        <img src="${imageUrl}" alt="${shop['name_zh-TW']}" class="w-full h-40 object-cover cursor-pointer" onclick="showShopDetail('${shop.id}')" onerror="this.onerror=null;this.src='https://placehold.co/400x300/e2e8f0/4a5568?text=圖片錯誤';">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg truncate cursor-pointer hover:text-green-700" onclick="showShopDetail('${shop.id}')">${shop['name_zh-TW']}</h3>
+                            <p class="text-gray-600 text-sm truncate"><i class="fas fa-map-marker-alt fa-fw mr-1"></i>${shop['address_zh-TW']}</p>
+                            <div class="mt-2 flex justify-between items-center">
+                                <span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">${shop['type_zh-TW']}</span>
+                                <button onclick="toggleFavorite('${shop.id}', event)" class="favorite-btn ${isFavorite ? 'active' : ''} text-gray-400 hover:text-red-500 text-xl p-1">
+                                    <i class="fas fa-heart"></i>
+                                </button>
                             </div>
-                            <button onclick="toggleFavorite('${shop.id}')" class="favorite-btn ${isFavorite ? 'active' : ''} p-2 text-gray-400 hover:text-red-500">
-                                <i class="fas fa-heart"></i>
-                            </button>
                         </div>
-                    </div>
-                `;
-            }).join('');
+                    </div>`;
+            }).join('') : '<p class="text-center text-gray-500 col-span-full">找不到店家資訊。</p>';
         }
-        
-        // =================================================================
-        // MAP & MARKERS
-        // =================================================================
+
         function addMarkers(shops) {
-            markers.clearLayers();
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
             shops.forEach(shop => {
                 if (shop.lat && shop.lng) {
-                    const popupContent = `
-                        <div class="text-center">
-                            <h4 class="font-bold">${shop['name_zh-TW']}</h4>
-                            <p>${shop['type_zh-TW']}</p>
-                            <button class="mt-2 text-blue-500 hover:underline" onclick="showShopDetail('${shop.id}')">查看詳情</button>
-                        </div>
-                    `;
-                    const marker = L.marker([shop.lat, shop.lng])
-                        .bindPopup(popupContent);
-                    
-                    marker.on('click', () => {
-                        map.setView([shop.lat, shop.lng], 16);
-                    });
-
-                    markers.addLayer(marker);
+                    const marker = L.marker([shop.lat, shop.lng]).addTo(map);
+                    marker.bindPopup(`<b>${shop['name_zh-TW']}</b><br>${shop['address_zh-TW']}`);
+                    marker.on('click', () => showShopDetail(shop.id));
+                    markers.push(marker);
                 }
             });
         }
         
-        // =================================================================
-        // FAVORITES
-        // =================================================================
-        function loadFavorites() {
-            favorites = JSON.parse(localStorage.getItem('greenMapFavorites')) || [];
-        }
-
-        function saveFavorites() {
-            localStorage.setItem('greenMapFavorites', JSON.stringify(favorites));
-        }
-
-        function toggleFavorite(shopId) {
-            const index = favorites.indexOf(shopId);
-            if (index > -1) {
-                favorites.splice(index, 1);
-            } else {
-                favorites.push(shopId);
-            }
-            saveFavorites();
-            renderFilteredShops(); // Re-render to update heart icons
-        }
-        
-        function showFavorites() {
-            const favoriteShops = allShops.filter(shop => favorites.includes(shop.id));
-            renderShopCards(favoriteShops);
-            addMarkers(favoriteShops);
-            document.getElementById('search-input').value = '我的最愛';
-            document.getElementById('type-filter').value = 'all';
-        }
-
-        // =================================================================
-        // MODALS
-        // =================================================================
-        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
-        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
-        function showMessageModal(message) {
-            document.getElementById('message-modal-text').textContent = message;
-            openModal('message-modal');
-        }
-
         function showShopDetail(shopId) {
             const shop = allShops.find(s => s.id === shopId);
             if (!shop) return;
+            const textOrDefault = (text) => text || '未提供';
+            document.getElementById('modal-shop-name').textContent = textOrDefault(shop['name_zh-TW']);
+            document.getElementById('modal-shop-address').innerHTML = `<i class="fas fa-map-marker-alt mr-2 text-green-600"></i>${textOrDefault(shop['address_zh-TW'])}`;
+            document.getElementById('modal-shop-type').textContent = textOrDefault(shop['type_zh-TW']);
+            document.getElementById('modal-shop-hours').innerHTML = `<i class="fas fa-clock fa-fw mr-2 text-green-600"></i>${textOrDefault(shop['hours_zh-TW'])}`;
+            document.getElementById('modal-shop-phone').innerHTML = `<i class="fas fa-phone fa-fw mr-2 text-green-600"></i>${textOrDefault(shop.phone)}`;
+            const websiteLink = document.getElementById('modal-shop-website');
+            websiteLink.href = shop.website ? `http://${shop.website.replace(/^https?:\/\//,'')}` : '#';
+            websiteLink.textContent = textOrDefault(shop.website);
+            document.getElementById('modal-shop-sustainability').textContent = textOrDefault(shop['sustainability_zh-TW']);
+            document.getElementById('modal-shop-tags').innerHTML = (shop['tags_zh-TW'] || '').split(',')
+                .map(tag => tag.trim() ? `<span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${tag.trim()}</span>` : '').join('');
+            document.getElementById('recommend-btn').onclick = () => openRecommendModal(shop.id);
+            document.getElementById('feedback-btn').onclick = () => openFeedbackModal(shop.id);
+
+            const modalImage = document.getElementById('modal-shop-image');
+            const imageUrl = shop.imageUrl || `https://placehold.co/600x400/e2e8f0/4a5568?text=${encodeURIComponent(shop['name_zh-TW'])}`;
+            modalImage.src = imageUrl;
+            modalImage.alt = shop['name_zh-TW'];
+            modalImage.onerror = () => { modalImage.src = `https://placehold.co/600x400/e2e8f0/4a5568?text=圖片載入失敗`; };
             
-            document.getElementById('shop-detail-title').textContent = shop['name_zh-TW'];
-            const contentEl = document.getElementById('shop-detail-content');
-            
-            contentEl.innerHTML = `
-                <p class="text-lg text-gray-600 mb-4">${shop['description_zh-TW']}</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div><strong>類型:</strong> ${shop['type_zh-TW']}</div>
-                    <div><strong>地址:</strong> ${shop['address_zh-TW']}</div>
-                    <div><strong>營業時間:</strong> ${shop['hours_zh-TW']}</div>
-                    <div><strong>電話:</strong> <a href="tel:${shop.phone}" class="text-blue-500 hover:underline">${shop.phone}</a></div>
-                    <div><strong>網站:</strong> <a href="${shop.website}" target="_blank" class="text-blue-500 hover:underline">${shop.website}</a></div>
-                    <div><strong>Email:</strong> <a href="mailto:${shop.email}" class="text-blue-500 hover:underline">${shop.email}</a></div>
-                </div>
-                <div class="mt-4 pt-4 border-t">
-                    <h4 class="font-bold text-green-700">永續特色</h4>
-                    <p class="mt-1">${(shop['sustainability_zh-TW'] || '').replace(/\n/g, '<br>')}</p>
-                </div>
-                <div class="mt-4">
-                    <h4 class="font-bold text-green-700">標籤</h4>
-                    <div class="flex flex-wrap gap-2 mt-2">
-                        ${(shop['tags_zh-TW'] || '').split(',').map(tag => `<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${tag.trim()}</span>`).join('')}
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('shop-detail-recommend-btn').onclick = () => showRecommendModal(shop.id);
             openModal('shop-detail-modal');
-        }
-        
-        function showRecommendModal(shopId) {
-            const shop = allShops.find(s => s.id === shopId);
-            if (!shop) return;
-            closeModal('shop-detail-modal'); // Close detail modal first
-            document.getElementById('recommend-shop-id').value = shop.id;
-            document.getElementById('recommend-shop-name').textContent = shop['name_zh-TW'];
-            document.getElementById('recommend-form').reset();
-            openModal('recommend-modal');
         }
 
         // =================================================================
-        // FORM SUBMISSIONS
+        // EVENT HANDLERS & MODAL LOGIC
         // =================================================================
-        async function handleApiFormSubmit(action, payload, successMessage, form) {
-            const submitButton = form.querySelector('button[type="submit"]');
-            const originalButtonText = submitButton.textContent;
-            submitButton.disabled = true;
-            submitButton.textContent = '傳送中...';
-            
-             try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    redirect: 'follow',
-                    body: JSON.stringify({ action, ...payload }),
-                    headers: { "Content-Type": "text/plain;charset=utf-8" }
-                });
-                const result = await response.json();
-                if (result.status !== 'success') throw new Error(result.message);
-                
-                closeModal(form.closest('.fixed').id);
-                showMessageModal(successMessage);
-                form.reset();
-             } catch (error) {
-                console.error(`Form submission error for action ${action}:`, error);
-                showMessageModal(`操作失敗：${error.message}`);
-             } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = originalButtonText;
-             }
+        function setupEventListeners() {
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filtered = allShops.filter(shop => 
+                    (shop['name_zh-TW'] && shop['name_zh-TW'].toLowerCase().includes(searchTerm)) ||
+                    (shop['address_zh-TW'] && shop['address_zh-TW'].toLowerCase().includes(searchTerm)) ||
+                    (shop['type_zh-TW'] && shop['type_zh-TW'].toLowerCase().includes(searchTerm))
+                );
+                renderShops(filtered);
+                addMarkers(filtered);
+            });
+            document.getElementById('favorites-list-btn').addEventListener('click', showFavoritesModal);
+            document.getElementById('recommend-form').addEventListener('submit', handleRecommendSubmit);
+            document.getElementById('feedback-form').addEventListener('submit', handleFeedbackSubmit);
         }
-        
-        function handleRecommendSubmit(e) {
+
+        function openModal(id) { document.getElementById(id).classList.replace('hidden', 'flex'); }
+        function closeModal(id) { document.getElementById(id).classList.replace('flex', 'hidden'); }
+
+        function openRecommendModal(shopId) { document.getElementById('recommend-shop-id').value = shopId; openModal('recommend-modal'); }
+        async function handleRecommendSubmit(e) {
             e.preventDefault();
             const shopId = document.getElementById('recommend-shop-id').value;
             const shop = allShops.find(s => s.id === shopId);
-            const payload = {
-                recipientEmail: document.getElementById('recipient-email').value,
-                shopName: shop['name_zh-TW'],
-                shopAddress: shop['address_zh-TW'],
-                shopWebsite: shop.website
-            };
-            handleApiFormSubmit('sendRecommendation', payload, '推薦信已成功寄出！', e.target);
+            const recipientEmail = document.getElementById('recipient-email').value;
+            try {
+                await apiCall('sendRecommendation', { recipientEmail, shopName: shop['name_zh-TW'], shopAddress: shop['address_zh-TW'], shopWebsite: shop.website });
+                alert('推薦信已成功寄出！');
+                closeModal('recommend-modal');
+                e.target.reset();
+            } catch (error) { alert(`推薦失敗: ${error.message}`); }
+        }
+
+        function openFeedbackModal(shopId) { const shop = allShops.find(s => s.id === shopId); document.getElementById('feedback-shop-id').value = shopId; document.getElementById('feedback-shop-name').textContent = shop['name_zh-TW']; openModal('feedback-modal'); }
+        async function handleFeedbackSubmit(e) {
+            e.preventDefault();
+            const payload = { shopId: document.getElementById('feedback-shop-id').value, feedbackType: document.getElementById('feedback-type').value, comment: document.getElementById('feedback-comment').value, shopName: document.getElementById('feedback-shop-name').textContent };
+            try {
+                await apiCall('submitFeedback', payload);
+                alert('感謝您的回報！');
+                closeModal('feedback-modal');
+                e.target.reset();
+            } catch (error) { alert(`回報失敗: ${error.message}`); }
         }
         
-        function handleIssueSubmit(e) {
-            e.preventDefault();
-            const shopIdentifier = document.getElementById('issue-shop-id').value;
-            const shop = allShops.find(s => s.id === shopIdentifier || s['name_zh-TW'] === shopIdentifier);
-            const payload = {
-                shopId: shop ? shop.id : 'N/A',
-                shopName: shop ? shop['name_zh-TW'] : shopIdentifier,
-                feedbackType: document.getElementById('issue-type').value,
-                comment: document.getElementById('issue-comment').value,
-            };
-            handleApiFormSubmit('submitFeedback', payload, '感謝您的回報，我們將盡快處理！', e.target);
+        // =================================================================
+        // FAVORITES LOGIC
+        // =================================================================
+        function loadFavorites() { favorites = JSON.parse(localStorage.getItem('favorites')) || []; updateFavoritesCount(); }
+        function saveFavorites() { localStorage.setItem('favorites', JSON.stringify(favorites)); updateFavoritesCount(); }
+        function updateFavoritesCount() { document.getElementById('favorites-count').textContent = favorites.length; }
+        function toggleFavorite(shopId, event) {
+            event.stopPropagation();
+            const index = favorites.indexOf(shopId);
+            if (index > -1) favorites.splice(index, 1);
+            else favorites.push(shopId);
+            saveFavorites();
+            const btn = event.currentTarget;
+            btn.classList.toggle('active', index === -1);
         }
-
-        // Make some functions globally accessible for inline HTML calls
-        window.showShopDetail = showShopDetail;
-        window.toggleFavorite = toggleFavorite;
-        window.closeModal = closeModal;
-
+        function showFavoritesModal() {
+            const content = document.getElementById('favorites-list-content');
+            const favoriteShops = allShops.filter(s => favorites.includes(s.id));
+            if (favoriteShops.length) {
+                content.innerHTML = favoriteShops.map(shop => `<div class="flex items-center justify-between p-2 border-b"><span class="cursor-pointer hover:underline" onclick="showShopDetail('${shop.id}');closeModal('favorites-modal');">${shop['name_zh-TW']}</span><button onclick="removeFavoriteFromList('${shop.id}')" class="text-red-500 text-sm">移除</button></div>`).join('');
+            } else {
+                content.innerHTML = '<p class="text-gray-500">您尚未加入任何最愛店家。</p>';
+            }
+            openModal('favorites-modal');
+        }
+        function removeFavoriteFromList(shopId) {
+            const index = favorites.indexOf(shopId);
+            if (index > -1) favorites.splice(index, 1);
+            saveFavorites();
+            showFavoritesModal(); // Refresh list
+            renderShops(allShops); // Refresh main view button states
+        }
     </script>
 </body>
 </html>
