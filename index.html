@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://script.google.com https://formsubmit.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com *.tile.openstreetmap.org; connect-src 'self' https://script.google.com https://formsubmit.co; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
     <title data-i18n="pageTitle">永續商店地圖 - 首頁</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -31,6 +32,33 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         #loading-overlay { position: fixed; inset: 0; background-color: rgba(255, 255, 255, 0.7); z-index: 9999; }
         .error-modal-content { max-height: 70vh; }
+
+        .dark body { background-color: #1f2937; color: #d1d5db; }
+        .dark nav { background-color: #374151; border-color: #4b5563; }
+        .dark .text-gray-800 { color: #d1d5db; }
+        .dark .text-gray-700 { color: #9ca3af; }
+        .dark .hover\:text-green-600:hover { color: #34d399; }
+        .dark .bg-white { background-color: #374151; }
+        .dark .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .dark .bg-green-50 { background-color: #111827; }
+        .dark .bg-yellow-50 { background-color: #111827; }
+        .dark .rounded-xl { border-radius: 0.75rem; }
+        .dark .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .dark .border-gray-300 { border-color: #4b5563; }
+        .dark .text-gray-600 { color: #9ca3af; }
+        .dark .tag { background-color: #10b981; color: white; }
+        .dark #newsletter { background-color: #10b981; }
+        .dark #newsletter .text-gray-800 { color: #1f2937; }
+        .dark footer { background-color: #1f2937; }
+        .dark .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(1.2); }
+
+        .rating-stars { display: inline-flex; color: #f59e0b; }
+        .rating-stars .star { cursor: pointer; transition: color 0.2s; }
+        .rating-stars .star:hover,
+        .rating-stars .star.selected { color: #f59e0b; }
+        .rating-stars .star.filled { color: #f59e0b; }
+        .rating-stars .star { color: #d1d5db; }
+
     </style>
 </head>
 <body class="text-gray-800">
@@ -59,6 +87,9 @@
                     <option value="zh-TW" data-i18n="langChinese">繁體中文</option>
                     <option value="en" data-i18n="langEnglish">English</option>
                 </select>
+                <button id="dark-mode-toggle" class="ml-4 text-gray-700 hover:text-green-600 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                </button>
             </div>
              <div class="md:hidden flex items-center">
                 <select id="language-select-mobile" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition cursor-pointer mr-2">
@@ -153,6 +184,35 @@
             </div>
         </section>
 
+        <section id="recommend-shop" class="py-12 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-3xl font-bold text-center mb-6" data-i18n="recommendShopTitle">推薦店家</h2>
+                    <form id="recommend-shop-form">
+                        <div class="mb-4">
+                            <label for="rec-shop-name" class="block text-gray-700 text-sm font-bold mb-2" data-i18n="recommendShopNameLabel">店家名稱</label>
+                            <input type="text" id="rec-shop-name" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div class="mb-4">
+                            <label for="rec-shop-address" class="block text-gray-700 text-sm font-bold mb-2" data-i18n="recommendShopAddressLabel">店家地址</label>
+                            <input type="text" id="rec-shop-address" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div class="mb-4">
+                            <label for="rec-shop-website" class="block text-gray-700 text-sm font-bold mb-2" data-i18n="recommendShopWebsiteLabel">店家網站 (選填)</label>
+                            <input type="text" id="rec-shop-website" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div class="mb-4">
+                            <label for="rec-shop-reason" class="block text-gray-700 text-sm font-bold mb-2" data-i18n="recommendShopReasonLabel">推薦理由 (選填)</label>
+                            <textarea id="rec-shop-reason" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn-primary px-6 py-2 rounded-lg font-medium" data-i18n="recommendShopSubmitBtn">送出推薦</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
         <section id="report-issue" class="py-12 bg-yellow-50">
             <div class="container mx-auto px-4">
                 <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
@@ -217,6 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===== GLOBAL STATE =====
     let allShops = [];
     let currentFilterCategory = 'all';
+    let currentFilterTag = 'all';
     let currentSearchQuery = '';
     const shopsPerPage = 6;
     let currentLoadedShops = 0;
@@ -242,7 +303,20 @@ document.addEventListener('DOMContentLoaded', () => {
             recommendationSending: '正在發送推薦信...', recommendationSuccess: '推薦信已成功寄出！',
             apiError: '發生錯誤，請稍後再試。', newsletterSuccess: '感謝您的訂閱！',
             adminRecommendBtn: '推薦此店家給所有訂閱者',
-            errorModalTitle: '發生錯誤'
+            errorModalTitle: '發生錯誤',
+            recommendShopTitle: '推薦店家',
+            recommendShopNameLabel: '店家名稱',
+            recommendShopAddressLabel: '店家地址',
+            recommendShopWebsiteLabel: '店家網站 (選填)',
+            recommendShopReasonLabel: '推薦理由 (選填)',
+            recommendShopSubmitBtn: '送出推薦',
+            recommendShopSuccessMsg: '感謝您的推薦！我們將會進行審核。',
+            ratingLabel: '評分',
+            ratingCountLabel: '(${count} 則評分)',
+            submitRatingBtn: '送出評分',
+            ratingSuccessMsg: '感謝您的評分！',
+            openingHoursLabel: '營業時間',
+            tagsLabel: '標籤'
         },
         'en': {
             pageTitle: 'Sustainable Store Map - Home', appName: 'Sustainable Store Map', home: 'Home', map: 'Map', shopList: 'Shop List', newsletter: 'Newsletter', reportIssueNavLink: 'Report Issue',
@@ -260,7 +334,20 @@ document.addEventListener('DOMContentLoaded', () => {
             recommendationSending: 'Sending recommendation...', recommendationSuccess: 'Recommendation sent successfully!',
             apiError: 'An error occurred. Please try again later.', newsletterSuccess: 'Thank you for subscribing!',
             adminRecommendBtn: 'Recommend this store to all subscribers',
-            errorModalTitle: 'An Error Occurred'
+            errorModalTitle: 'An Error Occurred',
+            recommendShopTitle: 'Recommend a Shop',
+            recommendShopNameLabel: 'Shop Name',
+            recommendShopAddressLabel: 'Shop Address',
+            recommendShopWebsiteLabel: 'Shop Website (Optional)',
+            recommendShopReasonLabel: 'Reason for Recommendation (Optional)',
+            recommendShopSubmitBtn: 'Submit Recommendation',
+            recommendShopSuccessMsg: 'Thank you for your recommendation! We will review it soon.',
+            ratingLabel: 'Rating',
+            ratingCountLabel: '(${count} ratings)',
+            submitRatingBtn: 'Submit Rating',
+            ratingSuccessMsg: 'Thank you for your rating!',
+            openingHoursLabel: 'Opening Hours',
+            tagsLabel: 'Tags'
         }
     };
 
@@ -365,24 +452,28 @@ document.addEventListener('DOMContentLoaded', () => {
     function getFilteredShops() {
         return allShops.filter(shop => {
             if (!shop || !shop.id) return false;
-            
+
+            const matchesSearch = (() => {
+                const name = shop[`name_${currentLang}`] || shop['name_zh-TW'] || '';
+                const address = shop[`address_${currentLang}`] || shop['address_zh-TW'] || '';
+                const desc = shop[`description_${currentLang}`] || shop['description_zh-TW'] || '';
+                const query = currentSearchQuery.toLowerCase();
+                return !query ||
+                    name.toLowerCase().includes(query) ||
+                    address.toLowerCase().includes(query) ||
+                    desc.toLowerCase().includes(query);
+            })();
+
+            if (!matchesSearch) return false;
+
             if (currentFilterCategory === 'favorites') {
                 return favoriteShops.includes(shop.id);
             }
 
             const matchesCategory = currentFilterCategory === 'all' || (shop['type_zh-TW']) === currentFilterCategory;
+            const matchesTag = currentFilterTag === 'all' || (shop.tags && shop.tags.includes(currentFilterTag));
 
-            const name = shop[`name_${currentLang}`] || shop['name_zh-TW'] || '';
-            const address = shop[`address_${currentLang}`] || shop['address_zh-TW'] || '';
-            const desc = shop[`description_${currentLang}`] || shop['description_zh-TW'] || '';
-            const query = currentSearchQuery.toLowerCase();
-            
-            const matchesSearch = !query ||
-                name.toLowerCase().includes(query) ||
-                address.toLowerCase().includes(query) ||
-                desc.toLowerCase().includes(query);
-
-            return matchesCategory && matchesSearch;
+            return matchesCategory && matchesTag;
         });
     }
 
@@ -406,9 +497,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 </button>
                 <div class="p-6">
                     <div>
-                        <h3 class="text-xl font-bold">${shop[`name_${currentLang}`] || shop['name_zh-TW']}</h3>
-                        <span class="tag px-2 py-1 rounded-full text-xs">${shop[`type_${currentLang}`] || shop['type_zh-TW']}</span>
-                        <p class="text-gray-600 my-4 h-20 overflow-hidden">${shop[`description_${currentLang}`] || shop['description_zh-TW']}</p>
+                        <h3 class="text-xl font-bold">${sanitizeHTML(shop[`name_${currentLang}`] || shop['name_zh-TW'])}</h3>
+                        <div class="flex items-center my-2">
+                            <div class="rating-stars">${[...Array(5)].map((_, i) => `<svg class="w-5 h-5 ${i < Math.round(shop.averageRating) ? 'text-yellow-400' : 'text-gray-300'}" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>`).join('')}</div>
+                            <span class="text-xs text-gray-500 ml-2">(${shop.ratingCount})</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1 mt-2">
+                            <span class="tag px-2 py-1 rounded-full text-xs">${sanitizeHTML(shop[`type_${currentLang}`] || shop['type_zh-TW'])}</span>
+                            ${shop.tags && shop.tags.map(tag => `<span class="tag px-2 py-1 rounded-full text-xs">${sanitizeHTML(tag)}</span>`).join('')}
+                        </div>
+                        <p class="text-gray-600 my-4 h-20 overflow-hidden">${sanitizeHTML(shop[`description_${currentLang}`] || shop['description_zh-TW'])}</p>
                     </div>
                     <button class="block w-full text-center py-2 btn-primary rounded-lg font-medium view-details-btn" data-shop-id="${shop.id}">${translations[currentLang].viewDetailsBtn}</button>
                 </div>
@@ -428,7 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const marker = L.marker([shop.lat, shop.lng]);
                 marker.bindPopup(`
                     <div class="p-1">
-                        <h3 class="font-bold text-base">${shop[`name_${currentLang}`] || shop['name_zh-TW']}</h3>
+                        <h3 class="font-bold text-base">${sanitizeHTML(shop[`name_${currentLang}`] || shop['name_zh-TW'])}</h3>
                         <button onclick="window.showShopDetail('${shop.id}')" class="text-green-600 text-sm hover:underline">${translations[currentLang].viewDetailsBtn}</button>
                     </div>
                 `);
@@ -455,16 +553,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ui.shopDetailContainer.innerHTML = `
             <div class="shop-detail-header py-12 text-white rounded-t-xl text-center relative">
-                <h1 class="text-3xl font-bold">${shop[`name_${currentLang}`] || shop['name_zh-TW']}</h1>
-                <p class="text-lg">${shop[`type_${currentLang}`] || shop['type_zh-TW']}</p>
+                <h1 class="text-3xl font-bold">${sanitizeHTML(shop[`name_${currentLang}`] || shop['name_zh-TW'])}</h1>
+                <p class="text-lg">${sanitizeHTML(shop[`type_${currentLang}`] || shop['type_zh-TW'])}</p>
+                <div class="flex items-center justify-center mt-2">
+                    <div class="rating-stars">${[...Array(5)].map((_, i) => `<svg class="w-6 h-6 ${i < Math.round(shop.averageRating) ? 'text-yellow-300' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>`).join('')}</div>
+                    <span class="text-sm text-white ml-2">${shop.averageRating} (${shop.ratingCount} ${T('ratingLabel')})</span>
+                </div>
                 <button id="close-modal" class="absolute top-4 right-4 bg-white/80 rounded-full p-2 text-gray-800"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
             </div>
             <div class="p-6">
-                 <p class="text-gray-700 mb-4">${shop[`longDescription_${currentLang}`] || shop[`longDescription_zh-TW`] || shop[`description_${currentLang}`] || shop['description_zh-TW'] || T('notProvided')}</p>
+                 <p class="text-gray-700 mb-4">${sanitizeHTML(shop[`longDescription_${currentLang}`] || shop[`longDescription_zh-TW`] || shop[`description_${currentLang}`] || shop['description_zh-TW'] || T('notProvided'))}</p>
                  <div class="bg-green-50 p-4 rounded-xl space-y-2">
-                    <p><strong>${T('modalAddress')}:</strong> ${shop[`address_${currentLang}`] || shop['address_zh-TW'] || T('notProvided')}</p>
-                    <p><strong>${T('modalPhone')}:</strong> ${shop.phone || T('notProvided')}</p>
-                    <p><strong>${T('modalWebsite')}:</strong> ${shop.website ? `<a href="//${shop.website.replace(/^https?:\/\//,'')}" target="_blank" class="text-green-600 hover:underline">${shop.website}</a>` : T('notProvided')}</p>
+                    <p><strong>${T('modalAddress')}:</strong> ${sanitizeHTML(shop[`address_${currentLang}`] || shop['address_zh-TW'] || T('notProvided'))}</p>
+                    <p><strong>${T('modalPhone')}:</strong> ${sanitizeHTML(shop.phone || T('notProvided'))}</p>
+                    <p><strong>${T('modalWebsite')}:</strong> ${shop.website ? `<a href="//${sanitizeHTML(shop.website.replace(/^https?:\/\//,''))}" target="_blank" class="text-green-600 hover:underline">${sanitizeHTML(shop.website)}</a>` : T('notProvided')}</p>
+                    <p><strong>${T('openingHoursLabel')}:</strong> ${sanitizeHTML(shop.opening_hours || T('notProvided'))}</p>
+                 </div>
+                 <div class="mt-4">
+                     <h4 class="font-bold text-lg mb-2">${T('tagsLabel')}</h4>
+                     <div class="flex flex-wrap gap-2">
+                        ${shop.tags && shop.tags.map(tag => `<span class="tag px-3 py-1 rounded-full text-sm">${sanitizeHTML(tag)}</span>`).join('')}
+                        ${!shop.tags || shop.tags.length === 0 ? `<span class="text-gray-500">${T('notProvided')}</span>` : ''}
+                     </div>
+                 </div>
+                 <div class="mt-4 pt-4 border-t">
+                     <h4 class="font-bold text-lg mb-2">${T('ratingLabel')}</h4>
+                     <div class="flex items-center">
+                         <div id="user-rating-stars" class="rating-stars text-3xl">
+                             ${[...Array(5)].map((_, i) => `<span class="star" data-value="${i + 1}">★</span>`).join('')}
+                         </div>
+                         <button id="submit-rating-btn" class="ml-4 btn-primary px-4 py-2 rounded-lg font-medium" disabled>${T('submitRatingBtn')}</button>
+                     </div>
                  </div>
                  ${localStorage.getItem('authToken') ? `<button id="recommend-btn" data-shop-id="${shopId}" class="mt-4 w-full py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">${T('adminRecommendBtn')}</button>` : ''}
             </div>
@@ -476,6 +595,47 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('close-modal').addEventListener('click', closeModal);
         const recommendBtn = document.getElementById('recommend-btn');
         if(recommendBtn) recommendBtn.addEventListener('click', handleRecommend);
+
+        let selectedRating = 0;
+        const stars = document.querySelectorAll('#user-rating-stars .star');
+        const submitRatingBtn = document.getElementById('submit-rating-btn');
+
+        stars.forEach(star => {
+            star.addEventListener('mouseover', () => {
+                stars.forEach(s => s.classList.remove('selected'));
+                for (let i = 0; i < star.dataset.value; i++) {
+                    stars[i].classList.add('selected');
+                }
+            });
+
+            star.addEventListener('mouseout', () => {
+                stars.forEach(s => s.classList.remove('selected'));
+                if (selectedRating > 0) {
+                    for (let i = 0; i < selectedRating; i++) {
+                        stars[i].classList.add('selected');
+                    }
+                }
+            });
+
+            star.addEventListener('click', () => {
+                selectedRating = star.dataset.value;
+                submitRatingBtn.disabled = false;
+                for (let i = 0; i < 5; i++) {
+                    stars[i].classList.toggle('filled', i < selectedRating);
+                }
+            });
+        });
+
+        submitRatingBtn.addEventListener('click', async () => {
+            if (selectedRating > 0) {
+                const result = await apiFetch('submitRating', { shopId, rating: selectedRating });
+                if (result) {
+                    showMessage(translations[currentLang].ratingSuccessMsg);
+                    // Optionally, refresh the shop details to show the new average rating
+                    showShopDetail(shopId);
+                }
+            }
+        });
     }
     
     function closeModal() {
@@ -488,6 +648,13 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.messageModal.classList.remove('hidden');
     }
 
+    const sanitizeHTML = (str) => {
+        if (!str) return '';
+        const temp = document.createElement('div');
+        temp.textContent = str;
+        return temp.innerHTML;
+    };
+
     // ===== EVENT HANDLERS =====
     function handleSearch() {
         currentSearchQuery = document.getElementById('search-input').value.trim();
@@ -498,9 +665,27 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleFilter(e) {
         const btn = e.target.closest('.tag');
         if (!btn) return;
+
         document.querySelectorAll('#filter-buttons-container .tag').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        currentFilterCategory = btn.dataset.category;
+
+        const filterType = btn.dataset.filterType;
+        const category = btn.dataset.category;
+
+        if (category === 'all') {
+            currentFilterCategory = 'all';
+            currentFilterTag = 'all';
+        } else if (category === 'favorites') {
+            currentFilterCategory = 'favorites';
+            currentFilterTag = 'all';
+        } else if (filterType === 'type') {
+            currentFilterCategory = category;
+            currentFilterTag = 'all';
+        } else if (filterType === 'tag') {
+            currentFilterCategory = 'all';
+            currentFilterTag = category;
+        }
+
         currentLoadedShops = 0;
         filterAndDisplayShops();
     }
@@ -546,6 +731,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    async function handleShopRecommendation(e) {
+        e.preventDefault();
+        const name = document.getElementById('rec-shop-name').value.trim();
+        const address = document.getElementById('rec-shop-address').value.trim();
+        const website = document.getElementById('rec-shop-website').value.trim();
+        const reason = document.getElementById('rec-shop-reason').value.trim();
+
+        if (!name || !address) return;
+
+        const result = await apiFetch('submitShopRecommendation', { name, address, website, reason });
+        if (result) {
+            showMessage(translations[currentLang].recommendShopSuccessMsg);
+            e.target.reset();
+        }
+    }
+
     function promptAdminLogin() {
         const password = prompt(translations[currentLang].adminLoginPrompt);
         if (!password) return;
@@ -556,6 +757,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 showMessage(translations[currentLang].adminLoginSuccess);
             }
         });
+    }
+
+    function toggleDarkMode() {
+        document.documentElement.classList.toggle('dark');
+        if (document.documentElement.classList.contains('dark')) {
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            localStorage.setItem('darkMode', 'disabled');
+        }
     }
 
     // ===== INITIALIZATION =====
@@ -571,9 +781,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 const btn = document.createElement('button');
                 btn.className = 'tag px-3 py-1 rounded-full text-sm';
                 btn.dataset.category = type; 
+                btn.dataset.filterType = 'type';
                 btn.textContent = type;
                 filterContainer.appendChild(btn);
             });
+
+            const allTags = [...new Set(allShops.flatMap(s => s.tags || []))];
+            if (allTags.length > 0) {
+                const tagsTitle = document.createElement('h3');
+                tagsTitle.className = 'font-medium mb-3 mt-4';
+                tagsTitle.textContent = translations[currentLang].tagsLabel;
+                filterContainer.appendChild(tagsTitle);
+
+                allTags.forEach(tag => {
+                    const btn = document.createElement('button');
+                    btn.className = 'tag px-3 py-1 rounded-full text-sm';
+                    btn.dataset.category = tag;
+                    btn.dataset.filterType = 'tag';
+                    btn.textContent = tag;
+                    filterContainer.appendChild(btn);
+                });
+            }
             
             filterAndDisplayShops();
         }
@@ -615,6 +843,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (favBtn) toggleFavorite(favBtn.dataset.shopId);
         });
         document.getElementById('newsletter-form').addEventListener('submit', handleNewsletter);
+        document.getElementById('recommend-shop-form').addEventListener('submit', handleShopRecommendation);
         
         document.getElementById('issue-form').addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -650,6 +879,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('close-error-modal').addEventListener('click', () => ui.errorModal.classList.add('hidden'));
         ui.shopDetailModal.addEventListener('click', (e) => e.target === ui.shopDetailModal && closeModal());
         document.addEventListener('keydown', e => (e.ctrlKey && e.shiftKey && e.key === 'A') && promptAdminLogin());
+        document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
+
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.documentElement.classList.add('dark');
+        }
     }
 
     initialize();
