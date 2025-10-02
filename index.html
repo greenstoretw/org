@@ -180,8 +180,11 @@
     </main>
 
     <footer class="bg-gray-800 text-white py-10">
-        <div class="container mx-auto px-4 text-center">
+        <div class="container mx-auto px-4 text-center text-gray-400">
             <p data-i18n="copyright">© 2025 永續商店地圖 - 版權所有</p>
+            <div class="mt-4">
+                <a href="#" id="policy-link" class="hover:text-white transition" data-i18n="policyLink">政策條款</a>
+            </div>
         </div>
     </footer>
 
@@ -196,7 +199,7 @@
             <button id="close-message-modal" class="btn-primary px-6 py-2 rounded-lg font-medium" data-i18n="okButton">確定</button>
         </div>
     </div>
-    
+
     <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-75 z-[3000] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-lg p-6 shadow-xl max-w-2xl w-full mx-auto">
             <h3 class="text-xl font-bold text-red-600 mb-4" data-i18n="errorModalTitle">發生錯誤</h3>
@@ -209,10 +212,25 @@
         </div>
     </div>
 
+    <!-- Policy Modal -->
+    <div id="policy-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-4xl w-full mx-4 modal-content flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center flex-shrink-0">
+                <h2 id="policy-modal-title" class="text-xl font-bold text-gray-800" data-i18n="policyModalTitle">網站政策</h2>
+                <button id="close-policy-modal-btn" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+            <div id="policy-modal-body" class="p-6 overflow-y-auto">
+                <!-- Policy content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // ===== CONFIGURATION =====
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzIcS0WXSQV0yNt5lyjvHy7hwDIUItkGeG78T_Yz2mKa83HJMgI9UxsfVIelU6PyKFwkw/exec';
+    // !!! 重要 !!! 請務必貼上您從 Google Apps Script「新增部署作業」後取得的「新」網址。
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzVebFWCKnDEiJOc1bJKtc5qIHifZceuXssrwb7Zir6FYOQLokhgzNoFeLZkFdLK7f5oA/exec';
 
     // ===== GLOBAL STATE =====
     let allShops = [];
@@ -242,7 +260,11 @@ document.addEventListener('DOMContentLoaded', () => {
             recommendationSending: '正在發送推薦信...', recommendationSuccess: '推薦信已成功寄出！',
             apiError: '發生錯誤，請稍後再試。', newsletterSuccess: '感謝您的訂閱！',
             adminRecommendBtn: '推薦此店家給所有訂閱者',
-            errorModalTitle: '發生錯誤'
+            errorModalTitle: '發生錯誤',
+            policyLink: '政策條款',
+            policyModalTitle: '網站政策',
+            privacy: '隱私權政策',
+            disclaimer: '免責聲明'
         },
         'en': {
             pageTitle: 'Sustainable Store Map - Home', appName: 'Sustainable Store Map', home: 'Home', map: 'Map', shopList: 'Shop List', newsletter: 'Newsletter', reportIssueNavLink: 'Report Issue',
@@ -260,7 +282,11 @@ document.addEventListener('DOMContentLoaded', () => {
             recommendationSending: 'Sending recommendation...', recommendationSuccess: 'Recommendation sent successfully!',
             apiError: 'An error occurred. Please try again later.', newsletterSuccess: 'Thank you for subscribing!',
             adminRecommendBtn: 'Recommend this store to all subscribers',
-            errorModalTitle: 'An Error Occurred'
+            errorModalTitle: 'An Error Occurred',
+            policyLink: 'Policies',
+            policyModalTitle: 'Site Policies',
+            privacy: 'Privacy Policy',
+            disclaimer: 'Disclaimer'
         }
     };
 
@@ -277,7 +303,9 @@ document.addEventListener('DOMContentLoaded', () => {
         shopDetailModal: document.getElementById('shop-detail-modal'),
         shopDetailContainer: document.getElementById('shop-detail-container'),
         errorModal: document.getElementById('error-modal'),
-        errorDetails: document.getElementById('error-details')
+        errorDetails: document.getElementById('error-details'),
+        policyModal: document.getElementById('policy-modal'),
+        policyModalBody: document.getElementById('policy-modal-body')
     };
 
     // ===== API & ERROR HANDLING =====
@@ -488,6 +516,26 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.messageModal.classList.remove('hidden');
     }
 
+    async function showPolicies() {
+        const policies = await apiFetch('getPublicPolicies');
+        if (policies) {
+            const T = (key) => translations[currentLang][key] || key.charAt(0).toUpperCase() + key.slice(1);
+            
+            ui.policyModalBody.innerHTML = policies
+                .map(policy => {
+                    const title = T(policy.key);
+                    // 將 \n 轉換為 <br>，並將純文字 URL 轉換為可點擊的連結
+                    const contentWithBreaks = policy.value.replace(/\n/g, '<br />');
+                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+                    const content = contentWithBreaks.replace(urlRegex, '<a href="$1" target="_blank" class="text-green-600 hover:underline">$1</a>');
+                    return `<h3 class="text-xl font-bold mt-4 mb-2 first:mt-0">${title}</h3><div class="text-gray-700 leading-relaxed">${content}</div>`;
+                }).join('');
+
+            ui.policyModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
     // ===== EVENT HANDLERS =====
     function handleSearch() {
         currentSearchQuery = document.getElementById('search-input').value.trim();
@@ -529,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!email) return;
         const result = await apiFetch('subscribe', { email });
         if (result) {
-            showMessage(translations[currentLang].newsletterSuccess);
+            showMessage(result.message || translations[currentLang].newsletterSuccess);
             e.target.reset();
         }
     }
@@ -650,6 +698,24 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('close-error-modal').addEventListener('click', () => ui.errorModal.classList.add('hidden'));
         ui.shopDetailModal.addEventListener('click', (e) => e.target === ui.shopDetailModal && closeModal());
         document.addEventListener('keydown', e => (e.ctrlKey && e.shiftKey && e.key === 'A') && promptAdminLogin());
+
+        // --- 新增的政策視窗事件監聽 ---
+        document.getElementById('policy-link').addEventListener('click', e => {
+            e.preventDefault();
+            showPolicies();
+        });
+
+        const closePolicyModal = () => {
+            ui.policyModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        };
+
+        document.getElementById('close-policy-modal-btn').addEventListener('click', closePolicyModal);
+        ui.policyModal.addEventListener('click', e => {
+            if (e.target === ui.policyModal) {
+                closePolicyModal();
+            }
+        });
     }
 
     initialize();
@@ -658,3 +724,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
