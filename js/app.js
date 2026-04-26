@@ -247,6 +247,13 @@ document.addEventListener('DOMContentLoaded', () => {
             currentLoadedShops = 0;
             filterAndDisplayShops();
         });
+        ui.shopCardsContainer.addEventListener('click', e => {
+            const btn = e.target.closest('.favorite-btn');
+            if (btn) toggleFavorite(btn.dataset.shopId);
+            
+            const detailBtn = e.target.closest('.view-details-btn');
+            if (detailBtn) window.showShopDetail(detailBtn.dataset.shopId);
+        });
         ui.loadMoreButton.addEventListener('click', () => renderShopCards(getFilteredShops()));
         
         // 登入按鈕綁定
@@ -269,6 +276,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 filterAndDisplayShops();
             }
         });
+    }
+
+    // ===== SHOP DETAILS =====
+    window.showShopDetail = function(shopId) {
+        const shop = allShops.find(s => s.id === shopId);
+        if (!shop) return;
+
+        const name = (shop.name && shop.name[currentLang]) || (shop.name && shop.name['zh-TW']) || translations[currentLang].notProvided;
+        const type = (shop.type && shop.type[currentLang]) || (shop.type && shop.type['zh-TW']) || translations[currentLang].notProvided;
+        const desc = (shop.description && shop.description[currentLang]) || (shop.description && shop.description['zh-TW']) || '';
+        const addr = (shop.address && shop.address[currentLang]) || (shop.address && shop.address['zh-TW']) || translations[currentLang].notProvided;
+
+        ui.shopDetailContainer.innerHTML = `
+            <div class="relative">
+                <div class="h-64 shop-detail-header flex items-end p-8 text-white">
+                    <div>
+                        <span class="tag px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block">${type}</span>
+                        <h2 class="text-4xl font-bold">${name}</h2>
+                    </div>
+                </div>
+                <button class="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition close-modal-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <div class="p-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="md:col-span-2">
+                        <h4 class="text-xl font-bold mb-4">關於商店</h4>
+                        <p class="text-gray-700 leading-relaxed">${desc}</p>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="font-bold text-gray-900 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                ${translations[currentLang].modalAddress}
+                            </h4>
+                            <p class="mt-1 text-gray-600">${addr}</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                ${translations[currentLang].modalOpeningHours}
+                            </h4>
+                            <p class="mt-1 text-gray-600">${shop.openingHours || translations[currentLang].notProvided}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        ui.shopDetailModal.classList.remove('hidden');
+
+        // 重新綁定關閉按鈕 (因為是動態產生的)
+        ui.shopDetailContainer.querySelector('.close-modal-btn').onclick = () => ui.shopDetailModal.classList.add('hidden');
     }
 
     function setLanguage(lang) {
