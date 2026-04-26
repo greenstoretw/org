@@ -146,18 +146,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ===== AUTHENTICATION & ADMIN =====
     function handleLogin() {
+        if (auth.currentUser) {
+            auth.signOut().then(() => {
+                localStorage.removeItem('isAdmin');
+                ui.adminIndicator.classList.add('hidden');
+                updateLoginButtons(false);
+                showMessage("已登出");
+            });
+            return;
+        }
+
         const provider = new firebase.auth.GoogleAuthProvider();
         auth.signInWithPopup(provider).then(result => {
             const user = result.user;
-            // 檢查是否為管理員 (需預先在 Firestore users 集合中設定)
+            updateLoginButtons(true);
+            
+            // 檢查是否為管理員
             db.collection('users').doc(user.uid).get().then(doc => {
                 if (doc.exists && doc.data().role === 'admin') {
                     localStorage.setItem('isAdmin', 'true');
                     ui.adminIndicator.classList.remove('hidden');
                 }
-                showMessage(`${user.displayName} 登入成功`);
+                showMessage(`${user.displayName} ${translations[currentLang].login}成功`);
             });
         }).catch(error => showErrorModal(error, "Login"));
+    }
+
+    function updateLoginButtons(isLoggedIn) {
+        const text = isLoggedIn ? translations[currentLang].logout : translations[currentLang].login;
+        const btn = document.getElementById('login-btn');
+        const btnMobile = document.getElementById('login-btn-mobile');
+        if (btn) btn.textContent = text;
+        if (btnMobile) btnMobile.textContent = text;
     }
 
     // ===== EVENT LISTENERS & INITIALIZATION =====
@@ -189,8 +209,24 @@ document.addEventListener('DOMContentLoaded', () => {
             filterAndDisplayShops();
         });
         ui.loadMoreButton.addEventListener('click', () => renderShopCards(getFilteredShops()));
-        // 隱藏快捷鍵登入，改為點擊 Logo 或特定按鈕觸發 Firebase Auth
-        document.addEventListener('keydown', e => (e.ctrlKey && e.shiftKey && e.key === 'L') && handleLogin());
+        
+        // 登入按鈕綁定
+        const loginBtn = document.getElementById('login-btn');
+        const loginBtnMobile = document.getElementById('login-btn-mobile');
+        if (loginBtn) loginBtn.addEventListener('click', handleLogin);
+        if (loginBtnMobile) loginBtnMobile.addEventListener('click', handleLogin);
+
+        // 監聽 Auth 狀態
+        auth.onAuthStateChanged(user => {
+            updateLoginButtons(!!user);
+            if (user) {
+                db.collection('users').doc(user.uid).get().then(doc => {
+                    if (doc.exists && doc.data().role === 'admin') {
+                        ui.adminIndicator.classList.remove('hidden');
+                    }
+                });
+            }
+        });
     }
 
     function setLanguage(lang) {

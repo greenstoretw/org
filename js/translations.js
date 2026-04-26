@@ -19,7 +19,9 @@ const translations = {
         policyLink: '政策條款',
         policyModalTitle: '網站政策',
         privacy: '隱私權政策',
-        disclaimer: '免責聲明'
+        disclaimer: '免責聲明',
+        login: '登入',
+        logout: '登出'
     },
     'en': {
         pageTitle: 'Sustainable Store Map - Home', appName: 'Sustainable Store Map', home: 'Home', map: 'Map', shopList: 'Shop List', newsletter: 'Newsletter', reportIssueNavLink: 'Report Issue',
@@ -41,7 +43,9 @@ const translations = {
         policyLink: 'Policies',
         policyModalTitle: 'Site Policies',
         privacy: 'Privacy Policy',
-        disclaimer: 'Disclaimer'
+        disclaimer: 'Disclaimer',
+        login: 'Login',
+        logout: 'Logout'
     },
     'fr': {
         pageTitle: 'Carte des Magasins Durables - Accueil', appName: 'Carte Durable', home: 'Accueil', map: 'Carte', shopList: 'Magasins', newsletter: 'Newsletter', reportIssueNavLink: 'Signaler',
@@ -63,7 +67,9 @@ const translations = {
         policyLink: 'Politiques',
         policyModalTitle: 'Politiques du site',
         privacy: 'Confidentialité',
-        disclaimer: 'Avis de non-responsabilité'
+        disclaimer: 'Avis de non-responsabilité',
+        login: 'Connexion',
+        logout: 'Déconnexion'
     },
     'es': {
         pageTitle: 'Mapa de Tiendas Sostenibles - Inicio', appName: 'Mapa Sostenible', home: 'Inicio', map: 'Mapa', shopList: 'Tiendas', newsletter: 'Boletín', reportIssueNavLink: 'Reportar',
@@ -85,7 +91,9 @@ const translations = {
         policyLink: 'Políticas',
         policyModalTitle: 'Políticas del sitio',
         privacy: 'Privacidad',
-        disclaimer: 'Descargo de responsabilidad'
+        disclaimer: 'Descargo de responsabilidad',
+        login: 'Iniciar sesión',
+        logout: 'Cerrar sesión'
     },
     'de': {
         pageTitle: 'Nachhaltige Geschäfte - Startseite', appName: 'Nachhaltige Karte', home: 'Startseite', map: 'Karte', shopList: 'Geschäfte', newsletter: 'Newsletter', reportIssueNavLink: 'Melden',
@@ -107,7 +115,9 @@ const translations = {
         policyLink: 'Richtlinien',
         policyModalTitle: 'Richtlinien',
         privacy: 'Datenschutz',
-        disclaimer: 'Haftungsausschluss'
+        disclaimer: 'Haftungsausschluss',
+        login: 'Anmelden',
+        logout: 'Abmelden'
     },
     'ja': {
         pageTitle: 'サステナブルストアマップ - ホーム', appName: 'サステナブルマップ', home: 'ホーム', map: 'マップ', shopList: '店舗一覧', newsletter: 'メルマガ', reportIssueNavLink: '問題報告',
@@ -129,7 +139,9 @@ const translations = {
         policyLink: 'ポリシー',
         policyModalTitle: 'サイトポリシー',
         privacy: 'プライバシーポリシー',
-        disclaimer: '免責事項'
+        disclaimer: '免責事項',
+        login: 'ログイン',
+        logout: 'ログアウト'
     },
     'ko': {
         pageTitle: '지속 가능한 상점 지도 - 홈', appName: '지속 가능한 지도', home: '홈', map: '지도', shopList: '상점 목록', newsletter: '뉴스레터', reportIssueNavLink: '문제 신고',
@@ -151,7 +163,9 @@ const translations = {
         policyLink: '정책',
         policyModalTitle: '사이트 정책',
         privacy: '개인정보처리방침',
-        disclaimer: '면책 조항'
+        disclaimer: '면책 조항',
+        login: '로그인',
+        logout: '로그아웃'
     },
     'la': {
         pageTitle: 'Tabula Tabernarum - Domum', appName: 'Tabula Durabilis', home: 'Domum', map: 'Tabula', shopList: 'Tabernae', newsletter: 'Epistula', reportIssueNavLink: 'Nuntiare',
@@ -173,6 +187,8 @@ const translations = {
         policyLink: 'Consilia',
         policyModalTitle: 'Consilia site',
         privacy: 'Privata',
-        disclaimer: 'Renuntiatio'
+        disclaimer: 'Renuntiatio',
+        login: 'Intrare',
+        logout: 'Exire'
     }
 };
