@@ -342,7 +342,7 @@
             { id: 'ads', name: '廣告推廣', color: '#FF4D4F' }
         ];
 
-        async function fetchAnalytics() {
+        async function fetchAnalytics(currentUserRole) {
             try {
                 const snapshot = await db.collection('analytics').orderBy('Date', 'desc').limit(30).get();
                 allData = snapshot.docs.map(doc => doc.data());
@@ -359,40 +359,49 @@
                 renderTrendChart(allData);
                 renderSourcesChart(allData);
                 renderTable(allData);
-            } catch (err) {
-                console.error("Error fetching analytics:", err);
-            }
-        }
-
-                renderSourcesChart(allData);
-                renderTable(allData);
-                fetchUsers(); // 獲取用戶列表
+                fetchUsers(currentUserRole); // 傳遞角色以渲染正確的 UI
                 document.getElementById('login-overlay').classList.add('hidden');
             } catch (err) {
                 console.error("Error fetching analytics:", err);
             }
         }
 
-        async function fetchUsers() {
+        async function fetchUsers(currentUserRole) {
             try {
                 const snapshot = await db.collection('users').limit(20).get();
                 const body = document.getElementById('user-table-body');
                 body.innerHTML = '';
                 snapshot.forEach(doc => {
                     const user = doc.data();
+                    let roleLabel = '一般用戶';
+                    let roleColor = 'bg-gray-100 text-gray-800';
+                    if (user.role === 'admin') { roleLabel = '管理員'; roleColor = 'bg-primary/10 text-primary'; }
+                    if (user.role === 'owner') { roleLabel = '版主'; roleColor = 'bg-purple-100 text-purple-800 font-bold'; }
+
                     const row = document.createElement('tr');
+                    let actionHtml = '';
+                    
+                    if (currentUserRole === 'owner') {
+                        actionHtml = `
+                            <select onchange="updateUserRole('${doc.id}', this.value)" class="text-sm border border-light-2 rounded px-2 py-1 focus:ring-primary outline-none">
+                                <option value="user" ${user.role !== 'admin' && user.role !== 'owner' ? 'selected' : ''}>設為一般用戶</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>設為管理員</option>
+                                <option value="owner" ${user.role === 'owner' ? 'selected' : ''}>設為版主</option>
+                            </select>
+                        `;
+                    } else {
+                        actionHtml = `<span class="text-sm text-gray-400">無權限更改</span>`;
+                    }
+
                     row.innerHTML = `
                         <td class="px-4 py-4 font-mono text-sm">${doc.id}</td>
                         <td class="px-4 py-4">
-                            <span class="px-2 py-1 rounded text-xs ${user.role === 'admin' ? 'bg-primary/10 text-primary' : 'bg-gray-100'}">
-                                ${user.role || 'user'}
+                            <span class="px-2 py-1 rounded text-xs ${roleColor}">
+                                ${roleLabel}
                             </span>
                         </td>
                         <td class="px-4 py-4">
-                            <select onchange="updateUserRole('${doc.id}', this.value)" class="text-sm border border-light-2 rounded px-2 py-1">
-                                <option value="user" ${user.role !== 'admin' ? 'selected' : ''}>設為一般用戶</option>
-                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>設為管理員</option>
-                            </select>
+                            ${actionHtml}
                         </td>
                     `;
                     body.appendChild(row);
@@ -420,11 +429,16 @@
                 return;
             }
             
-            // 檢查管理員權限
+            // 檢查管理員或版主權限
             db.collection('users').doc(user.uid).get().then(doc => {
-                if (doc.exists && doc.data().role === 'admin') {
+                if (doc.exists && (doc.data().role === 'admin' || doc.data().role === 'owner')) {
                     document.getElementById('login-overlay').classList.add('hidden');
-                    fetchAnalytics();
+                    const currentRole = doc.data().role;
+                    
+                    // 根據角色顯示不同歡迎語
+                    document.querySelector('.container .hidden.sm\\:inline').textContent = currentRole === 'owner' ? '最高版主' : '管理員';
+                    
+                    fetchAnalytics(currentRole);
                 } else {
                     alert("您沒有管理員權限");
                     auth.signOut();
