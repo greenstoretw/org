@@ -150,54 +150,64 @@ window.showUserDashboard = async function() {
     const user = auth.currentUser;
     if (!user) return;
 
-    const favContainer = document.getElementById('dashboard-favorites');
-    const revContainer = document.getElementById('dashboard-reviews');
-    const repContainer = document.getElementById('dashboard-reports');
-    favContainer.innerHTML = '載入中...';
-    revContainer.innerHTML = '載入中...';
-    repContainer.innerHTML = '載入中...';
+    try {
+        const favContainer = document.getElementById('dashboard-favorites');
+        const revContainer = document.getElementById('dashboard-reviews');
+        const repContainer = document.getElementById('dashboard-reports');
+        if (favContainer) favContainer.innerHTML = '載入中...';
+        if (revContainer) revContainer.innerHTML = '載入中...';
+        if (repContainer) repContainer.innerHTML = '載入中...';
 
-    const favShops = allShops.filter(s => favoriteShops.includes(s.id));
-    favContainer.innerHTML = favShops.map(s => `
-        <div class="p-3 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-red-200 transition">
-            <div class="font-bold text-gray-800">${(s.name && s.name['zh-TW']) || '未知商家'}</div>
-            <button onclick="window.showShopDetail('${s.id}')" class="text-xs text-red-500 mt-2 flex items-center gap-1">
-                <i class="fa fa-external-link"></i> 查看詳情
-            </button>
-        </div>
-    `).join('') || '<p class="text-gray-400 text-sm">尚無收藏</p>';
-
-    const revSnap = await db.collection('reviews').where('userId', '==', user.uid).orderBy('timestamp', 'desc').get();
-    revContainer.innerHTML = revSnap.docs.map(doc => {
-        const r = doc.data();
-        const s = allShops.find(shop => shop.id === r.shopId);
-        return `
-            <div class="p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-bold text-gray-800">${s ? s.name['zh-TW'] : '未知商家'}</span>
-                    <span class="text-yellow-500 text-sm font-bold">★ ${r.rating}</span>
+        const favShops = (window.allShops || []).filter(s => (window.favoriteShops || []).includes(s.id));
+        if (favContainer) {
+            favContainer.innerHTML = favShops.map(s => `
+                <div class="p-3 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-red-200 transition">
+                    <div class="font-bold text-gray-800">${(s.name && s.name['zh-TW']) || '未知商家'}</div>
+                    <button onclick="window.showShopDetail('${s.id}')" class="text-xs text-red-500 mt-2 flex items-center gap-1">
+                        <i class="fa fa-external-link"></i> 查看詳情
+                    </button>
                 </div>
-                <p class="text-xs text-gray-400">${r.timestamp ? r.timestamp.toDate().toLocaleDateString() : '剛剛'}</p>
-            </div>
-        `;
-    }).join('') || '<p class="text-gray-400 text-sm">尚無評價</p>';
+            `).join('') || '<p class="text-gray-400 text-sm">尚無收藏</p>';
+        }
 
-    const repSnap = await db.collection('reports').where('userId', '==', user.uid).orderBy('timestamp', 'desc').get();
-    repContainer.innerHTML = repSnap.docs.map(doc => {
-        const r = doc.data();
-        const s = allShops.find(shop => shop.id === r.shopId);
-        return `
-            <div class="p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
-                <div class="flex justify-between items-start">
-                    <span class="font-bold text-gray-800">${s ? s.name['zh-TW'] : '未知商家'}</span>
-                    <span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-100 text-blue-700 font-bold">處理中</span>
-                </div>
-                <p class="text-xs text-gray-600 mt-2">原因：${r.reason}</p>
-            </div>
-        `;
-    }).join('') || '<p class="text-gray-400 text-sm">尚無檢舉紀錄</p>';
+        const revSnap = await db.collection('reviews').where('userId', '==', user.uid).orderBy('timestamp', 'desc').get();
+        if (revContainer) {
+            revContainer.innerHTML = revSnap.docs.map(doc => {
+                const r = doc.data();
+                const s = (window.allShops || []).find(shop => shop.id === r.shopId);
+                return `
+                    <div class="p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-gray-800">${s ? s.name['zh-TW'] : '未知商家'}</span>
+                            <span class="text-yellow-500 text-sm font-bold">★ ${r.rating}</span>
+                        </div>
+                        <p class="text-xs text-gray-400">${r.timestamp ? r.timestamp.toDate().toLocaleDateString() : '剛剛'}</p>
+                    </div>
+                `;
+            }).join('') || '<p class="text-gray-400 text-sm">尚無評價</p>';
+        }
 
-    document.getElementById('user-dashboard-modal').classList.remove('hidden');
+        const repSnap = await db.collection('reports').where('userId', '==', user.uid).orderBy('timestamp', 'desc').get();
+        if (repContainer) {
+            repContainer.innerHTML = repSnap.docs.map(doc => {
+                const r = doc.data();
+                const s = (window.allShops || []).find(shop => shop.id === r.shopId);
+                return `
+                    <div class="p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <span class="font-bold text-gray-800">${s ? s.name['zh-TW'] : '未知商家'}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-100 text-blue-700 font-bold">處理中</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-2">原因：${r.reason}</p>
+                    </div>
+                `;
+            }).join('') || '<p class="text-gray-400 text-sm">尚無檢舉紀錄</p>';
+        }
+
+        document.getElementById('user-dashboard-modal').classList.remove('hidden');
+    } catch (error) {
+        window.showErrorModal(error, "showUserDashboard");
+    }
 };
 
 window.setLanguage = function(lang) {
