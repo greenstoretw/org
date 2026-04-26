@@ -40,7 +40,7 @@
                 <a href="#shops" class="text-gray-700 hover:text-green-600 transition" data-i18n="shopList">商店列表</a>
                 <a href="#newsletter" class="text-gray-700 hover:text-green-600 transition" data-i18n="newsletter">訂閱電子報</a>
                 <a href="#report-issue" class="text-gray-700 hover:text-green-600 transition" data-i18n="reportIssueNavLink">問題回報</a>
-                <button id="dashboard-btn" class="text-gray-700 hover:text-green-600 transition font-bold hidden px-4">Dashboard</button>
+                <button id="dashboard-btn" class="text-gray-700 hover:text-green-600 transition font-bold hidden px-4" data-i18n="dashboard">儀表板</button>
                 <select id="language-select" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition cursor-pointer">
                     <option value="zh-TW" data-i18n="langChinese">繁體中文</option>
                     <option value="en" data-i18n="langEnglish">English</option>
@@ -256,11 +256,15 @@
         </div>
     </div>
 
-    <!-- Custom Scripts -->
+    <!-- Custom Scripts (Modularized) -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="js/firebase-config.js"></script>
     <script src="js/translations.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
