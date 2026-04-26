@@ -262,9 +262,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loginBtn) loginBtn.addEventListener('click', handleLogin);
         if (loginBtnMobile) loginBtnMobile.addEventListener('click', handleLogin);
 
+        // Dashboard 綁定
+        const dashBtn = document.getElementById('dashboard-btn');
+        if (dashBtn) dashBtn.addEventListener('click', showUserDashboard);
+        document.getElementById('close-dashboard-btn').onclick = () => document.getElementById('user-dashboard-modal').classList.add('hidden');
+
         auth.onAuthStateChanged(user => {
             updateLoginButtons(!!user);
             if (user) {
+                if (dashBtn) dashBtn.classList.remove('hidden');
                 fetchUserFavorites(user.uid);
                 db.collection('users').doc(user.uid).get().then(doc => {
                     if (doc.exists && doc.data().role === 'admin') {
@@ -272,6 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             } else {
+                if (dashBtn) dashBtn.classList.add('hidden');
                 favoriteShops = JSON.parse(localStorage.getItem('favoriteShops')) || [];
                 filterAndDisplayShops();
             }
@@ -291,9 +298,14 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.shopDetailContainer.innerHTML = `
             <div class="relative">
                 <div class="h-64 shop-detail-header flex items-end p-8 text-white">
-                    <div>
+                    <div class="flex-1">
                         <span class="tag px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block">${type}</span>
                         <h2 class="text-4xl font-bold">${name}</h2>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="window.handleShopAction('${shopId}', 'favorite')" class="bg-white/20 hover:bg-white/40 p-3 rounded-full transition group">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ${favoriteShops.includes(shopId) ? 'fill-red-500 text-red-500' : ''}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                        </button>
                     </div>
                 </div>
                 <button class="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition close-modal-btn">
@@ -303,8 +315,25 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="p-8">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="md:col-span-2">
+                        <div class="flex gap-4 mb-6">
+                            <button onclick="window.handleShopAction('${shopId}', 'rate')" class="flex-1 py-3 bg-yellow-50 text-yellow-700 rounded-xl font-bold hover:bg-yellow-100 transition flex items-center justify-center gap-2">
+                                <i class="fa fa-star"></i> 評價商店
+                            </button>
+                            <button onclick="window.handleShopAction('${shopId}', 'report')" class="flex-1 py-3 bg-red-50 text-red-700 rounded-xl font-bold hover:bg-red-100 transition flex items-center justify-center gap-2">
+                                <i class="fa fa-flag"></i> 檢舉商店
+                            </button>
+                        </div>
                         <h4 class="text-xl font-bold mb-4">關於商店</h4>
-                        <p class="text-gray-700 leading-relaxed">${desc}</p>
+                        <p class="text-gray-700 leading-relaxed mb-6">${desc}</p>
+                        
+                        <div class="bg-green-50 p-6 rounded-xl border border-green-100 mb-6">
+                            <h4 class="text-green-800 font-bold mb-3 flex items-center gap-2">
+                                <i class="fa fa-leaf"></i> 永續特點 (比 Google 更詳細)
+                            </h4>
+                            <div class="grid grid-cols-2 gap-3 text-sm text-green-700">
+                                ${shop.ecoFeatures ? shop.ecoFeatures.map(f => `<div class="flex items-center gap-2">✓ ${f}</div>`).join('') : '暫無詳細資料'}
+                            </div>
+                        </div>
                     </div>
                     <div class="space-y-6">
                         <div>
@@ -329,6 +358,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 重新綁定關閉按鈕 (因為是動態產生的)
         ui.shopDetailContainer.querySelector('.close-modal-btn').onclick = () => ui.shopDetailModal.classList.add('hidden');
+    }
+
+    // ===== ACTION HANDLERS =====
+    window.handleShopAction = async function(shopId, action) {
+        if (!auth.currentUser) {
+            showMessage("請先登入後再執行此操作");
+            return;
+        }
+        
+        switch(action) {
+            case 'favorite':
+                toggleFavorite(shopId);
+                // 更新 Modal 內的愛心顏色
+                const heart = document.querySelector(`#shop-detail-modal .fill-red-500`);
+                if (heart) heart.classList.toggle('fill-red-500');
+                break;
+            case 'rate':
+                const rating = prompt("請輸入評價分數 (1-5):", "5");
+                if (rating >= 1 && rating <= 5) {
+                    await db.collection('reviews').add({
+                        shopId,
+                        userId: auth.currentUser.uid,
+                        rating: Number(rating),
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    showMessage("感謝您的評價！");
+                }
+                break;
+            case 'report':
+                const reason = prompt("請輸入檢舉原因:");
+                if (reason) {
+                    await db.collection('reports').add({
+                        shopId,
+                        userId: auth.currentUser.uid,
+                        reason,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    showMessage("檢舉已收到，我們將盡快查核。");
+                }
+                break;
+        }
+    }
+
+    async function showUserDashboard() {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const favContainer = document.getElementById('dashboard-favorites');
+        const revContainer = document.getElementById('dashboard-reviews');
+        favContainer.innerHTML = '載入中...';
+        revContainer.innerHTML = '載入中...';
+
+        // 獲取收藏
+        const favShops = allShops.filter(s => favoriteShops.includes(s.id));
+        favContainer.innerHTML = favShops.map(s => `
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <span class="font-medium">${s.name['zh-TW']}</span>
+                <button onclick="window.showShopDetail('${s.id}')" class="text-xs text-green-600 hover:underline">查看</button>
+            </div>
+        `).join('') || '尚無收藏';
+
+        // 獲取評價
+        const revSnap = await db.collection('reviews').where('userId', '==', user.uid).get();
+        revContainer.innerHTML = revSnap.docs.map(doc => {
+            const r = doc.data();
+            const s = allShops.find(shop => shop.id === r.shopId);
+            return `
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <div class="flex justify-between">
+                        <span class="font-bold">${s ? s.name['zh-TW'] : '未知商家'}</span>
+                        <span class="text-yellow-500">★ ${r.rating}</span>
+                    </div>
+                </div>
+            `;
+        }).join('') || '尚無評價';
+
+        document.getElementById('user-dashboard-modal').classList.remove('hidden');
     }
 
     function setLanguage(lang) {

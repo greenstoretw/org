@@ -40,6 +40,7 @@
                 <a href="#shops" class="text-gray-700 hover:text-green-600 transition" data-i18n="shopList">商店列表</a>
                 <a href="#newsletter" class="text-gray-700 hover:text-green-600 transition" data-i18n="newsletter">訂閱電子報</a>
                 <a href="#report-issue" class="text-gray-700 hover:text-green-600 transition" data-i18n="reportIssueNavLink">問題回報</a>
+                <button id="dashboard-btn" class="text-gray-700 hover:text-green-600 transition font-bold hidden px-4">Dashboard</button>
                 <select id="language-select" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition cursor-pointer">
                     <option value="zh-TW" data-i18n="langChinese">繁體中文</option>
                     <option value="en" data-i18n="langEnglish">English</option>
@@ -186,6 +187,33 @@
             </div>
         </div>
     </footer>
+
+    <div id="user-dashboard-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden flex items-center justify-center">
+        <div class="bg-white rounded-xl max-w-4xl w-full mx-4 modal-content p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold">個人儀表板</h2>
+                <button id="close-dashboard-btn" class="text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                        我的收藏
+                    </h3>
+                    <div id="dashboard-favorites" class="space-y-4 max-h-64 overflow-y-auto pr-2"></div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                        我的評價
+                    </h3>
+                    <div id="dashboard-reviews" class="space-y-4 max-h-64 overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden flex items-center justify-center">
         <div id="shop-detail-container" class="bg-white rounded-xl max-w-4xl w-full mx-4 modal-content">
