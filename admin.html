@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>永續商店地圖 - 後台管理系統</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+    
     <!-- 引入Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入Font Awesome -->
@@ -305,8 +311,9 @@
         </div>
     </footer>
 
+    <script src="js/firebase-config.js"></script>
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzVebFWCKnDEiJOc1bJKtc5qIHifZceuXssrwb7Zir6FYOQLokhgzNoFeLZkFdLK7f5oA/exec';
+        // 注意：API_URL 在 Firebase 模式下已不再需要，改用 Firebase SDK 直接通訊
         let allData = [];
         let channels = [
             { id: 'direct', name: '直接訪問', color: '#165DFF' },

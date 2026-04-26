@@ -1,15 +1,19 @@
-// Firebase 配置資訊 - 請將此處替換為您的 Firebase 專案設定
+// Firebase 配置資訊 - 已更新為您的專案設定
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
+  apiKey: "AIzaSyBYVzIEA4RxUH2IxojDnln0QNKC8gyemfg",
+  authDomain: "greenstore-1ce0f.firebaseapp.com",
+  databaseURL: "https://greenstore-1ce0f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "greenstore-1ce0f",
+  storageBucket: "greenstore-1ce0f.firebasestorage.app",
+  messagingSenderId: "332361925906",
+  appId: "1:332361925906:web:8b0155a9d924483d681fcb",
+  measurementId: "G-1PTCMM7MCM"
 };
 
-// 初始化 Firebase
+// 初始化 Firebase (使用 Compat 模式以支援 CDN 引入)
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
+const analytics = firebase.analytics();
+
+console.log("Firebase 雲端連線已成功初始化！");
