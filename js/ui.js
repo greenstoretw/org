@@ -42,7 +42,7 @@ window.renderShopCards = function(filteredShops) {
                     <span class="tag px-2 py-1 rounded-full text-xs">${(shop.type && shop.type[currentLang]) || (shop.type && shop.type['zh-TW'])}</span>
                 </div>
                 <p class="text-gray-600 my-4 h-20 overflow-hidden">${(shop.description && shop.description[currentLang]) || (shop.description && shop.description['zh-TW'])}</p>
-                <button class="block w-full text-center py-2 btn-primary rounded-lg font-medium view-details-btn" data-shop-id="${shop.id}">${translations[currentLang]?.viewDetailsBtn || 'View Details'}</button>
+                <button class="block w-full text-center py-2 btn-primary rounded-lg font-medium view-details-btn" data-shop-id="${shop.id}">${window.locales[currentLang]?.viewDetailsBtn || 'View Details'}</button>
             </div>
         `;
         container.appendChild(card);
@@ -61,7 +61,7 @@ window.updateMapMarkers = function(filteredShops) {
             marker.bindPopup(`
                 <div class="p-1">
                     <h3 class="font-bold text-base">${(shop.name && shop.name[currentLang]) || (shop.name && shop.name['zh-TW'])}</h3>
-                    <button onclick="window.showShopDetail('${shop.id}')" class="text-green-600 text-sm hover:underline">${translations[currentLang]?.viewDetailsBtn || 'View Details'}</button>
+                    <button onclick="window.showShopDetail('${shop.id}')" class="text-green-600 text-sm hover:underline">${window.locales[currentLang]?.viewDetailsBtn || 'View Details'}</button>
                 </div>
             `);
             markersGroup.addLayer(marker);
@@ -127,16 +127,16 @@ window.showShopDetail = function(shopId) {
                     <div>
                         <h4 class="font-bold text-gray-900 flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                            ${translations[currentLang]?.modalAddress || 'Address'}
+                            ${window.locales[currentLang]?.modalAddress || 'Address'}
                         </h4>
                         <p class="mt-1 text-gray-600">${addr}</p>
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-900 flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            ${translations[currentLang]?.modalOpeningHours || 'Opening Hours'}
+                            ${window.locales[currentLang]?.modalOpeningHours || 'Opening Hours'}
                         </h4>
-                        <p class="mt-1 text-gray-600">${shop.openingHours || (translations[currentLang]?.notProvided || 'Not Provided')}</p>
+                        <p class="mt-1 text-gray-600">${shop.openingHours || (window.locales[currentLang]?.notProvided || 'Not Provided')}</p>
                     </div>
                 </div>
             </div>
@@ -205,7 +205,7 @@ window.setLanguage = function(lang) {
     localStorage.setItem('lang', lang);
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        el.textContent = translations[lang]?.[key] || translations['zh-TW'][key];
+        el.textContent = window.locales[lang]?.[key] || window.locales['zh-TW'][key];
     });
     currentLoadedShops = 0;
     window.filterAndDisplayShops();

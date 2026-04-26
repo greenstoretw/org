@@ -36,7 +36,7 @@ window.handleLogin = function() {
 };
 
 window.updateLoginButtons = function(isLoggedIn) {
-    const text = isLoggedIn ? (translations[currentLang]?.logout || 'Logout') : (translations[currentLang]?.login || 'Login');
+    const text = isLoggedIn ? (window.locales[currentLang]?.logout || 'Logout') : (window.locales[currentLang]?.login || 'Login');
     const btn = document.getElementById('login-btn');
     const btnMobile = document.getElementById('login-btn-mobile');
     if (btn) btn.textContent = text;

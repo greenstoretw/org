@@ -1,0 +1,26 @@
+window.locales = window.locales || {};
+window.locales['en'] = {
+    pageTitle: 'Sustainable Store Map - Home', appName: 'Sustainable Store Map', home: 'Home', map: 'Map', shopList: 'Shop List', newsletter: 'Newsletter', reportIssueNavLink: 'Report Issue',
+    langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langLatin: 'Latina', langSpanish: 'Español', langGerman: 'Deutsch', langJapanese: '日本語', langKorean: '한국어',
+    heroTitle: 'Explore Taiwan\'s Sustainable Stores', heroSubtitle: 'Find stores that support environmental protection, fair trade, and sustainable development.',
+    viewMapBtn: 'View Map', browseShopsBtn: 'Browse Shops', searchTitle: 'Search Sustainable Stores', searchPlaceholder: 'Enter store name or address...',
+    filterCategoryTitle: 'Filter by Category', filterAll: 'All', filterFavorites: 'My Favorites',
+    mapSectionTitle: 'Sustainable Store Map', shopListSectionTitle: 'Sustainable Shop List', viewDetailsBtn: 'View Details', loadMoreBtn: 'Load More',
+    newsletterTitle: 'Subscribe to our Newsletter', newsletterSubtitle: 'Get the latest sustainable store info, eco-friendly tips, and special offers.', newsletterPlaceholder: 'Your email', subscribeBtn: 'Subscribe',
+    reportIssueTitle: 'Report an Issue', reportIssueLabel: 'Please describe the issue you encountered:', reportIssuePlaceholder: 'e.g., Incorrect store information, wrong map location...', reportIssueSubmitBtn: 'Submit Report',
+    reportIssueSuccessMsg: 'Thank you for your report, we will process it soon!', reportIssueErrorMsg: 'Failed to submit report. Please try again later.',
+    okButton: 'OK', notProvided: 'Not provided', copyright: '© 2025 Sustainable Store Map - All Rights Reserved',
+    modalAddress: 'Address', modalOpeningHours: 'Opening Hours', modalContactInfo: 'Contact Info', modalPhone: 'Phone', modalWebsite: 'Website',
+    adminLoginPrompt: 'Please enter admin password:', adminLoginSuccess: 'Admin mode activated',
+    recommendationSending: 'Sending recommendation...', recommendationSuccess: 'Recommendation sent successfully!',
+    apiError: 'An error occurred. Please try again later.', newsletterSuccess: 'Thank you for subscribing!',
+    adminRecommendBtn: 'Recommend this store to all subscribers',
+    errorModalTitle: 'An Error Occurred',
+    policyLink: 'Policies',
+    policyModalTitle: 'Site Policies',
+    privacy: 'Privacy Policy',
+    disclaimer: 'Disclaimer',
+    login: 'Login',
+    logout: 'Logout',
+    dashboard: 'Dashboard'
+};

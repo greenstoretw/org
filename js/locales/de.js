@@ -1,0 +1,26 @@
+window.locales = window.locales || {};
+window.locales['de'] = {
+    pageTitle: 'Nachhaltige Geschäfte - Startseite', appName: 'Nachhaltige Karte', home: 'Startseite', map: 'Karte', shopList: 'Geschäfte', newsletter: 'Newsletter', reportIssueNavLink: 'Melden',
+    langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langLatin: 'Latina', langSpanish: 'Español', langGerman: 'Deutsch', langJapanese: '日本語', langKorean: '한국어',
+    heroTitle: 'Entdecken Sie nachhaltige Geschäfte', heroSubtitle: 'Finden Sie Geschäfte, die die Umwelt schützen.',
+    viewMapBtn: 'Karte anzeigen', browseShopsBtn: 'Durchsuchen', searchTitle: 'Suche', searchPlaceholder: 'Name oder Adresse...',
+    filterCategoryTitle: 'Kategorie', filterAll: 'Alle', filterFavorites: 'Favoriten',
+    mapSectionTitle: 'Karte', shopListSectionTitle: 'Liste der Geschäfte', viewDetailsBtn: 'Details', loadMoreBtn: 'Mehr laden',
+    newsletterTitle: 'Newsletter', newsletterSubtitle: 'Angebote erhalten.', newsletterPlaceholder: 'Ihre E-Mail', subscribeBtn: 'Abonnieren',
+    reportIssueTitle: 'Problem melden', reportIssueLabel: 'Beschreibung:', reportIssuePlaceholder: 'z.B. Falsche Adresse...', reportIssueSubmitBtn: 'Senden',
+    reportIssueSuccessMsg: 'Vielen Dank!', reportIssueErrorMsg: 'Fehler.',
+    okButton: 'OK', notProvided: 'Nicht angegeben', copyright: '© 2025 Nachhaltige Karte',
+    modalAddress: 'Adresse', modalOpeningHours: 'Öffnungszeiten', modalContactInfo: 'Kontakt', modalPhone: 'Tel', modalWebsite: 'Webseite',
+    adminLoginPrompt: 'Admin-Passwort:', adminLoginSuccess: 'Admin-Modus',
+    recommendationSending: 'Senden...', recommendationSuccess: 'Gesendet!',
+    apiError: 'Fehler.', newsletterSuccess: 'Danke!',
+    adminRecommendBtn: 'Empfehlen',
+    errorModalTitle: 'Fehler',
+    policyLink: 'Richtlinien',
+    policyModalTitle: 'Website-Richtlinien',
+    privacy: 'Datenschutz',
+    disclaimer: 'Haftungsausschluss',
+    login: 'Anmelden',
+    logout: 'Abmelden',
+    dashboard: 'Dashboard'
+};

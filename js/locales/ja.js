@@ -1,0 +1,26 @@
+window.locales = window.locales || {};
+window.locales['ja'] = {
+    pageTitle: 'サステナブルショップマップ - ホーム', appName: 'サステナブルマップ', home: 'ホーム', map: 'マップ', shopList: 'ショップリスト', newsletter: 'ニュースレター', reportIssueNavLink: '問題を報告',
+    langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langLatin: 'Latina', langSpanish: 'Español', langGerman: 'Deutsch', langJapanese: '日本語', langKorean: '한국어',
+    heroTitle: '台湾のサステナブルショップを探索', heroSubtitle: '環境保護を支援するショップを見つけましょう。',
+    viewMapBtn: 'マップを見る', browseShopsBtn: 'リストを見る', searchTitle: '検索', searchPlaceholder: '店名または住所...',
+    filterCategoryTitle: 'カテゴリー', filterAll: 'すべて', filterFavorites: 'お気に入り',
+    mapSectionTitle: 'ショップマップ', shopListSectionTitle: 'ショップリスト', viewDetailsBtn: '詳細を見る', loadMoreBtn: 'もっと読み込む',
+    newsletterTitle: 'ニュースレター購読', newsletterSubtitle: '最新情報を受け取る。', newsletterPlaceholder: 'メールアドレス', subscribeBtn: '購読する',
+    reportIssueTitle: '問題を報告する', reportIssueLabel: '内容:', reportIssuePlaceholder: '例：住所が間違っている...', reportIssueSubmitBtn: '送信',
+    reportIssueSuccessMsg: 'ありがとうございます！', reportIssueErrorMsg: 'エラー。',
+    okButton: 'OK', notProvided: '未提供', copyright: '© 2025 サステナブルマップ',
+    modalAddress: '住所', modalOpeningHours: '営業時間', modalContactInfo: '連絡先', modalPhone: '電話', modalWebsite: 'ウェブサイト',
+    adminLoginPrompt: 'パスワード:', adminLoginSuccess: '管理者モード',
+    recommendationSending: '送信中...', recommendationSuccess: '送信完了！',
+    apiError: 'エラー。', newsletterSuccess: 'ありがとうございます！',
+    adminRecommendBtn: 'おすすめする',
+    errorModalTitle: 'エラー',
+    policyLink: 'ポリシー',
+    policyModalTitle: 'サイトポリシー',
+    privacy: 'プライバシーポリシー',
+    disclaimer: '免責事項',
+    login: 'ログイン',
+    logout: 'ログアウト',
+    dashboard: 'ダッシュボード'
+};

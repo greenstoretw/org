@@ -1,0 +1,26 @@
+window.locales = window.locales || {};
+window.locales['la'] = {
+    pageTitle: 'Tabula Tabernarum - Domum', appName: 'Tabula Durabilis', home: 'Domum', map: 'Tabula', shopList: 'Tabernae', newsletter: 'Epistula', reportIssueNavLink: 'Nuntiare',
+    langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langLatin: 'Latina', langSpanish: 'Español', langGerman: 'Deutsch', langJapanese: '日本語', langKorean: '한국어',
+    heroTitle: 'Tabernas Sustinebiles Explorare', heroSubtitle: 'Invenire tabernas quae naturam protegent.',
+    viewMapBtn: 'Tabulam Videre', browseShopsBtn: 'Explorare', searchTitle: 'Quaerere', searchPlaceholder: 'Nomen vel locus...',
+    filterCategoryTitle: 'Genus', filterAll: 'Omnia', filterFavorites: 'Mea Favorita',
+    mapSectionTitle: 'Tabula Tabernarum', shopListSectionTitle: 'Index Tabernarum', viewDetailsBtn: 'Singula', loadMoreBtn: 'Plus',
+    newsletterTitle: 'Epistula', newsletterSubtitle: 'Nuntios accipere.', newsletterPlaceholder: 'Email tuum', subscribeBtn: 'Scribere',
+    reportIssueTitle: 'Problema Referre', reportIssueLabel: 'Descriptio:', reportIssuePlaceholder: 'ex: Locus erratus...', reportIssueSubmitBtn: 'Mittere',
+    reportIssueSuccessMsg: 'Gratias!', reportIssueErrorMsg: 'Error.',
+    okButton: 'OK', notProvided: 'Non datum', copyright: '© 2025 Tabula Sustinebilis',
+    modalAddress: 'Locus', modalOpeningHours: 'Horae', modalContactInfo: 'Contactus', modalPhone: 'Tel', modalWebsite: 'Situs',
+    adminLoginPrompt: 'Tessera Admin:', adminLoginSuccess: 'Modus Admin',
+    recommendationSending: 'Mittens...', recommendationSuccess: 'Missum!',
+    apiError: 'Error.', newsletterSuccess: 'Gratias!',
+    adminRecommendBtn: 'Commendare',
+    errorModalTitle: 'Error',
+    policyLink: 'Regulae',
+    policyModalTitle: 'Regulae Situs',
+    privacy: 'Privatitas',
+    disclaimer: 'Denuntiatio',
+    login: 'Log in',
+    logout: 'Log out',
+    dashboard: 'Dashboard'
+};

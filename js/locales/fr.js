@@ -1,0 +1,26 @@
+window.locales = window.locales || {};
+window.locales['fr'] = {
+    pageTitle: 'Carte des Magasins Durables - Accueil', appName: 'Carte Durable', home: 'Accueil', map: 'Carte', shopList: 'Magasins', newsletter: 'Newsletter', reportIssueNavLink: 'Signaler',
+    langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langLatin: 'Latina', langSpanish: 'Español', langGerman: 'Deutsch', langJapanese: '日本語', langKorean: '한국어',
+    heroTitle: 'Découvrez les Magasins Durables', heroSubtitle: 'Trouvez des magasins qui soutiennent l\'environnement.',
+    viewMapBtn: 'Voir la Carte', browseShopsBtn: 'Parcourir', searchTitle: 'Chercher', searchPlaceholder: 'Nom ou adresse...',
+    filterCategoryTitle: 'Catégorie', filterAll: 'Tout', filterFavorites: 'Favoris',
+    mapSectionTitle: 'Carte', shopListSectionTitle: 'Liste des Magasins', viewDetailsBtn: 'Détails', loadMoreBtn: 'Charger plus',
+    newsletterTitle: 'Newsletter', newsletterSubtitle: 'Recevez les offres.', newsletterPlaceholder: 'Votre email', subscribeBtn: 'S\'abonner',
+    reportIssueTitle: 'Signaler un problème', reportIssueLabel: 'Description:', reportIssuePlaceholder: 'ex: Mauvaise adresse...', reportIssueSubmitBtn: 'Envoyer',
+    reportIssueSuccessMsg: 'Merci !', reportIssueErrorMsg: 'Erreur.',
+    okButton: 'OK', notProvided: 'Non fourni', copyright: '© 2025 Carte Durable',
+    modalAddress: 'Adresse', modalOpeningHours: 'Horaires', modalContactInfo: 'Contact', modalPhone: 'Tél', modalWebsite: 'Site web',
+    adminLoginPrompt: 'Mot de passe Admin:', adminLoginSuccess: 'Mode Admin',
+    recommendationSending: 'Envoi...', recommendationSuccess: 'Envoyé!',
+    apiError: 'Erreur.', newsletterSuccess: 'Merci!',
+    adminRecommendBtn: 'Recommander',
+    errorModalTitle: 'Erreur',
+    policyLink: 'Politiques',
+    policyModalTitle: 'Politiques du site',
+    privacy: 'Confidentialité',
+    disclaimer: 'Avis de non-responsabilité',
+    login: 'Connexion',
+    logout: 'Déconnexion',
+    dashboard: 'Tableau de bord'
+};

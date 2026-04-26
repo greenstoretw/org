@@ -1,0 +1,26 @@
+window.locales = window.locales || {};
+window.locales['zh-TW'] = {
+    pageTitle: '永續商店地圖 - 首頁', appName: '永續商店地圖', home: '首頁', map: '地圖', shopList: '商店列表', newsletter: '訂閱電子報', reportIssueNavLink: '問題回報',
+    langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langLatin: 'Latina', langSpanish: 'Español', langGerman: 'Deutsch', langJapanese: '日本語', langKorean: '한국어',
+    heroTitle: '探索台灣永續商店', heroSubtitle: '找到支持環保、公平貿易和永續發展的商店，一起為地球盡一份心力',
+    viewMapBtn: '查看地圖', browseShopsBtn: '瀏覽商店列表', searchTitle: '搜尋永續商店', searchPlaceholder: '輸入商店名稱或地址...',
+    filterCategoryTitle: '依類別篩選', filterAll: '全部', filterFavorites: '我的收藏',
+    mapSectionTitle: '永續商店地圖', shopListSectionTitle: '永續商店列表', viewDetailsBtn: '查看詳情', loadMoreBtn: '載入更多',
+    newsletterTitle: '訂閱永續生活電子報', newsletterSubtitle: '獲取最新的永續商店資訊、環保生活技巧和特別優惠', newsletterPlaceholder: '您的電子郵件', subscribeBtn: '訂閱',
+    reportIssueTitle: '問題回報', reportIssueLabel: '請描述您遇到的問題：', reportIssuePlaceholder: '例如：某間商店資訊錯誤、地圖位置有誤...', reportIssueSubmitBtn: '送出回報',
+    reportIssueSuccessMsg: '感謝您的回報，我們會儘快處理！', reportIssueErrorMsg: '回報失敗，請稍後再試。',
+    okButton: '確定', notProvided: '未提供', copyright: '© 2025 永續商店地圖 - 版權所有',
+    modalAddress: '地址', modalOpeningHours: '營業時間', modalContactInfo: '聯絡方式', modalPhone: '電話', modalWebsite: '網站',
+    adminLoginPrompt: '請輸入管理員密碼：', adminLoginSuccess: '已進入管理員模式',
+    recommendationSending: '正在發送推薦信...', recommendationSuccess: '推薦信已成功寄出！',
+    apiError: '發生錯誤，請稍後再試。', newsletterSuccess: '感謝您的訂閱！',
+    adminRecommendBtn: '推薦此店家給所有訂閱者',
+    errorModalTitle: '發生錯誤',
+    policyLink: '政策條款',
+    policyModalTitle: '網站政策',
+    privacy: '隱私權政策',
+    disclaimer: '免責聲明',
+    login: '登入',
+    logout: '登出',
+    dashboard: '儀表板'
+};

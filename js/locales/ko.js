@@ -1,0 +1,26 @@
+window.locales = window.locales || {};
+window.locales['ko'] = {
+    pageTitle: '지속 가능한 상점 지도 - 홈', appName: '지속 가능한 지도', home: '홈', map: '지도', shopList: '상점 목록', newsletter: '뉴스레터', reportIssueNavLink: '문제 신고',
+    langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langLatin: 'Latina', langSpanish: 'Español', langGerman: 'Deutsch', langJapanese: '日本語', langKorean: '한국어',
+    heroTitle: '대만의 지속 가능한 상점 탐색', heroSubtitle: '환경 보호를 지원하는 상점을 찾으세요.',
+    viewMapBtn: '지도 보기', browseShopsBtn: '목록 보기', searchTitle: '검색', searchPlaceholder: '상점명 또는 주소...',
+    filterCategoryTitle: '카테고리', filterAll: '전체', filterFavorites: '내 즐겨찾기',
+    mapSectionTitle: '상점 지도', shopListSectionTitle: '상점 목록', viewDetailsBtn: '상세 보기', loadMoreBtn: '더 보기',
+    newsletterTitle: '뉴스레터 구독', newsletterSubtitle: '최신 정보를 받으세요.', newsletterPlaceholder: '이메일 주소', subscribeBtn: '구독',
+    reportIssueTitle: '문제 신고하기', reportIssueLabel: '내용:', reportIssuePlaceholder: '예: 주소가 틀림...', reportIssueSubmitBtn: '제출',
+    reportIssueSuccessMsg: '감사합니다!', reportIssueErrorMsg: '오류.',
+    okButton: '확인', notProvided: '제공되지 않음', copyright: '© 2025 지속 가능한 지도',
+    modalAddress: '주소', modalOpeningHours: '영업 시간', modalContactInfo: '연락처', modalPhone: '전화', modalWebsite: '웹사이트',
+    adminLoginPrompt: '비밀번호:', adminLoginSuccess: '관리자 모드',
+    recommendationSending: '전송 중...', recommendationSuccess: '전송 완료!',
+    apiError: '오류.', newsletterSuccess: '감사합니다!',
+    adminRecommendBtn: '추천하기',
+    errorModalTitle: '오류',
+    policyLink: '정책',
+    policyModalTitle: '사이트 정책',
+    privacy: '개인정보처리방침',
+    disclaimer: '면책 조항',
+    login: '로그인',
+    logout: '로그아웃',
+    dashboard: '대시보드'
+};

@@ -1,0 +1,26 @@
+window.locales = window.locales || {};
+window.locales['es'] = {
+    pageTitle: 'Mapa de Tiendas Sostenibles - Inicio', appName: 'Mapa Sostenible', home: 'Inicio', map: 'Mapa', shopList: 'Tiendas', newsletter: 'Boletín', reportIssueNavLink: 'Reportar',
+    langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langLatin: 'Latina', langSpanish: 'Español', langGerman: 'Deutsch', langJapanese: '日本語', langKorean: '한국어',
+    heroTitle: 'Explora Tiendas Sostenibles', heroSubtitle: 'Encuentra tiendas que protegen el medio ambiente.',
+    viewMapBtn: 'Ver Mapa', browseShopsBtn: 'Explorar', searchTitle: 'Buscar', searchPlaceholder: 'Nombre o dirección...',
+    filterCategoryTitle: 'Categoría', filterAll: 'Todo', filterFavorites: 'Favoritos',
+    mapSectionTitle: 'Mapa', shopListSectionTitle: 'Lista de Tiendas', viewDetailsBtn: 'Detalles', loadMoreBtn: 'Cargar más',
+    newsletterTitle: 'Boletín', newsletterSubtitle: 'Recibe ofertas.', newsletterPlaceholder: 'Tu correo', subscribeBtn: 'Suscribir',
+    reportIssueTitle: 'Reportar un problema', reportIssueLabel: 'Descripción:', reportIssuePlaceholder: 'ej: Dirección incorrecta...', reportIssueSubmitBtn: 'Enviar',
+    reportIssueSuccessMsg: 'Gracias!', reportIssueErrorMsg: 'Error.',
+    okButton: 'OK', notProvided: 'No proporcionado', copyright: '© 2025 Mapa Sostenible',
+    modalAddress: 'Dirección', modalOpeningHours: 'Horario', modalContactInfo: 'Contacto', modalPhone: 'Teléfono', modalWebsite: 'Sitio web',
+    adminLoginPrompt: 'Contraseña:', adminLoginSuccess: 'Modo Admin',
+    recommendationSending: 'Enviando...', recommendationSuccess: 'Enviado!',
+    apiError: 'Error.', newsletterSuccess: 'Gracias!',
+    adminRecommendBtn: 'Recomendar',
+    errorModalTitle: 'Error',
+    policyLink: 'Políticas',
+    policyModalTitle: 'Políticas del sitio',
+    privacy: 'Privacidad',
+    disclaimer: 'Descargo de responsabilidad',
+    login: 'Iniciar sesión',
+    logout: 'Cerrar sesión',
+    dashboard: 'Panel de control'
+};

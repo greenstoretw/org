@@ -107,6 +107,64 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('policy-modal').classList.remove('hidden');
             };
         }
+
+        // 手機版選單切換
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (menuToggle && mobileMenu) {
+            menuToggle.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // 訂閱電子報
+        const newsletterForm = document.getElementById('newsletter-form');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('newsletter-email').value;
+                if (!email) return;
+                
+                try {
+                    await db.collection('newsletter').add({
+                        email,
+                        subscribedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    window.showMessage(window.locales[window.currentLang]?.newsletterSuccess || '感謝您的訂閱！');
+                    newsletterForm.reset();
+                } catch (err) {
+                    window.showErrorModal(err, "Newsletter");
+                }
+            });
+        }
+
+        // 問題回報
+        const issueForm = document.getElementById('issue-form');
+        if (issueForm) {
+            issueForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const issueText = document.getElementById('issue').value;
+                if (!issueText) return;
+
+                try {
+                    await db.collection('issues').add({
+                        description: issueText,
+                        reportedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        status: 'pending'
+                    });
+                    const successMsg = document.getElementById('issue-message');
+                    if (successMsg) {
+                        successMsg.classList.remove('hidden');
+                        setTimeout(() => successMsg.classList.add('hidden'), 3000);
+                    } else {
+                        window.showMessage(window.locales[window.currentLang]?.reportIssueSuccessMsg || '感謝您的回報！');
+                    }
+                    issueForm.reset();
+                } catch (err) {
+                    window.showErrorModal(err, "ReportIssue");
+                }
+            });
+        }
     }
 
     // ===== CORE LOGIC (Remaining in app.js for coordination) =====
