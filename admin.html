@@ -303,6 +303,24 @@
                 </table>
             </div>
         </div>
+        <!-- 成員權限管理 (新功能) -->
+        <div class="mt-12">
+            <h2 class="text-2xl font-bold mb-6">成員權限管理</h2>
+            <div class="chart-container">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-left border-b border-light-2">
+                            <th class="px-4 py-3 text-dark-2 font-medium">用戶 ID</th>
+                            <th class="px-4 py-3 text-dark-2 font-medium">目前角色</th>
+                            <th class="px-4 py-3 text-dark-2 font-medium">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <!-- 由 JS 動態填充 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
     <footer class="bg-white border-t border-light-2 py-6">
@@ -343,6 +361,55 @@
                 renderTable(allData);
             } catch (err) {
                 console.error("Error fetching analytics:", err);
+            }
+        }
+
+                renderSourcesChart(allData);
+                renderTable(allData);
+                fetchUsers(); // 獲取用戶列表
+                document.getElementById('login-overlay').classList.add('hidden');
+            } catch (err) {
+                console.error("Error fetching analytics:", err);
+            }
+        }
+
+        async function fetchUsers() {
+            try {
+                const snapshot = await db.collection('users').limit(20).get();
+                const body = document.getElementById('user-table-body');
+                body.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const user = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-4 py-4 font-mono text-sm">${doc.id}</td>
+                        <td class="px-4 py-4">
+                            <span class="px-2 py-1 rounded text-xs ${user.role === 'admin' ? 'bg-primary/10 text-primary' : 'bg-gray-100'}">
+                                ${user.role || 'user'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4">
+                            <select onchange="updateUserRole('${doc.id}', this.value)" class="text-sm border border-light-2 rounded px-2 py-1">
+                                <option value="user" ${user.role !== 'admin' ? 'selected' : ''}>設為一般用戶</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>設為管理員</option>
+                            </select>
+                        </td>
+                    `;
+                    body.appendChild(row);
+                });
+            } catch (err) {
+                console.error("Error fetching users:", err);
+            }
+        }
+
+        async function updateUserRole(uid, newRole) {
+            if (!confirm(`確定要將此用戶設為 ${newRole} 嗎？`)) return;
+            try {
+                await db.collection('users').doc(uid).update({ role: newRole });
+                alert("權限更新成功！");
+                fetchUsers();
+            } catch (err) {
+                alert("更新失敗: " + err.message);
             }
         }
 

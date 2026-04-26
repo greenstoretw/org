@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLoadedShops = 0;
     let mapInstance;
     let markersGroup = L.featureGroup();
-    let favoriteShops = JSON.parse(localStorage.getItem('favoriteShops')) || [];
+    let favoriteShops = []; // 從 Firestore 或 LocalStorage 獲取
     let currentLang = localStorage.getItem('lang') || 'zh-TW';
 
     // ===== UI ELEMENTS =====
@@ -65,7 +65,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ===== CORE FUNCTIONS (UPDATED FOR MULTILINGUAL OBJECTS) =====
+    // ===== FAVORITES LOGIC (CLOUD SYNCED) =====
+    async function toggleFavorite(shopId) {
+        const user = auth.currentUser;
+        const index = favoriteShops.indexOf(shopId);
+        
+        if (index === -1) {
+            favoriteShops.push(shopId);
+        } else {
+            favoriteShops.splice(index, 1);
+        }
+
+        // 如果已登入，同步到雲端
+        if (user) {
+            try {
+                await db.collection('users').doc(user.uid).set({
+                    favorites: favoriteShops
+                }, { merge: true });
+                showMessage("雲端同步成功");
+            } catch (error) {
+                console.error("Sync error:", error);
+            }
+        } else {
+            localStorage.setItem('favoriteShops', JSON.stringify(favoriteShops));
+            showMessage("已儲存至本地 (登入後可跨裝置同步)");
+        }
+        
+        filterAndDisplayShops();
+    }
+
+    async function fetchUserFavorites(uid) {
+        try {
+            const doc = await db.collection('users').doc(uid).get();
+            if (doc.exists && doc.data().favorites) {
+                favoriteShops = doc.data().favorites;
+                filterAndDisplayShops();
+            }
+        } catch (error) {
+            console.error("Fetch favorites error:", error);
+        }
+    }
     function getFilteredShops() {
         return allShops.filter(shop => {
             if (!shop || !shop.id) return false;
@@ -216,15 +255,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loginBtn) loginBtn.addEventListener('click', handleLogin);
         if (loginBtnMobile) loginBtnMobile.addEventListener('click', handleLogin);
 
-        // 監聽 Auth 狀態
         auth.onAuthStateChanged(user => {
             updateLoginButtons(!!user);
             if (user) {
+                fetchUserFavorites(user.uid);
                 db.collection('users').doc(user.uid).get().then(doc => {
                     if (doc.exists && doc.data().role === 'admin') {
                         ui.adminIndicator.classList.remove('hidden');
                     }
                 });
+            } else {
+                favoriteShops = JSON.parse(localStorage.getItem('favoriteShops')) || [];
+                filterAndDisplayShops();
             }
         });
     }
