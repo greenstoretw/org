@@ -50,7 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // 商店列表點擊 (愛心與詳情)
         document.getElementById('shop-cards-container').addEventListener('click', e => {
             const btn = e.target.closest('.favorite-btn');
-            if (btn) window.toggleFavorite(btn.dataset.shopId);
+            if (btn) {
+                // Optimistic UI Update: Toggle class immediately
+                btn.classList.toggle('favorited');
+                window.toggleFavorite(btn.dataset.shopId);
+            }
             
             const detailBtn = e.target.closest('.view-details-btn');
             if (detailBtn) window.showShopDetail(detailBtn.dataset.shopId);
@@ -169,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ===== CORE LOGIC (Remaining in app.js for coordination) =====
     window.getFilteredShops = function() {
-        return window.allShops.filter(shop => {
+        let filtered = window.allShops.filter(shop => {
             if (!shop || !shop.id) return false;
             if (window.currentFilterCategory === 'favorites') return window.favoriteShops.includes(shop.id);
 
@@ -187,6 +191,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 desc.toLowerCase().includes(query);
 
             return matchesCategory && matchesSearch;
+        });
+
+        // Optimization: Sort by 'featured' first, then by name
+        return filtered.sort((a, b) => {
+            if (a.featured && !b.featured) return -1;
+            if (!a.featured && b.featured) return 1;
+            return 0;
         });
     };
 

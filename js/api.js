@@ -17,28 +17,31 @@ window.fetchShops = async function() {
 
 window.toggleFavorite = async function(shopId) {
     const user = auth.currentUser;
-    const index = favoriteShops.indexOf(shopId);
+    const index = window.favoriteShops.indexOf(shopId);
     
     if (index === -1) {
-        favoriteShops.push(shopId);
+        window.favoriteShops.push(shopId);
     } else {
-        favoriteShops.splice(index, 1);
+        window.favoriteShops.splice(index, 1);
     }
 
     if (user) {
         try {
             await db.collection('users').doc(user.uid).set({
-                favorites: favoriteShops
+                favorites: window.favoriteShops
             }, { merge: true });
         } catch (error) {
             console.error("Sync error:", error);
         }
     } else {
-        localStorage.setItem('favoriteShops', JSON.stringify(favoriteShops));
-        window.showMessage("已儲存至本地 (登入後可跨裝置同步)");
+        localStorage.setItem('favoriteShops', JSON.stringify(window.favoriteShops));
     }
     
-    window.filterAndDisplayShops();
+    // Only re-render if we are currently filtering by favorites, 
+    // otherwise the optimistic UI already handled the icon toggle.
+    if (window.currentFilterCategory === 'favorites') {
+        window.filterAndDisplayShops();
+    }
 };
 
 window.fetchUserFavorites = async function(uid) {
