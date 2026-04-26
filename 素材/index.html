@@ -1,0 +1,1043 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电商网站访问统计报表</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- 引入FileSaver.js用于导出功能 -->
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <!-- Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        success: '#52C41A',
+                        warning: '#FAAD14',
+                        danger: '#FF4D4F',
+                        dark: '#1D2129',
+                        'dark-2': '#4E5969',
+                        'light-1': '#F2F3F5',
+                        'light-2': '#E5E6EB',
+                        'light-3': '#C9CDD4'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            }
+            .gradient-bg {
+                background: linear-gradient(135deg, #165DFF 0%, #0A4BDB 100%);
+            }
+            .stat-card {
+                @apply bg-white rounded-xl p-6 card-shadow card-hover;
+            }
+            .chart-container {
+                @apply bg-white rounded-xl p-6 card-shadow;
+            }
+            .btn-primary {
+                @apply bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-all duration-300;
+            }
+            .btn-secondary {
+                @apply bg-light-1 text-dark px-4 py-2 rounded-lg hover:bg-light-2 transition-all duration-300;
+            }
+            .nav-item {
+                @apply flex items-center gap-2 px-4 py-3 rounded-lg transition-all duration-200 hover:bg-light-1;
+            }
+            .nav-item.active {
+                @apply bg-primary/10 text-primary font-medium;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter text-dark min-h-screen flex flex-col">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- 品牌标识 -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 gradient-bg text-white p-2 rounded-lg">
+                        <i class="fa fa-line-chart text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h1 class="text-xl font-bold">电商分析平台</h1>
+                    </div>
+                </div>
+                
+                <!-- 搜索框 -->
+                <div class="hidden md:block flex-1 max-w-md mx-8">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa fa-search text-light-3"></i>
+                        </div>
+                        <input id="search-input" type="text" placeholder="搜索日期、渠道或指标..." class="block w-full pl-10 pr-3 py-2 border border-light-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+                    </div>
+                </div>
+                
+                <!-- 用户区域 -->
+                <div class="flex items-center">
+                    <button id="export-btn" class="btn-primary mr-4 hidden sm:flex items-center gap-2">
+                        <i class="fa fa-download"></i>
+                        <span>导出报表</span>
+                    </button>
+                    <div class="relative">
+                        <button class="flex items-center gap-2 focus:outline-none">
+                            <img class="h-8 w-8 rounded-full object-cover" src="https://picsum.photos/id/1005/200/200" alt="用户头像">
+                            <span class="hidden sm:inline font-medium">管理员</span>
+                            <i class="fa fa-angle-down text-light-3"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- 页面标题和过滤器 -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <div>
+                <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold">访问统计报表</h2>
+                <p class="text-dark-2 mt-1">实时监控网站访问数据和用户行为</p>
+            </div>
+            
+            <div class="flex flex-wrap gap-3">
+                <div class="relative">
+                    <select id="date-range" class="appearance-none bg-white border border-light-2 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+                        <option value="today">今日</option>
+                        <option value="yesterday">昨日</option>
+                        <option value="7days" selected="">近7天</option>
+                        <option value="30days">近30天</option>
+                        <option value="90days">近90天</option>
+                        <option value="custom">自定义</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-light-3">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                </div>
+                
+                <button class="btn-secondary flex items-center gap-2">
+                    <i class="fa fa-refresh"></i>
+                    <span>刷新</span>
+                </button>
+                
+                <button id="mobile-export-btn" class="btn-primary sm:hidden flex items-center gap-2">
+                    <i class="fa fa-download"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 搜索结果区域 (默认隐藏) -->
+        <div id="search-results" class="hidden chart-container mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">搜索结果: <span id="search-term" class="text-primary"></span></h3>
+                <button id="close-search" class="text-light-3 hover:text-dark transition-colors">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div id="search-results-content" class="py-4">
+                <!-- 搜索结果将在这里动态生成 -->
+            </div>
+        </div>
+        
+        <!-- KPI指标卡片 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <!-- PV (页面浏览量) -->
+            <div class="stat-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-dark-2 text-sm">页面浏览量 (PV)</p>
+                        <h3 id="pv-value" class="text-3xl font-bold mt-1">0</h3>
+                    </div>
+                    <div class="bg-primary/10 p-3 rounded-lg">
+                        <i class="fa fa-eye text-primary text-xl"></i>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <span id="pv-change" class="text-success flex items-center">
+                        <i class="fa fa-arrow-up mr-1"></i>
+                        <span>0%</span>
+                    </span>
+                    <span class="text-dark-2 text-sm ml-2">较上期</span>
+                </div>
+            </div>
+            
+            <!-- UV (独立访客) -->
+            <div class="stat-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-dark-2 text-sm">独立访客 (UV)</p>
+                        <h3 id="uv-value" class="text-3xl font-bold mt-1">0</h3>
+                    </div>
+                    <div class="bg-secondary/10 p-3 rounded-lg">
+                        <i class="fa fa-user text-secondary text-xl"></i>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <span id="uv-change" class="text-success flex items-center">
+                        <i class="fa fa-arrow-up mr-1"></i>
+                        <span>0%</span>
+                    </span>
+                    <span class="text-dark-2 text-sm ml-2">较上期</span>
+                </div>
+            </div>
+            
+            <!-- 平均访问时长 -->
+            <div class="stat-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-dark-2 text-sm">平均访问时长</p>
+                        <h3 id="avg-time-value" class="text-3xl font-bold mt-1">00:00</h3>
+                    </div>
+                    <div class="bg-warning/10 p-3 rounded-lg">
+                        <i class="fa fa-clock-o text-warning text-xl"></i>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <span id="time-change" class="text-danger flex items-center">
+                        <i class="fa fa-arrow-down mr-1"></i>
+                        <span>0%</span>
+                    </span>
+                    <span class="text-dark-2 text-sm ml-2">较上期</span>
+                </div>
+            </div>
+            
+            <!-- 跳出率 -->
+            <div class="stat-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-dark-2 text-sm">跳出率</p>
+                        <h3 id="bounce-rate-value" class="text-3xl font-bold mt-1">0%</h3>
+                    </div>
+                    <div class="bg-danger/10 p-3 rounded-lg">
+                        <i class="fa fa-sign-out text-danger text-xl"></i>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <span id="bounce-change" class="text-success flex items-center">
+                        <i class="fa fa-arrow-down mr-1"></i>
+                        <span>0%</span>
+                    </span>
+                    <span class="text-dark-2 text-sm ml-2">较上期</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- 访问趋势图 -->
+            <div class="lg:col-span-2 chart-container">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">访问趋势</h3>
+                    <div class="flex gap-2">
+                        <button class="trend-filter px-3 py-1 rounded-full text-sm bg-primary text-white">PV</button>
+                        <button class="trend-filter px-3 py-1 rounded-full text-sm bg-light-1 text-dark-2 hover:bg-light-2 transition-colors">UV</button>
+                    </div>
+                </div>
+                <div class="h-[350px]">
+                    <canvas id="trend-chart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 来源渠道饼图 -->
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-6">访问来源渠道</h3>
+                <div class="h-[350px] flex items-center justify-center">
+                    <canvas id="sources-chart"></canvas>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-primary"></span>
+                        <span class="text-sm text-dark-2">直接访问</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-secondary"></span>
+                        <span class="text-sm text-dark-2">搜索引擎</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-success"></span>
+                        <span class="text-sm text-dark-2">社交媒体</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-warning"></span>
+                        <span class="text-sm text-dark-2">外部链接</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-danger"></span>
+                        <span class="text-sm text-dark-2">广告推广</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 详细数据表格 -->
+        <div class="chart-container mb-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold">访问详情数据</h3>
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <select id="table-filter" class="appearance-none bg-white border border-light-2 rounded-lg pl-4 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+                            <option value="all">全部渠道</option>
+                            <option value="direct">直接访问</option>
+                            <option value="search">搜索引擎</option>
+                            <option value="social">社交媒体</option>
+                            <option value="external">外部链接</option>
+                            <option value="ads">广告推广</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-light-3">
+                            <i class="fa fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-light-2">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-3 bg-light-1 text-left text-xs font-medium text-dark-2 uppercase tracking-wider rounded-tl-lg">日期</th>
+                            <th class="px-4 py-3 bg-light-1 text-left text-xs font-medium text-dark-2 uppercase tracking-wider">来源渠道</th>
+                            <th class="px-4 py-3 bg-light-1 text-left text-xs font-medium text-dark-2 uppercase tracking-wider">PV</th>
+                            <th class="px-4 py-3 bg-light-1 text-left text-xs font-medium text-dark-2 uppercase tracking-wider">UV</th>
+                            <th class="px-4 py-3 bg-light-1 text-left text-xs font-medium text-dark-2 uppercase tracking-wider">平均访问时长</th>
+                            <th class="px-4 py-3 bg-light-1 text-left text-xs font-medium text-dark-2 uppercase tracking-wider rounded-tr-lg">跳出率</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table-body" class="bg-white divide-y divide-light-2">
+                        <!-- 表格数据将通过JavaScript动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 分页控件 -->
+            <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
+                <div class="text-sm text-dark-2">
+                    显示 <span id="showing-range">0-0</span> 条，共 <span id="total-records">0</span> 条记录
+                </div>
+                <div class="flex items-center gap-1">
+                    <button id="prev-page" class="w-9 h-9 flex items-center justify-center rounded-lg border border-light-2 text-dark-2 hover:bg-light-1 disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+                        <i class="fa fa-angle-left"></i>
+                    </button>
+                    <div id="pagination-numbers" class="flex items-center gap-1">
+                        <!-- 页码将通过JavaScript动态生成 -->
+                    </div>
+                    <button id="next-page" class="w-9 h-9 flex items-center justify-center rounded-lg border border-light-2 text-dark-2 hover:bg-light-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fa fa-angle-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t border-light-2 py-6">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-dark-2 text-sm">© 2025 电商分析平台. 保留所有权利.</p>
+                <div class="flex items-center gap-4 mt-4 md:mt-0">
+                    <a href="#" class="text-dark-2 hover:text-primary transition-colors">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ml-1 text-sm">帮助中心</span>
+                    </a>
+                    <a href="#" class="text-dark-2 hover:text-primary transition-colors">
+                        <i class="fa fa-file-text-o"></i>
+                        <span class="ml-1 text-sm">使用文档</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 导出成功提示 (默认隐藏) -->
+    <div id="export-toast" class="fixed bottom-6 right-6 bg-success text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2 z-50">
+        <i class="fa fa-check-circle"></i>
+        <span>报表导出成功！</span>
+    </div>
+
+    <script>
+        // 生成假数据
+        function generateFakeData() {
+            const days = 7; // 生成7天的数据
+            const channels = [
+                { id: 'direct', name: '直接访问', color: '#165DFF' },
+                { id: 'search', name: '搜索引擎', color: '#36CFC9' },
+                { id: 'social', name: '社交媒体', color: '#52C41A' },
+                { id: 'external', name: '外部链接', color: '#FAAD14' },
+                { id: 'ads', name: '广告推广', color: '#FF4D4F' }
+            ];
+            
+            const data = [];
+            let totalPV = 0;
+            let totalUV = 0;
+            let totalDuration = 0;
+            let totalBounceRate = 0;
+            let recordCount = 0;
+            
+            // 生成每日各渠道数据
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = `${date.getMonth() + 1}月${date.getDate()}日`;
+                
+                channels.forEach(channel => {
+                    // 生成随机数据
+                    const pv = Math.floor(Math.random() * 1000) + 500;
+                    const uv = Math.floor(pv * (0.5 + Math.random() * 0.5));
+                    const duration = Math.floor(Math.random() * 300) + 60; // 秒
+                    const bounceRate = Math.floor(Math.random() * 40) + 20; // %
+                    
+                    data.push({
+                        date: dateStr,
+                        dateObj: new Date(date),
+                        channel: channel.name,
+                        channelId: channel.id,
+                        pv,
+                        uv,
+                        duration,
+                        bounceRate
+                    });
+                    
+                    totalPV += pv;
+                    totalUV += uv;
+                    totalDuration += duration;
+                    totalBounceRate += bounceRate;
+                    recordCount++;
+                });
+            }
+            
+            // 计算平均值
+            const avgDuration = Math.floor(totalDuration / recordCount);
+            const avgBounceRate = Math.round((totalBounceRate / recordCount) * 10) / 10;
+            
+            // 计算环比变化 (随机生成)
+            const pvChange = (Math.random() * 15 + 5) * (Math.random() > 0.2 ? 1 : -1);
+            const uvChange = (Math.random() * 12 + 3) * (Math.random() > 0.25 ? 1 : -1);
+            const timeChange = (Math.random() * 8 + 2) * (Math.random() > 0.6 ? -1 : 1);
+            const bounceChange = (Math.random() * 6 + 1) * (Math.random() > 0.5 ? -1 : 1);
+            
+            // 按渠道汇总
+            const channelSummary = channels.map(channel => {
+                const channelData = data.filter(item => item.channelId === channel.id);
+                const pv = channelData.reduce((sum, item) => sum + item.pv, 0);
+                const uv = channelData.reduce((sum, item) => sum + item.uv, 0);
+                
+                return {
+                    name: channel.name,
+                    value: pv,
+                    color: channel.color
+                };
+            });
+            
+            // 按日期汇总趋势数据
+            const trendData = [];
+            const uniqueDates = [...new Set(data.map(item => item.date))];
+            
+            uniqueDates.forEach(date => {
+                const dateData = data.filter(item => item.date === date);
+                const pv = dateData.reduce((sum, item) => sum + item.pv, 0);
+                const uv = dateData.reduce((sum, item) => sum + item.uv, 0);
+                
+                trendData.push({
+                    date,
+                    pv,
+                    uv
+                });
+            });
+            
+            return {
+                allData: data,
+                kpi: {
+                    pv: totalPV,
+                    uv: totalUV,
+                    avgDuration,
+                    avgBounceRate,
+                    changes: {
+                        pv: pvChange,
+                        uv: uvChange,
+                        duration: timeChange,
+                        bounce: bounceChange
+                    }
+                },
+                channelSummary,
+                trendData
+            };
+        }
+        
+        // 格式化数字（添加千位分隔符）
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        // 格式化时间（秒转时分秒）
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            } else {
+                return `${minutes}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+        
+        // 渲染KPI指标
+        function renderKPI(kpiData) {
+            // 渲染数值
+            document.getElementById('pv-value').textContent = formatNumber(kpiData.pv);
+            document.getElementById('uv-value').textContent = formatNumber(kpiData.uv);
+            document.getElementById('avg-time-value').textContent = formatTime(kpiData.avgDuration);
+            document.getElementById('bounce-rate-value').textContent = `${kpiData.avgBounceRate}%`;
+            
+            // 渲染变化率
+            function renderChange(elementId, value) {
+                const element = document.getElementById(elementId);
+                const isPositive = value >= 0;
+                
+                element.className = isPositive ? 'text-success flex items-center' : 'text-danger flex items-center';
+                element.innerHTML = `
+                    <i class="fa fa-arrow-${isPositive ? 'up' : 'down'} mr-1"></i>
+                    <span>${Math.abs(value).toFixed(1)}%</span>
+                `;
+            }
+            
+            renderChange('pv-change', kpiData.changes.pv);
+            renderChange('uv-change', kpiData.changes.uv);
+            renderChange('time-change', kpiData.changes.duration);
+            renderChange('bounce-change', kpiData.changes.bounce);
+        }
+        
+        // 渲染趋势图
+        function renderTrendChart(trendData) {
+            const ctx = document.getElementById('trend-chart').getContext('2d');
+            const dates = trendData.map(item => item.date);
+            const pvData = trendData.map(item => item.pv);
+            const uvData = trendData.map(item => item.uv);
+            
+            // 销毁已存在的图表
+            if (window.trendChartInstance) {
+                window.trendChartInstance.destroy();
+            }
+            
+            // 创建新图表
+            window.trendChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: '页面浏览量 (PV)',
+                        data: pvData,
+                        borderColor: '#165DFF',
+                        backgroundColor: 'rgba(22, 93, 255, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#165DFF',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            padding: 10,
+                            boxPadding: 5,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return `PV: ${formatNumber(context.raw)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    if (value >= 1000) {
+                                        return value / 1000 + 'k';
+                                    }
+                                    return value;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+            
+            // 趋势图切换（PV/UV）
+            const trendFilters = document.querySelectorAll('.trend-filter');
+            trendFilters.forEach((filter, index) => {
+                filter.addEventListener('click', () => {
+                    // 更新按钮样式
+                    trendFilters.forEach(btn => {
+                        btn.className = 'px-3 py-1 rounded-full text-sm bg-light-1 text-dark-2 hover:bg-light-2 transition-colors';
+                    });
+                    filter.className = 'px-3 py-1 rounded-full text-sm bg-primary text-white';
+                    
+                    // 更新图表数据
+                    window.trendChartInstance.data.datasets[0].data = index === 0 ? pvData : uvData;
+                    window.trendChartInstance.data.datasets[0].label = index === 0 ? '页面浏览量 (PV)' : '独立访客 (UV)';
+                    window.trendChartInstance.data.datasets[0].borderColor = index === 0 ? '#165DFF' : '#36CFC9';
+                    window.trendChartInstance.data.datasets[0].backgroundColor = index === 0 ? 'rgba(22, 93, 255, 0.1)' : 'rgba(54, 207, 201, 0.1)';
+                    window.trendChartInstance.data.datasets[0].pointBackgroundColor = index === 0 ? '#165DFF' : '#36CFC9';
+                    
+                    // 更新tooltip
+                    window.trendChartInstance.options.plugins.tooltip.callbacks.label = function(context) {
+                        const label = index === 0 ? 'PV' : 'UV';
+                        return `${label}: ${formatNumber(context.raw)}`;
+                    };
+                    
+                    window.trendChartInstance.update();
+                    
+                    // 联动表格高亮对应列
+                    highlightTableColumn(index === 0 ? 'pv' : 'uv');
+                });
+            });
+        }
+        
+        // 渲染来源渠道饼图
+        function renderSourcesChart(channelData) {
+            const ctx = document.getElementById('sources-chart').getContext('2d');
+            
+            // 销毁已存在的图表
+            if (window.sourcesChartInstance) {
+                window.sourcesChartInstance.destroy();
+            }
+            
+            // 创建新图表
+            window.sourcesChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: channelData.map(item => item.name),
+                    datasets: [{
+                        data: channelData.map(item => item.value),
+                        backgroundColor: channelData.map(item => item.color),
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            padding: 10,
+                            boxPadding: 5,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${context.label}: ${formatNumber(value)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+            
+            // 饼图点击事件 - 联动表格过滤
+            document.getElementById('sources-chart').onclick = function(evt) {
+                const points = window.sourcesChartInstance.getElementsAtEventForMode(
+                    evt,
+                    'nearest',
+                    { intersect: true },
+                    false
+                );
+                
+                if (points.length) {
+                    const firstPoint = points[0];
+                    const channelIndex = firstPoint.index;
+                    const channelName = channelData[channelIndex].name;
+                    
+                    // 找到对应的渠道ID
+                    const channelId = channels.find(c => c.name === channelName).id;
+                    
+                    // 设置过滤条件
+                    document.getElementById('table-filter').value = channelId;
+                    
+                    // 重新渲染表格
+                    renderTable(currentPage);
+                }
+            };
+        }
+        
+        // 表格分页相关变量
+        let currentPage = 0;
+        const pageSize = 10;
+        let filteredData = [];
+        let allData = [];
+        let channels = [];
+        
+        // 高亮表格列
+        function highlightTableColumn(column) {
+            // 移除所有高亮
+            document.querySelectorAll('#data-table-body tr td').forEach(cell => {
+                cell.classList.remove('bg-primary/5');
+            });
+            
+            // 高亮指定列
+            const columnIndex = {
+                'pv': 2,
+                'uv': 3
+            }[column];
+            
+            if (columnIndex !== undefined) {
+                document.querySelectorAll(`#data-table-body tr td:nth-child(${columnIndex + 1})`).forEach(cell => {
+                    cell.classList.add('bg-primary/5');
+                });
+            }
+        }
+        
+        // 渲染数据表格
+        function renderTable(page = 0) {
+            const tableBody = document.getElementById('data-table-body');
+            const tableFilter = document.getElementById('table-filter').value;
+            
+            // 根据筛选条件过滤数据
+            filteredData = allData.filter(item => {
+                if (tableFilter === 'all') return true;
+                return item.channelId === tableFilter;
+            });
+            
+            // 计算总页数
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            
+            // 确保页码有效
+            currentPage = Math.max(0, Math.min(page, totalPages - 1));
+            
+            // 计算当前页数据范围
+            const startIndex = currentPage * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, filteredData.length);
+            const currentData = filteredData.slice(startIndex, endIndex);
+            
+            // 清空表格
+            tableBody.innerHTML = '';
+            
+            // 填充表格数据
+            if (currentData.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `
+                    <td colspan="6" class="px-4 py-8 text-center text-dark-2">
+                        <i class="fa fa-inbox mr-2"></i>没有找到匹配的数据
+                    </td>
+                `;
+                tableBody.appendChild(emptyRow);
+            } else {
+                currentData.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-light-1/50 transition-colors';
+                    row.innerHTML = `
+                        <td class="px-4 py-4 whitespace-nowrap">${item.date}</td>
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full" style="background-color: ${channels.find(c => c.id === item.channelId).color}"></span>
+                                ${item.channel}
+                            </div>
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap">${formatNumber(item.pv)}</td>
+                        <td class="px-4 py-4 whitespace-nowrap">${formatNumber(item.uv)}</td>
+                        <td class="px-4 py-4 whitespace-nowrap">${formatTime(item.duration)}</td>
+                        <td class="px-4 py-4 whitespace-nowrap">${item.bounceRate}%</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // 更新分页信息
+            document.getElementById('showing-range').textContent = filteredData.length > 0 
+                ? `${startIndex + 1}-${endIndex}` 
+                : '0-0';
+            document.getElementById('total-records').textContent = filteredData.length;
+            
+            // 渲染页码
+            renderPagination(totalPages);
+            
+            // 更新分页按钮状态
+            document.getElementById('prev-page').disabled = currentPage === 0;
+            document.getElementById('next-page').disabled = currentPage === totalPages - 1 || totalPages === 0;
+        }
+        
+        // 渲染分页控件
+        function renderPagination(totalPages) {
+            const paginationContainer = document.getElementById('pagination-numbers');
+            paginationContainer.innerHTML = '';
+            
+            // 最多显示5个页码
+            const maxVisiblePages = 5;
+            let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = startPage + maxVisiblePages - 1;
+            
+            // 调整页码范围
+            if (endPage >= totalPages) {
+                endPage = totalPages - 1;
+                startPage = Math.max(0, endPage - maxVisiblePages + 1);
+            }
+            
+            // 添加页码按钮
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.className = `w-9 h-9 flex items-center justify-center rounded-lg ${i === currentPage ? 'bg-primary text-white' : 'border border-light-2 text-dark-2 hover:bg-light-1'}`;
+                pageButton.textContent = i;
+                pageButton.addEventListener('click', () => renderTable(i));
+                paginationContainer.appendChild(pageButton);
+            }
+        }
+        
+        // 初始化分页事件监听
+        function initPaginationEvents() {
+            document.getElementById('prev-page').addEventListener('click', () => {
+                if (currentPage > 0) {
+                    renderTable(currentPage - 1);
+                }
+            });
+            
+            document.getElementById('next-page').addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredData.length / pageSize);
+                if (currentPage < totalPages - 1) {
+                    renderTable(currentPage + 1);
+                }
+            });
+            
+            // 表格筛选事件
+            document.getElementById('table-filter').addEventListener('change', () => {
+                renderTable(0); // 重置到第0页
+            });
+        }
+        
+        // 初始化搜索功能
+        function initSearch() {
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.getElementById('search-results');
+            const searchTermEl = document.getElementById('search-term');
+            const searchResultsContent = document.getElementById('search-results-content');
+            const closeSearch = document.getElementById('close-search');
+            
+            // 执行搜索
+            function performSearch(query) {
+                if (!query.trim()) {
+                    searchResults.classList.add('hidden');
+                    return;
+                }
+                
+                query = query.toLowerCase().trim();
+                searchTermEl.textContent = query;
+                
+                // 搜索数据
+                const results = allData.filter(item => {
+                    return item.date.toLowerCase().includes(query) ||
+                           item.channel.toLowerCase().includes(query) ||
+                           item.pv.toString().includes(query) ||
+                           item.uv.toString().includes(query) ||
+                           formatTime(item.duration).includes(query) ||
+                           item.bounceRate.toString().includes(query);
+                });
+                
+                // 显示结果
+                if (results.length === 0) {
+                    searchResultsContent.innerHTML = `
+                        <div class="text-center py-8 text-dark-2">
+                            <i class="fa fa-search fa-2x mb-3 text-light-3"></i>
+                            <p>没有找到与"${query}"相关的结果</p>
+                        </div>
+                    `;
+                } else {
+                    // 限制显示前5条结果
+                    const displayResults = results.slice(0, 5);
+                    let html = '<div class="space-y-4">';
+                    
+                    displayResults.forEach(item => {
+                        // 高亮匹配的文本
+                        const highlight = (text, term) => {
+                            if (!term) return text;
+                            const regex = new RegExp(`(${term})`, 'gi');
+                            return text.toString().replace(regex, '<span class="bg-yellow-200">$1</span>');
+                        };
+                        
+                        html += `
+                            <div class="p-3 border border-light-2 rounded-lg hover:border-primary/30 hover:bg-primary/5 transition-colors">
+                                <div class="text-sm text-dark-2 mb-1">${item.date} · ${item.channel}</div>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
+                                    <div>PV: ${highlight(item.pv, query)}</div>
+                                    <div>UV: ${highlight(item.uv, query)}</div>
+                                    <div>时长: ${highlight(formatTime(item.duration), query)}</div>
+                                    <div>跳出率: ${highlight(item.bounceRate, query)}%</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    // 如果有更多结果
+                    if (results.length > 5) {
+                        html += `
+                            <div class="text-center text-sm text-primary">
+                                还有 ${results.length - 5} 条结果，可在表格中查看全部
+                            </div>
+                        `;
+                    }
+                    
+                    html += '</div>';
+                    searchResultsContent.innerHTML = html;
+                }
+                
+                searchResults.classList.remove('hidden');
+            }
+            
+            // 搜索输入事件
+            searchInput.addEventListener('input', (e) => {
+                performSearch(e.target.value);
+            });
+            
+            // 关闭搜索结果
+            closeSearch.addEventListener('click', () => {
+                searchResults.classList.add('hidden');
+                searchInput.value = '';
+            });
+        }
+        
+        // 初始化导出功能
+        function initExport() {
+            // 导出按钮点击事件
+            const exportButtons = [
+                document.getElementById('export-btn'),
+                document.getElementById('mobile-export-btn')
+            ];
+            
+            exportButtons.forEach(button => {
+                if (button) {
+                    button.addEventListener('click', () => {
+                        // 准备导出数据
+                        const exportData = filteredData.map(item => {
+                            return {
+                                '日期': item.date,
+                                '来源渠道': item.channel,
+                                'PV': item.pv,
+                                'UV': item.uv,
+                                '平均访问时长(秒)': item.duration,
+                                '跳出率(%)': item.bounceRate
+                            };
+                        });
+                        
+                        // 转换为CSV格式
+                        const headers = Object.keys(exportData[0] || {}).join(',');
+                        const rows = exportData.map(item => Object.values(item).join(','));
+                        const csv = [headers, ...rows].join('\n');
+                        
+                        // 创建Blob并下载
+                        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                        saveAs(blob, `电商访问统计报表_${new Date().toLocaleDateString()}.csv`);
+                        
+                        // 显示导出成功提示
+                        const toast = document.getElementById('export-toast');
+                        toast.classList.remove('translate-y-20', 'opacity-0');
+                        
+                        // 3秒后隐藏提示
+                        setTimeout(() => {
+                            toast.classList.add('translate-y-20', 'opacity-0');
+                        }, 3000);
+                    });
+                }
+            });
+        }
+        
+        // 初始化日期范围选择器
+        function initDateRangePicker() {
+            const dateRange = document.getElementById('date-range');
+            dateRange.addEventListener('change', () => {
+                // 重新生成数据并刷新所有组件
+                const newData = generateFakeData();
+                allData = newData.allData;
+                renderKPI(newData.kpi);
+                renderTrendChart(newData.trendData);
+                renderSourcesChart(newData.channelSummary);
+                renderTable(0);
+            });
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 生成假数据
+            const data = generateFakeData();
+            allData = data.allData;
+            channels = [
+                { id: 'direct', name: '直接访问', color: '#165DFF' },
+                { id: 'search', name: '搜索引擎', color: '#36CFC9' },
+                { id: 'social', name: '社交媒体', color: '#52C41A' },
+                { id: 'external', name: '外部链接', color: '#FAAD14' },
+                { id: 'ads', name: '广告推广', color: '#FF4D4F' }
+            ];
+            
+            // 渲染各组件
+            renderKPI(data.kpi);
+            renderTrendChart(data.trendData);
+            renderSourcesChart(data.channelSummary);
+            
+            // 初始化功能
+            initPaginationEvents();
+            initSearch();
+            initExport();
+            initDateRangePicker();
+            
+            // 初始渲染表格
+            renderTable(0);
+        });
+    </script>
+
+</body></html>

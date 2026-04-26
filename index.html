@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <link rel="icon" type="image/png" href="png.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="pageTitle">永續商店地圖 - 首頁</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    
+    <!-- External Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="text-gray-800">
+
+    <div id="loading-overlay" class="flex items-center justify-center">
+        <div class="loader"></div>
+    </div>
+
+    <div id="admin-indicator" class="admin-mode hidden">管理員模式</div>
+
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+             <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <a href="#" class="text-2xl font-bold text-gray-800" data-i18n="appName">永續商店地圖</a>
+            </div>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#" class="text-gray-700 hover:text-green-600 transition" data-i18n="home">首頁</a>
+                <a href="#map" class="text-gray-700 hover:text-green-600 transition" data-i18n="map">地圖</a>
+                <a href="#shops" class="text-gray-700 hover:text-green-600 transition" data-i18n="shopList">商店列表</a>
+                <a href="#newsletter" class="text-gray-700 hover:text-green-600 transition" data-i18n="newsletter">訂閱電子報</a>
+                <a href="#report-issue" class="text-gray-700 hover:text-green-600 transition" data-i18n="reportIssueNavLink">問題回報</a>
+                <select id="language-select" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition cursor-pointer">
+                    <option value="zh-TW" data-i18n="langChinese">繁體中文</option>
+                    <option value="en" data-i18n="langEnglish">English</option>
+                    <option value="fr" data-i18n="langFrench">Français</option>
+                    <option value="es" data-i18n="langSpanish">Español</option>
+                    <option value="de" data-i18n="langGerman">Deutsch</option>
+                    <option value="ja" data-i18n="langJapanese">日本語</option>
+                    <option value="ko" data-i18n="langKorean">한국어</option>
+                    <option value="la" data-i18n="langLatin">Latina</option>
+                </select>
+            </div>
+             <div class="md:hidden flex items-center">
+                <select id="language-select-mobile" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition cursor-pointer mr-2">
+                    <option value="zh-TW" data-i18n="langChinese">繁體中文</option>
+                    <option value="en" data-i18n="langEnglish">English</option>
+                    <option value="fr" data-i18n="langFrench">Français</option>
+                    <option value="es" data-i18n="langSpanish">Español</option>
+                    <option value="de" data-i18n="langGerman">Deutsch</option>
+                    <option value="ja" data-i18n="langJapanese">日本語</option>
+                    <option value="ko" data-i18n="langKorean">한국어</option>
+                    <option value="la" data-i18n="langLatin">Latina</option>
+                </select>
+                <button id="menu-toggle" class="text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-4 py-2 bg-white">
+            <a href="#" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="home">首頁</a>
+            <a href="#map" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="map">地圖</a>
+            <a href="#shops" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="shopList">商店列表</a>
+            <a href="#newsletter" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="newsletter">訂閱電子報</a>
+            <a href="#report-issue" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="reportIssueNavLink">問題回報</a>
+        </div>
+    </nav>
+
+    <div id="announcement-bar" class="hidden bg-yellow-200 border-b-2 border-yellow-300 text-yellow-800 p-3 text-center">
+        <p id="announcement-text" class="font-medium"></p>
+    </div>
+
+    <section class="hero-section py-20 md:py-32 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6" data-i18n="heroTitle">探索台灣永續商店</h1>
+            <p class="text-xl max-w-2xl mx-auto mb-8" data-i18n="heroSubtitle">找到支持環保、公平貿易和永續發展的商店，一起為地球盡一份心力</p>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <a href="#map" class="btn-primary px-8 py-3 rounded-lg font-medium" data-i18n="viewMapBtn">查看地圖</a>
+                <a href="#shops" class="bg-white text-green-600 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition" data-i18n="browseShopsBtn">瀏覽商店列表</a>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <section class="py-12 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold mb-4" data-i18n="searchTitle">搜尋永續商店</h2>
+                            <div class="flex">
+                                <input type="text" id="search-input" class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500" data-i18n="searchPlaceholder" placeholder="輸入商店名稱或地址...">
+                                <button id="search-button" class="btn-primary px-6 py-3 rounded-r-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-medium mb-3" data-i18n="filterCategoryTitle">依類別篩選</h3>
+                            <div class="flex flex-wrap gap-2" id="filter-buttons-container">
+                                <button class="tag px-3 py-1 rounded-full text-sm active" data-i18n="filterAll" data-category="all">全部</button>
+                                <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterFavorites" data-category="favorites">❤️ 我的收藏</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="map" class="py-12 bg-green-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-8" data-i18n="mapSectionTitle">永續商店地圖</h2>
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div id="sustainability-map" class="h-96 md:h-[500px] w-full z-10"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="shops" class="py-12 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-8" data-i18n="shopListSectionTitle">永續商店列表</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="shop-cards-container">
+                </div>
+                <div class="text-center mt-8">
+                    <button id="load-more-button" class="btn-primary px-8 py-3 rounded-lg font-medium hidden" data-i18n="loadMoreBtn">載入更多</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="newsletter" class="py-12 bg-green-600 text-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-2xl mx-auto text-center">
+                    <h2 class="text-3xl font-bold mb-4" data-i18n="newsletterTitle">訂閱永續生活電子報</h2>
+                    <p class="mb-6" data-i18n="newsletterSubtitle">獲取最新的永續商店資訊、環保生活技巧和特別優惠</p>
+                    <form id="newsletter-form" class="flex flex-col md:flex-row gap-2">
+                        <input type="email" id="newsletter-email" required class="flex-1 px-4 py-3 rounded-lg text-gray-800 focus:outline-none" data-i18n="newsletterPlaceholder" placeholder="您的電子郵件">
+                        <button type="submit" id="subscribe-button" class="bg-white text-green-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition" data-i18n="subscribeBtn">訂閱</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="report-issue" class="py-12 bg-yellow-50">
+            <div class="container mx-auto px-4">
+                <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-3xl font-bold text-center mb-6" data-i18n="reportIssueTitle">問題回報</h2>
+                    <form id="issue-form">
+                        <div class="mb-4">
+                            <label for="issue" class="block text-gray-700 text-sm font-bold mb-2" data-i18n="reportIssueLabel">請描述您遇到的問題：</label>
+                            <textarea id="issue" name="issue" rows="6" required
+                                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                      data-i18n="reportIssuePlaceholder"
+                                      placeholder="例如：某間商店資訊錯誤、地圖位置有誤..."></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit"
+                                    class="btn-primary px-6 py-2 rounded-lg font-medium"
+                                    data-i18n="reportIssueSubmitBtn">
+                                送出回報
+                            </button>
+                        </div>
+                    </form>
+                    <p id="issue-message" class="text-center text-green-600 mt-4 hidden" data-i18n="reportIssueSuccessMsg">感謝您的回報，我們會儘快處理！</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-4 text-center text-gray-400">
+            <p data-i18n="copyright">© 2025 永續商店地圖 - 版權所有</p>
+            <div class="mt-4">
+                <a href="#" id="policy-link" class="hover:text-white transition" data-i18n="policyLink">政策條款</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="shop-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden flex items-center justify-center">
+        <div id="shop-detail-container" class="bg-white rounded-xl max-w-4xl w-full mx-4 modal-content">
+        </div>
+    </div>
+
+    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[2000] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 shadow-xl max-w-sm mx-auto text-center">
+            <p id="message-modal-text" class="text-gray-800 text-lg mb-4"></p>
+            <button id="close-message-modal" class="btn-primary px-6 py-2 rounded-lg font-medium" data-i18n="okButton">確定</button>
+        </div>
+    </div>
+
+    <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-75 z-[3000] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 shadow-xl max-w-2xl w-full mx-auto">
+            <h3 class="text-xl font-bold text-red-600 mb-4" data-i18n="errorModalTitle">發生錯誤</h3>
+            <div class="bg-red-50 p-4 rounded-md error-modal-content overflow-y-auto">
+                <pre id="error-details" class="text-sm text-gray-800 whitespace-pre-wrap break-all"></pre>
+            </div>
+            <div class="mt-6 text-right">
+                <button id="close-error-modal" class="bg-red-600 text-white px-6 py-2 rounded-lg font-medium">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Policy Modal -->
+    <div id="policy-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-4xl w-full mx-4 modal-content flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center flex-shrink-0">
+                <h2 id="policy-modal-title" class="text-xl font-bold text-gray-800" data-i18n="policyModalTitle">網站政策</h2>
+                <button id="close-policy-modal-btn" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+            <div id="policy-modal-body" class="p-6 overflow-y-auto">
+                <!-- Policy content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
