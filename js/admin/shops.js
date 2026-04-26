@@ -55,8 +55,10 @@ window.saveShop = async function() {
   const id = document.getElementById('shop-edit-id').value;
   const lat = parseFloat(document.getElementById('s-lat').value);
   const lng = parseFloat(document.getElementById('s-lng').value);
+  const nameZh = document.getElementById('s-name-zh').value.trim();
+  
   const data = {
-    name: { 'zh-TW': document.getElementById('s-name-zh').value, 'en': document.getElementById('s-name-en').value },
+    name: { 'zh-TW': nameZh, 'en': document.getElementById('s-name-en').value },
     type: { 'zh-TW': document.getElementById('s-type-zh').value },
     address: { 'zh-TW': document.getElementById('s-addr-zh').value },
     description: { 'zh-TW': document.getElementById('s-desc-zh').value },
@@ -67,6 +69,18 @@ window.saveShop = async function() {
     location: !isNaN(lat) && !isNaN(lng) ? new firebase.firestore.GeoPoint(lat, lng) : null,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
+
+  // Duplicate check and branch logic
+  const existingShop = window.adminAllShops.find(s => s.id !== id && s.name?.['zh-TW'] === nameZh);
+  if (existingShop) {
+    if (confirm(`店名 "${nameZh}" 已經存在！\n是否將此店面標記為「分店」？\n(按「確定」設為分店，按「取消」放棄儲存)`)) {
+      data.isBranch = true;
+      data.parentId = existingShop.parentId || existingShop.id;
+    } else {
+      return; // Do not save
+    }
+  }
+
   if (id) { await db.collection('merchants').doc(id).update(data); }
   else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); await db.collection('merchants').add(data); }
   window.closeModal('shop-modal');

@@ -173,8 +173,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ===== CORE LOGIC (Remaining in app.js for coordination) =====
     window.getFilteredShops = function() {
+        const branches = window.allShops.filter(s => s.isBranch && s.parentId);
+        
         let filtered = window.allShops.filter(shop => {
             if (!shop || !shop.id) return false;
+            if (shop.isBranch) return false; // Hide branches from top-level
+
             if (window.currentFilterCategory === 'favorites') return window.favoriteShops.includes(shop.id);
 
             const matchesCategory = window.currentFilterCategory === 'all' || 
@@ -185,10 +189,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const desc = (shop.description && shop.description[window.currentLang]) || (shop.description && shop.description['zh-TW']) || '';
             const query = window.currentSearchQuery.toLowerCase();
             
-            const matchesSearch = !query ||
+            let matchesSearch = !query ||
                 name.toLowerCase().includes(query) ||
                 address.toLowerCase().includes(query) ||
                 desc.toLowerCase().includes(query);
+
+            if (query && !matchesSearch) {
+                const shopBranches = branches.filter(b => b.parentId === shop.id);
+                matchesSearch = shopBranches.some(b => {
+                    const bName = (b.name && window.currentLang) ? b.name[window.currentLang] : (b.name?.['zh-TW'] || '');
+                    const bAddr = (b.address && window.currentLang) ? b.address[window.currentLang] : (b.address?.['zh-TW'] || '');
+                    return bName.toLowerCase().includes(query) || bAddr.toLowerCase().includes(query);
+                });
+            }
 
             return matchesCategory && matchesSearch;
         });
