@@ -31,6 +31,10 @@ window.openShopModal = function(id = null) {
   document.getElementById('s-featured').checked = false;
   document.getElementById('shop-edit-id').value = '';
   document.getElementById('shop-modal-title').textContent = id ? '編輯商店' : '新增商店';
+  
+  const modal = document.getElementById('shop-modal');
+  modal.dataset.isBranch = 'false';
+  modal.dataset.parentId = '';
 
   if (id) {
     const s = window.adminAllShops.find(x => x.id === id);
@@ -47,8 +51,13 @@ window.openShopModal = function(id = null) {
     document.getElementById('s-eco').value = (s.ecoFeatures || []).join(',');
     document.getElementById('s-status').value = s.status || 'active';
     document.getElementById('s-featured').checked = s.featured || false;
+    
+    if (s.isBranch) {
+        modal.dataset.isBranch = 'true';
+        modal.dataset.parentId = s.parentId || '';
+    }
   }
-  document.getElementById('shop-modal').classList.add('open');
+  modal.classList.add('open');
 };
 
 window.saveShop = async function() {
@@ -70,9 +79,17 @@ window.saveShop = async function() {
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
+  const modal = document.getElementById('shop-modal');
+  const isExistingBranch = modal.dataset.isBranch === 'true';
+  
+  if (isExistingBranch) {
+      data.isBranch = true;
+      data.parentId = modal.dataset.parentId;
+  }
+
   // Duplicate check and branch logic
   const existingShop = window.adminAllShops.find(s => s.id !== id && s.name?.['zh-TW'] === nameZh);
-  if (existingShop) {
+  if (existingShop && !isExistingBranch) {
     if (confirm(`店名 "${nameZh}" 已經存在！\n是否將此店面標記為「分店」？\n(按「確定」設為分店，按「取消」放棄儲存)`)) {
       data.isBranch = true;
       data.parentId = existingShop.parentId || existingShop.id;
