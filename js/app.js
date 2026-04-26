@@ -184,7 +184,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ===== AUTHENTICATION & ADMIN =====
+    let isLoggingIn = false;
     function handleLogin() {
+        if (isLoggingIn) return;
         if (auth.currentUser) {
             auth.signOut().then(() => {
                 localStorage.removeItem('isAdmin');
@@ -195,20 +197,27 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        isLoggingIn = true;
         const provider = new firebase.auth.GoogleAuthProvider();
         auth.signInWithPopup(provider).then(result => {
             const user = result.user;
             updateLoginButtons(true);
             
             // 檢查是否為管理員
-            db.collection('users').doc(user.uid).get().then(doc => {
-                if (doc.exists && doc.data().role === 'admin') {
+            return db.collection('users').doc(user.uid).get().then(doc => {
+                if (doc.exists && (doc.data().role === 'admin' || doc.data().role === 'owner')) {
                     localStorage.setItem('isAdmin', 'true');
                     ui.adminIndicator.classList.remove('hidden');
                 }
                 showMessage(`${user.displayName} ${translations[currentLang].login}成功`);
             });
-        }).catch(error => showErrorModal(error, "Login"));
+        }).catch(error => {
+            if (error.code !== 'auth/cancelled-popup-request' && error.code !== 'auth/popup-closed-by-user') {
+                showErrorModal(error, "Login");
+            }
+        }).finally(() => {
+            isLoggingIn = false;
+        });
     }
 
     function updateLoginButtons(isLoggedIn) {
