@@ -20,3 +20,35 @@ body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0f7f4; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 #loading-overlay { position: fixed; inset: 0; background-color: rgba(255, 255, 255, 0.7); z-index: 9999; }
 .error-modal-content { max-height: 70vh; }
+
+/* Leaflet Popup Styling */
+.leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.leaflet-popup-content {
+    min-width: 180px;
+    margin: 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    text-align: center;
+}
+.leaflet-popup-content h3 {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #166534;
+    margin-bottom: 8px;
+}
+.leaflet-popup-content button {
+    background: #16a34a;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    margin-top: 8px;
+}
+.leaflet-popup-content button:hover {
+    background: #15803d;
+    transform: scale(1.05);
+}
