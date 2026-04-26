@@ -240,5 +240,25 @@ document.addEventListener('DOMContentLoaded', () => {
         filterAndDisplayShops();
     }
 
+    // ===== UI HELPERS =====
+    function showMessage(msg) {
+        ui.messageModalText.textContent = msg;
+        ui.messageModal.classList.remove('hidden');
+        setTimeout(() => ui.messageModal.classList.add('hidden'), 3000);
+    }
+
+    function showErrorModal(error, context) {
+        console.error(`Error in ${context}:`, error);
+        ui.errorDetails.textContent = `[${context}] ${error.message || error}`;
+        ui.errorModal.classList.remove('hidden');
+    }
+
+    // 關閉 Modal 的事件
+    document.querySelectorAll('.close-modal-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.closest('.modal-overlay').classList.add('hidden');
+        });
+    });
+
     initialize();
 });
