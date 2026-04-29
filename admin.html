@@ -165,7 +165,10 @@ tr:hover td{background:#fafafa}
   <div id="topbar">
     <h2 id="page-title">儀表板</h2>
     <div class="actions" id="topbar-actions">
-      <button class="btn btn-purple" onclick="toggleAISidebar()"><i class="fa fa-magic"></i> AI 助手</button>
+      <button class="btn btn-purple" onclick="toggleAISidebar()" style="display:flex;align-items:center;gap:6px;padding:8px 16px">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+        AI 助手
+      </button>
     </div>
   </div>
   <div id="content">
@@ -362,10 +365,17 @@ tr:hover td{background:#fafafa}
 <!-- AI Sidebar -->
 <div id="ai-sidebar">
   <div id="ai-header">
-    <h3><i class="fa fa-magic"></i> Gemini 商店查核助手</h3>
+    <h3>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+      Gemini 商店查核助手
+    </h3>
     <div style="display:flex;gap:8px">
-      <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="document.getElementById('ai-settings').classList.toggle('show')"><i class="fa fa-cog"></i></button>
-      <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="toggleAISidebar()"><i class="fa fa-times"></i></button>
+      <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="document.getElementById('ai-settings').classList.toggle('show')">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+      </button>
+      <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="toggleAISidebar()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
     </div>
   </div>
   <div id="ai-settings">
@@ -380,7 +390,10 @@ tr:hover td{background:#fafafa}
     <textarea id="ai-input" rows="2" placeholder="請輸入訊息或貼上商店連結..."></textarea>
     <div class="ai-btn-group">
       <button class="btn btn-gray btn-sm" onclick="document.getElementById('ai-messages').innerHTML=''">清空對話</button>
-      <button class="btn btn-purple" id="ai-send-btn" onclick="sendAiMessage()">發送 <i class="fa fa-paper-plane"></i></button>
+      <button class="btn btn-purple" id="ai-send-btn" onclick="sendAiMessage()" style="display:flex;align-items:center;gap:6px">
+        發送
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+      </button>
     </div>
   </div>
 </div>
