@@ -26,7 +26,7 @@ window.renderShopsTable = function(shops) {
 };
 
 window.openShopModal = function(id = null) {
-  const fields = ['name-zh','name-en','type-zh','addr-zh','lat','lng','desc-zh','hours','eco','status'];
+  const fields = ['name-zh','name-en','type-zh','addr-zh','lat','lng','desc-zh','hours','eco','status','phone','website'];
   fields.forEach(f => { const el = document.getElementById('s-'+f); if(el) el.value=''; });
   document.getElementById('s-featured').checked = false;
   document.getElementById('shop-edit-id').value = '';
@@ -48,6 +48,8 @@ window.openShopModal = function(id = null) {
     document.getElementById('s-lng').value = s.location?.longitude || '';
     document.getElementById('s-desc-zh').value = s.description?.['zh-TW'] || '';
     document.getElementById('s-hours').value = s.openingHours || '';
+    document.getElementById('s-phone').value = s.phone || '';
+    document.getElementById('s-website').value = s.website || '';
     document.getElementById('s-eco').value = (s.ecoFeatures || []).join(',');
     document.getElementById('s-status').value = s.status || 'active';
     document.getElementById('s-featured').checked = s.featured || false;
@@ -72,6 +74,8 @@ window.saveShop = async function() {
     address: { 'zh-TW': document.getElementById('s-addr-zh').value },
     description: { 'zh-TW': document.getElementById('s-desc-zh').value },
     openingHours: document.getElementById('s-hours').value,
+    phone: document.getElementById('s-phone').value.trim(),
+    website: document.getElementById('s-website').value.trim(),
     ecoFeatures: document.getElementById('s-eco').value.split(',').map(x=>x.trim()).filter(Boolean),
     status: document.getElementById('s-status').value,
     featured: document.getElementById('s-featured').checked,
@@ -145,3 +149,96 @@ if (csvInput) {
     e.target.value = '';
   });
 }
+
+window.exportShopsCSV = function() {
+  if (!window.adminAllShops || window.adminAllShops.length === 0) return alert('沒有商店資料可以匯出');
+  
+  const headers = ['id', 'name_zh', 'name_en', 'type_zh', 'address_zh', 'lat', 'lng', 'phone', 'website', 'status', 'featured'];
+  const rows = window.adminAllShops.map(s => {
+    return [
+      s.id,
+      `"${(s.name?.['zh-TW'] || '').replace(/"/g, '""')}"`,
+      `"${(s.name?.['en'] || '').replace(/"/g, '""')}"`,
+      `"${(s.type?.['zh-TW'] || '').replace(/"/g, '""')}"`,
+      `"${(s.address?.['zh-TW'] || '').replace(/"/g, '""')}"`,
+      s.location?.latitude || '',
+      s.location?.longitude || '',
+      `"${(s.phone || '').replace(/"/g, '""')}"`,
+      `"${(s.website || '').replace(/"/g, '""')}"`,
+      s.status || 'active',
+      s.featured ? 'true' : 'false'
+    ].join(',');
+  });
+  
+  const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + headers.join(',') + "\n" + rows.join('\n');
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `shops_export_${new Date().getTime()}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+window.backupShops = function() {
+  if (!window.adminAllShops || window.adminAllShops.length === 0) return alert('沒有商店資料可以備份');
+  
+  const backupData = JSON.stringify(window.adminAllShops, null, 2);
+  const blob = new Blob([backupData], {type: "application/json;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `shops_backup_${new Date().getTime()}.json`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+window.onlineBackupShops = async function() {
+  if (!window.adminAllShops || window.adminAllShops.length === 0) return alert('沒有商店資料可以備份');
+  if (!confirm('確定要建立線上備份嗎？這將儲存一份當前所有商店的快照。')) return;
+
+  try {
+    const backupData = {
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      shopCount: window.adminAllShops.length,
+      data: window.adminAllShops
+    };
+    
+    await db.collection('backups').add(backupData);
+    alert('線上備份成功建立！');
+  } catch (err) {
+    console.error('Online backup error:', err);
+    alert('線上備份失敗：' + err.message);
+  }
+};
+
+window.clearAllShops = async function() {
+  if (!confirm('警告：此操作將會把所有商店移至垃圾桶(封禁狀態)。\n\n確定要繼續嗎？')) return;
+  if (!confirm('請再次確認，這會影響所有前台顯示的商店！')) return;
+  
+  try {
+    const batch = db.batch();
+    let count = 0;
+    
+    window.adminAllShops.forEach(shop => {
+      if (shop.status !== 'banned') {
+        const shopRef = db.collection('merchants').doc(shop.id);
+        batch.update(shopRef, { status: 'banned', deletedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        count++;
+      }
+    });
+    
+    if (count > 0) {
+      await batch.commit();
+      alert(`已成功將 ${count} 間商店移至垃圾桶。`);
+      window.loadShops();
+    } else {
+      alert('目前沒有可以清除的商店。');
+    }
+  } catch (err) {
+    console.error('Clear all error:', err);
+    alert('清除失敗：' + err.message);
+  }
+};

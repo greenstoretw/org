@@ -172,6 +172,22 @@ window.showShopDetail = function(shopId) {
                         </h4>
                         <p class="mt-1 text-slate-600 text-sm whitespace-pre-line">${shop.openingHours || (window.locales[currentLang]?.notProvided || '未提供')}</p>
                     </div>
+                    <hr class="border-slate-100">
+                    <div>
+                        <h4 class="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider mb-2">
+                            <i class="fa fa-phone text-green-600 w-5 text-center"></i>
+                            ${window.locales[currentLang]?.modalPhone || '電話'}
+                        </h4>
+                        <p class="mt-1 text-slate-600 text-sm whitespace-pre-line">${shop.phone || (window.locales[currentLang]?.notProvided || '未提供')}</p>
+                    </div>
+                    <hr class="border-slate-100">
+                    <div>
+                        <h4 class="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider mb-2">
+                            <i class="fa fa-globe text-green-600 w-5 text-center"></i>
+                            ${window.locales[currentLang]?.modalWebsite || '網站'}
+                        </h4>
+                        ${shop.website ? `<a href="${shop.website}" target="_blank" class="mt-1 text-blue-600 hover:underline text-sm break-all">${shop.website}</a>` : `<p class="mt-1 text-slate-600 text-sm">${window.locales[currentLang]?.notProvided || '未提供'}</p>`}
+                    </div>
                 </div>
             </div>
         </div>
