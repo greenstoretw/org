@@ -1,0 +1,2 @@
+name_zh,name_en,type_zh,address_zh,latitude,longitude,description_zh,opening_hours,phone,website,image_url,eco_features,status,featured
+"測試商店","Test Shop","零售","台北市信義區測試路1號","25.0330","121.5654","這是一間測試用的環保商店","09:00-18:00","02-12345678","https://example.com","https://example.com/image.jpg","減塑包裝,在地食材","active","true"
