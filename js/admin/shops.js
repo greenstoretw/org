@@ -18,9 +18,10 @@ window.renderShopsTable = function(shops) {
       <td><span class="badge ${s.status==='active'?'badge-green':'badge-gray'}">${s.status==='active'?'上架':'隱藏'}</span></td>
       <td>${s.featured ? '<span class="badge badge-yellow">⭐ 精選</span>' : '—'}</td>
       <td style="display:flex;gap:6px">
-        <button class="btn btn-blue btn-sm" onclick="window.openShopModal('${s.id}')"><i class="fa fa-edit"></i></button>
+        <button class="btn btn-purple btn-sm" onclick="window.verifyShopWithAI('${s.id}')" title="AI 查核"><i class="fa fa-magic"></i></button>
+        <button class="btn btn-blue btn-sm" onclick="window.openShopModal('${s.id}')" title="編輯"><i class="fa fa-edit"></i></button>
         <button class="btn btn-${s.status==='active'?'gray':'green'} btn-sm" onclick="window.toggleShopStatus('${s.id}','${s.status}')">${s.status==='active'?'下架':'上架'}</button>
-        <button class="btn btn-red btn-sm" onclick="window.deleteShop('${s.id}')"><i class="fa fa-trash"></i></button>
+        <button class="btn btn-red btn-sm" onclick="window.deleteShop('${s.id}')" title="刪除"><i class="fa fa-trash"></i></button>
       </td>
     </tr>`).join('');
 };
