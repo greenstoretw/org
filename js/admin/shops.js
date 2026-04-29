@@ -139,6 +139,10 @@ if (csvInput) {
         type: { 'zh-TW': obj.type_zh||'' },
         address: { 'zh-TW': obj.address_zh||'' },
         description: { 'zh-TW': obj.desc_zh||'' },
+        phone: obj.phone || '',
+        website: obj.website || '',
+        openingHours: obj.opening_hours || '',
+        ecoFeatures: obj.eco_features ? obj.eco_features.split('|').map(x=>x.trim()) : [],
         location: obj.lat && obj.lng ? new firebase.firestore.GeoPoint(parseFloat(obj.lat), parseFloat(obj.lng)) : null,
         status: 'active', createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });

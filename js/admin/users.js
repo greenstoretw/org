@@ -109,3 +109,31 @@ window.restoreUser = async function(id) {
   await db.collection('users').doc(id).update({ banned: false, bannedAt: null });
   window.loadTrash();
 };
+
+window.emptyTrash = async function(type) {
+  const collection = type === 'shops' ? 'merchants' : 'users';
+  const queryField = type === 'shops' ? 'status' : 'banned';
+  const queryVal = type === 'shops' ? 'banned' : true;
+  
+  if (!confirm(`確定要永久刪除所有已封禁的${type === 'shops' ? '商店' : '使用者'}嗎？\n\n注意：此操作無法撤銷！`)) return;
+
+  try {
+    const snap = await db.collection(collection).where(queryField, '==', queryVal).get();
+    if (snap.empty) {
+      alert('垃圾桶目前是空的。');
+      return;
+    }
+
+    const batch = db.batch();
+    snap.docs.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+
+    await batch.commit();
+    alert(`已永久刪除 ${snap.size} 個項目。`);
+    window.loadTrash();
+  } catch (err) {
+    console.error('Empty trash error:', err);
+    alert('清空失敗：' + err.message);
+  }
+};
