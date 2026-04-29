@@ -399,7 +399,10 @@ tr:hover td{background:#f8faf9}
   <div id="ai-input-area">
     <textarea id="ai-input" rows="2" placeholder="請輸入訊息或貼上商店連結..."></textarea>
     <div class="ai-btn-group">
-      <button class="btn btn-gray btn-sm" onclick="document.getElementById('ai-messages').innerHTML=''">清空對話</button>
+      <div style="display:flex;gap:4px">
+        <button class="btn btn-gray btn-sm" onclick="document.getElementById('ai-messages').innerHTML=''">清空對話</button>
+        <button class="btn btn-gray btn-sm" onclick="toggleAISidebar()">關閉</button>
+      </div>
       <button class="btn btn-purple" id="ai-send-btn" onclick="sendAiMessage()" style="display:flex;align-items:center;gap:6px">
         發送
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
