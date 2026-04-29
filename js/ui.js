@@ -34,7 +34,9 @@ window.renderShopCards = function(filteredShops) {
         card.innerHTML = `
             ${shop.featured ? `<div class="featured-badge">FEATURED</div>` : ''}
             <div class="h-48 bg-slate-100 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                ${shop.imageUrl 
+                  ? `<img src="${shop.imageUrl}" class="w-full h-full object-cover" alt="Shop Image" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<svg class=\\'h-16 w-16 text-slate-300\\' fill=\\'none\\' viewBox=\\'0 0 24 24\\' stroke=\\'currentColor\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'1.5\\' d=\\'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z\\' /></svg>';">`
+                  : `<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>`}
             </div>
             <button class="favorite-btn ${isFavorited ? 'favorited' : ''}" data-shop-id="${shop.id}">
                 <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
@@ -102,7 +104,11 @@ window.showShopDetail = function(shopId) {
     const container = document.getElementById('shop-detail-container');
     container.innerHTML = `
         <div class="relative">
-            <div class="h-48 md:h-64 shop-detail-header"></div>
+            <div class="h-48 md:h-64 bg-slate-100 flex items-center justify-center overflow-hidden">
+                ${shop.imageUrl 
+                  ? `<img src="${shop.imageUrl}" class="w-full h-full object-cover" alt="Shop Image" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<svg class=\\'h-24 w-24 text-slate-300\\' fill=\\'none\\' viewBox=\\'0 0 24 24\\' stroke=\\'currentColor\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'1.5\\' d=\\'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z\\' /></svg>';">`
+                  : `<svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>`}
+            </div>
             <button class="close-modal-btn absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white p-2 transition z-[1010] cursor-pointer rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>

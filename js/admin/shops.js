@@ -32,7 +32,7 @@ window.renderShopsTable = function(shops) {
 };
 
 window.openShopModal = function(id = null) {
-  const fields = ['name-zh','name-en','type-zh','addr-zh','lat','lng','desc-zh','hours','eco','status','phone','website'];
+  const fields = ['name-zh','name-en','type-zh','addr-zh','lat','lng','desc-zh','hours','eco','status','phone','website','image'];
   fields.forEach(f => { const el = document.getElementById('s-'+f); if(el) el.value=''; });
   document.getElementById('s-featured').checked = false;
   document.getElementById('shop-edit-id').value = '';
@@ -56,6 +56,7 @@ window.openShopModal = function(id = null) {
     document.getElementById('s-hours').value = s.openingHours || '';
     document.getElementById('s-phone').value = s.phone || '';
     document.getElementById('s-website').value = s.website || '';
+    document.getElementById('s-image').value = s.imageUrl || '';
     document.getElementById('s-eco').value = (s.ecoFeatures || []).join(',');
     document.getElementById('s-status').value = s.status || 'active';
     document.getElementById('s-featured').checked = s.featured || false;
@@ -82,6 +83,7 @@ window.saveShop = async function() {
     openingHours: document.getElementById('s-hours').value,
     phone: document.getElementById('s-phone').value.trim(),
     website: document.getElementById('s-website').value.trim(),
+    imageUrl: document.getElementById('s-image').value.trim(),
     ecoFeatures: document.getElementById('s-eco').value.split(',').map(x=>x.trim()).filter(Boolean),
     status: document.getElementById('s-status').value,
     featured: document.getElementById('s-featured').checked,
