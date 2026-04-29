@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('gemini-api-key').value = savedKey;
   }
   
+  const savedModel = localStorage.getItem('gemini_model');
+  if (savedModel) {
+    document.getElementById('gemini-model').value = savedModel;
+  }
+  
   // Also listen for enter key on input
   document.getElementById('ai-input').addEventListener('keypress', function (e) {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -109,7 +114,8 @@ window.sendAiMessage = async function() {
   `;
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    const selectedModel = localStorage.getItem('gemini_model') || 'gemini-1.5-flash-latest';
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

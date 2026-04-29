@@ -380,8 +380,15 @@ tr:hover td{background:#fafafa}
   </div>
   <div id="ai-settings">
     <label style="font-size:0.8rem;font-weight:bold;display:block;margin-bottom:4px">Gemini API Key</label>
-    <input type="password" id="gemini-api-key" placeholder="AIzaSy..." style="width:100%;padding:6px;border:1px solid #d1d5db;border-radius:4px;font-size:0.8rem" onchange="saveApiKey(this.value)">
-    <div style="font-size:0.7rem;color:#6b7280;margin-top:4px">Key將儲存於瀏覽器中。請確保具有 googleSearchRetrieval 權限。</div>
+    <input type="password" id="gemini-api-key" placeholder="AIzaSy..." style="width:100%;padding:6px;border:1px solid #d1d5db;border-radius:4px;font-size:0.8rem;margin-bottom:8px" onchange="saveApiKey(this.value)">
+    
+    <label style="font-size:0.8rem;font-weight:bold;display:block;margin-bottom:4px">模型選擇</label>
+    <select id="gemini-model" style="width:100%;padding:6px;border:1px solid #d1d5db;border-radius:4px;font-size:0.8rem" onchange="localStorage.setItem('gemini_model', this.value)">
+      <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (最快)</option>
+      <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (最強)</option>
+    </select>
+    
+    <div style="font-size:0.7rem;color:#6b7280;margin-top:8px">Key將儲存於瀏覽器中。請確保具有 googleSearchRetrieval 權限。</div>
   </div>
   <div id="ai-messages">
     <div class="ai-msg bot">你好！我是 Gemini AI 助手。我可以幫你查核商店的真實性、營業時間、或是直接幫你產生新增商店的資料。<br><br>你可以點擊商店列表旁的「AI 查核」，或是直接在這裡告訴我商店名稱！</div>
