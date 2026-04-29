@@ -227,7 +227,7 @@
     <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[2000] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-lg p-6 shadow-xl max-w-sm mx-auto text-center">
             <p id="message-modal-text" class="text-gray-800 text-lg mb-4"></p>
-            <button id="close-message-modal" class="btn-primary px-6 py-2 rounded-lg font-medium" data-i18n="okButton">確定</button>
+            <button id="close-message-modal" onclick="document.getElementById('message-modal').classList.add('hidden')" class="btn-primary px-6 py-2 rounded-lg font-medium" data-i18n="okButton">確定</button>
         </div>
     </div>
 
@@ -238,7 +238,7 @@
                 <pre id="error-details" class="text-sm text-gray-800 whitespace-pre-wrap break-all"></pre>
             </div>
             <div class="mt-6 text-right">
-                <button id="close-error-modal" class="bg-red-600 text-white px-6 py-2 rounded-lg font-medium">關閉</button>
+                <button id="close-error-modal" onclick="document.getElementById('error-modal').classList.add('hidden')" class="bg-red-600 text-white px-6 py-2 rounded-lg font-medium">關閉</button>
             </div>
         </div>
     </div>
