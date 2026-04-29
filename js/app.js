@@ -20,8 +20,22 @@ document.addEventListener('DOMContentLoaded', () => {
         window.fetchShops();
         setupEventListeners();
         window.setLanguage(window.currentLang);
+        logVisit();
         
         if (localStorage.getItem('isAdmin')) document.getElementById('admin-indicator').classList.remove('hidden');
+    }
+
+    async function logVisit() {
+        try {
+            await db.collection('analytics').add({
+                type: 'page_view',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                referrer: document.referrer || 'direct',
+                userAgent: navigator.userAgent
+            });
+        } catch (err) {
+            console.error("Visit logging failed", err);
+        }
     }
 
     function setupEventListeners() {
@@ -130,8 +144,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!email) return;
                 
                 try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const source = urlParams.get('utm_source') || (document.referrer.includes('google') ? 'Google' : (document.referrer.includes('facebook') ? 'Facebook' : 'Direct'));
+                    
                     await db.collection('newsletter').add({
                         email,
+                        source: source,
                         subscribedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     window.showMessage(window.locales[window.currentLang]?.newsletterSuccess || '感謝您的訂閱！');

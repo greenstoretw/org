@@ -3,11 +3,12 @@ window.trendChart = null;
 window.sourceChart = null;
 
 window.loadDashboard = async function() {
-  const [shops, users, subs, reviews] = await Promise.all([
+  const [shops, users, subs, reviews, analytics] = await Promise.all([
     db.collection('merchants').where('status','==','active').get(),
     db.collection('users').get(),
     db.collection('newsletter').get(),
-    db.collection('reviews').get()
+    db.collection('reviews').get(),
+    db.collection('analytics').where('timestamp', '>', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).get()
   ]);
   const stats = [
     { label:'上架商店', val: shops.size, icon:'fa-store', color:'#166534' },
@@ -22,27 +23,53 @@ window.loadDashboard = async function() {
         <div style="background:${s.color}15;padding:10px;border-radius:10px"><i class="fa ${s.icon}" style="color:${s.color};font-size:1.3rem"></i></div>
       </div>
     </div>`).join('');
-  window.renderTrendChart();
-  window.renderSourceChart(subs.size);
+    
+  window.renderTrendChart(analytics.docs.map(doc => doc.data()));
+  window.renderSourceChart(subs.docs.map(doc => doc.data()));
 };
 
-window.renderTrendChart = function() {
+window.renderTrendChart = function(visitData) {
   const ctx = document.getElementById('trend-chart').getContext('2d');
   if (window.trendChart) window.trendChart.destroy();
-  const labels = Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return `${d.getMonth()+1}/${d.getDate()}`;});
+  
+  const last7Days = Array.from({length:7},(_,i)=>{
+    const d=new Date();
+    d.setDate(d.getDate()-6+i);
+    return d.toISOString().split('T')[0];
+  });
+
+  const counts = last7Days.map(date => {
+    return visitData.filter(v => v.timestamp && v.timestamp.toDate().toISOString().split('T')[0] === date).length;
+  });
+
+  const displayLabels = last7Days.map(d => {
+    const parts = d.split('-');
+    return `${parts[1]}/${parts[2]}`;
+  });
+
   window.trendChart = new Chart(ctx, {
     type:'line',
-    data:{ labels, datasets:[{ label:'PV', data:labels.map(()=>Math.floor(Math.random()*200+50)), borderColor:'#16a34a', backgroundColor:'rgba(22,163,74,.1)', fill:true, tension:0.4 }] },
-    options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
+    data:{ labels: displayLabels, datasets:[{ label:'PV', data: counts, borderColor:'#16a34a', backgroundColor:'rgba(22,163,74,.1)', fill:true, tension:0.4 }] },
+    options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, ticks: { stepSize: 1 }}} }
   });
 };
 
-window.renderSourceChart = function(subs) {
+window.renderSourceChart = function(subData) {
   const ctx = document.getElementById('source-chart').getContext('2d');
   if (window.sourceChart) window.sourceChart.destroy();
+  
+  const sources = subData.reduce((acc, curr) => {
+    const s = curr.source || 'Direct';
+    acc[s] = (acc[s] || 0) + 1;
+    return acc;
+  }, {});
+
+  const labels = Object.keys(sources);
+  const counts = Object.values(sources);
+
   window.sourceChart = new Chart(ctx, {
     type:'doughnut',
-    data:{ labels:['直接訪問','搜尋引擎','社群媒體'], datasets:[{ data:[45,35,20], backgroundColor:['#16a34a','#2563eb','#9333ea'], borderWidth:0 }] },
+    data:{ labels: labels.length ? labels : ['無數據'], datasets:[{ data: counts.length ? counts : [1], backgroundColor:['#16a34a','#2563eb','#9333ea','#f59e0b','#ef4444'], borderWidth:0 }] },
     options:{ responsive:true, cutout:'65%', plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 } } } } }
   });
 };
