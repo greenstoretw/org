@@ -2,7 +2,12 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a3a2a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="png.png">
+<link rel="manifest" href="manifest.json">
 <title>綠簷後台管理系統</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -97,7 +102,21 @@ tr:hover td{background:#f8faf9}
 .owner-only{display:none}
 .is-owner .owner-only{display:flex}
 /* Responsive */
-@media(max-width:768px){#sidebar{width:60px}#sidebar .logo h1,#sidebar .user-info .meta,.nav-item span,.nav-group .group-label,#sidebar .logout-btn button span{display:none}#sidebar .logo{justify-content:center}#sidebar .user-info{justify-content:center}#main{overflow:auto}}
+@media(max-width:768px){
+  #sidebar{width:60px}
+  #sidebar .logo h1,#sidebar .user-info .meta,.nav-item span,.nav-group .group-label,#sidebar .logout-btn button span{display:none}
+  #sidebar .logo{justify-content:center}
+  #sidebar .user-info{justify-content:center}
+  #main{overflow:hidden}
+  #content{padding:16px}
+  .stat-grid{grid-template-columns: 1fr;}
+  .form-row{grid-template-columns: 1fr;}
+}
+@media(max-width:480px){
+  #topbar h2{font-size:0.9rem;}
+  .card{padding:15px;}
+  #ai-sidebar{width:100%;right:-100%;}
+}
 /* AI Sidebar */
 #ai-sidebar{position:fixed;right:-400px;top:0;width:400px;height:100vh;background:#fff;box-shadow:-5px 0 25px rgba(0,0,0,.1);transition:right .3s cubic-bezier(0.4,0,0.2,1);z-index:2000;display:flex;flex-direction:column;border-left:2px solid #9333ea}
 #ai-sidebar.open{right:0}

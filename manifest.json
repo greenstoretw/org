@@ -1,0 +1,22 @@
+{
+  "name": "永續商店地圖 - 綠簷",
+  "short_name": "綠簷地圖",
+  "description": "探索並支持您身邊的永續環保商店",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "icons": [
+    {
+      "src": "png.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "png.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
