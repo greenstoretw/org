@@ -7,7 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('gemini-api-key').value = savedKey;
   }
   
-  const savedModel = localStorage.getItem('gemini_model');
+  let savedModel = localStorage.getItem('gemini_model');
+  // Auto-fix: Upgrade old model IDs to the latest version
+  if (!savedModel || savedModel === 'gemini-1.5-flash' || savedModel === 'gemini-1.5-pro') {
+    savedModel = 'gemini-1.5-flash-latest';
+    localStorage.setItem('gemini_model', savedModel);
+  }
+  
   if (savedModel) {
     document.getElementById('gemini-model').value = savedModel;
   }
