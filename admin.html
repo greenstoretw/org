@@ -35,7 +35,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f0f4f8;color:#1a202c;disp
 #sidebar .logout-btn button:hover{background:rgba(239,68,68,.2)}
 /* Main */
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-#topbar{background:#fff;padding:0 24px;height:60px;display:flex;align-items:center;justify-between;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+#topbar{background:#fff;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 #topbar h2{font-size:1.1rem;font-weight:700;color:#1a202c}
 #topbar .actions{display:flex;align-items:center;gap:12px}
 #content{flex:1;overflow-y:auto;padding:24px}
@@ -165,7 +165,7 @@ tr:hover td{background:#fafafa}
   <div id="topbar">
     <h2 id="page-title">儀表板</h2>
     <div class="actions" id="topbar-actions">
-      <button class="btn btn-purple" onclick="toggleAISidebar()" style="display:flex;align-items:center;gap:6px;padding:8px 16px">
+      <button class="btn btn-purple" onclick="toggleAISidebar()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;white-space:nowrap;flex-shrink:0">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
         AI 助手
       </button>
