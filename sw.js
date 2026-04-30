@@ -1,8 +1,9 @@
-var CACHE_NAME = 'green-eaves-v2';
+var CACHE_NAME = 'green-eaves-v2.2';
 var ASSETS = [
   './',
   './index.html',
   './css/main.css',
+  './js/state.js',
   './js/app.js',
   './js/ui.js',
   './js/api.js',
