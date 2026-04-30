@@ -35,7 +35,11 @@ window.approveShop = async function(id) {
 window.renderShopsTable = function(shops) {
   document.getElementById('shops-tbody').innerHTML = shops.map(s => `
     <tr>
-      <td><strong>${s.name?.['zh-TW'] || '—'}</strong></td>
+      <td>
+        <strong>${s.name?.['zh-TW'] || '—'}</strong>
+        ${s.verified ? '<span style="margin-left:4px;font-size:10px;color:#16a34a;" title="官方認證">✔ 認證</span>' : ''}
+        ${s.isPartner ? '<span style="margin-left:4px;font-size:10px;color:#d97706;" title="合作店家">★ 合作</span>' : ''}
+      </td>
       <td>${s.type?.['zh-TW'] || '—'}</td>
       <td><span class="badge ${s.status==='active'?'badge-green':'badge-gray'}">${s.status==='active'?'上架':'隱藏'}</span></td>
       <td style="display:flex;gap:6px">

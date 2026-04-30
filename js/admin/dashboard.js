@@ -3,23 +3,26 @@ window.trendChart = null;
 window.sourceChart = null;
 
 window.loadDashboard = async function() {
-  const [shops, users, subs, reviews, analytics] = await Promise.all([
+  const [shops, users, subs, reviews, analytics, allShopsSnap] = await Promise.all([
     db.collection('merchants').where('status','==','active').get(),
     db.collection('users').get(),
     db.collection('newsletter').get(),
     db.collection('reviews').get(),
-    db.collection('analytics').where('timestamp', '>', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).get()
+    db.collection('analytics').where('timestamp', '>', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).get(),
+    db.collection('merchants').where('status','==','active').where('verified','==',false).get()
   ]);
+  const pendingAudit = allShopsSnap.size;
   const stats = [
-    { label:'上架商店', val: shops.size, icon:'fa-store', color:'#166534' },
+    { label:'上架商店', val: shops.size, icon:'fa-shopping-basket', color:'#166534' },
     { label:'使用者', val: users.size, icon:'fa-users', color:'#1e40af' },
     { label:'訂閱人數', val: subs.size, icon:'fa-envelope', color:'#7e22ce' },
-    { label:'評價數', val: reviews.size, icon:'fa-star', color:'#b45309' }
+    { label:'評價數', val: reviews.size, icon:'fa-star', color:'#b45309' },
+    { label:'待審核', val: pendingAudit, icon:'fa-check-square-o', color: pendingAudit > 0 ? '#dc2626' : '#6b7280', extra: pendingAudit > 0 ? ` <a onclick="document.querySelector('[data-page=audit]').click()" style="cursor:pointer;font-size:11px;color:#dc2626;font-weight:bold;display:block;margin-top:4px">點擊前往審核 →</a>` : '' }
   ];
   document.getElementById('stat-grid').innerHTML = stats.map(s => `
     <div class="stat-card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div><div class="val" style="color:${s.color}">${s.val}</div><div class="label">${s.label}</div></div>
+        <div><div class="val" style="color:${s.color}">${s.val}</div><div class="label">${s.label}</div>${s.extra||''}</div>
         <div style="background:${s.color}15;padding:10px;border-radius:10px"><i class="fa ${s.icon}" style="color:${s.color};font-size:1.3rem"></i></div>
       </div>
     </div>`).join('');
