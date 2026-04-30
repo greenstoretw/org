@@ -162,6 +162,7 @@ tr:hover td{background:#f8faf9}
       <div class="group-label">核心</div>
       <div class="nav-item active" data-page="dashboard"><i class="fa fa-dashboard"></i><span>儀表板</span></div>
       <div class="nav-item" data-page="shops"><i class="fa fa-shopping-basket" style="font-size:14px"></i><span>商店管理</span></div>
+      <div class="nav-item" data-page="audit"><i class="fa fa-check-square-o"></i><span>審核工作區</span></div>
       <div class="nav-item" data-page="reports"><i class="fa fa-flag"></i><span>查看問題</span></div>
     </div>
     <div class="nav-group">
@@ -223,6 +224,26 @@ tr:hover td{background:#f8faf9}
       </div>
     </div>
 
+    <!-- AUDIT WORKSPACE -->
+    <div class="page" id="page-audit">
+      <div class="card">
+        <h3>待審核商店 (AI 匯入)</h3>
+        <p style="color:#666;font-size:14px;margin-bottom:15px">這些商店可能由 AI 自動產生或未經人工確認。審核通過後，前台將顯示「官方認證」標章。</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>名稱</th>
+                <th>類型</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="audit-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- REPORTS -->
     <div class="page" id="page-reports">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
@@ -256,6 +277,7 @@ tr:hover td{background:#f8faf9}
               <button onclick="fmtLink()"><i class="fa fa-link"></i></button>
               <button onclick="fmt('insertUnorderedList')">• 列表</button>
             </div>
+
             <div id="rte-content" contenteditable="true"></div>
           </div>
           <button class="btn btn-green" onclick="saveAnnouncement()">發布公告</button>
@@ -371,9 +393,19 @@ tr:hover td{background:#f8faf9}
           <select id="s-status"><option value="active">上架</option><option value="hidden">隱藏</option></select>
         </div>
       </div>
-      <div class="form-group" style="display:flex;align-items:center;gap:8px">
-        <input type="checkbox" id="s-featured" style="width:auto">
-        <label for="s-featured" style="margin:0">設為精選推薦店</label>
+      <div class="form-row">
+        <div class="form-group" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="s-featured" style="width:auto">
+          <label for="s-featured" style="margin:0">設為精選推薦</label>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="s-verified" style="width:auto">
+          <label for="s-verified" style="margin:0; color:#16a34a; font-weight:bold;"><i class="fa fa-check-circle"></i> 官方審核認證</label>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="s-partner" style="width:auto">
+          <label for="s-partner" style="margin:0; color:#eab308; font-weight:bold;"><i class="fa fa-handshake-o"></i> 合作店家標誌</label>
+        </div>
       </div>
     </div>
     <div class="modal-footer">

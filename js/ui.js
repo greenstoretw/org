@@ -63,6 +63,10 @@ window.renderShopCards = function(filteredShops) {
             </button>
             <div class="p-6 flex-grow flex flex-col justify-between">
                 <div>
+                    <div class="flex flex-wrap gap-2 items-center mb-1">
+                        ${shop.verified ? `<span class="tag px-2 py-0.5 text-[10px] bg-blue-50 text-blue-600 border-blue-200" title="官方審核認證"><i class="fa-solid fa-circle-check"></i> 官方認證</span>` : ''}
+                        ${shop.isPartner ? `<span class="tag px-2 py-0.5 text-[10px] bg-yellow-50 text-yellow-600 border-yellow-200" title="合作店家"><i class="fa-solid fa-handshake"></i> 合作店家</span>` : ''}
+                    </div>
                     <h3 class="text-xl font-black text-slate-900">${(shop.name && shop.name[currentLang]) || (shop.name && shop.name['zh-TW'])}</h3>
                     <div class="flex flex-wrap gap-1 mt-1 mb-2">
                         <span class="tag px-2 py-0.5 text-[10px]">${(shop.type && shop.type[currentLang]) || (shop.type && shop.type['zh-TW'])}</span>
@@ -137,6 +141,8 @@ window.showShopDetail = function(shopId) {
                 <div>
                     <div class="flex items-center gap-2 mb-2">
                         <span class="tag px-3 py-1 text-sm font-medium inline-block">${type}</span>
+                        ${shop.verified ? `<span class="tag px-2 py-1 text-[10px] bg-blue-50 text-blue-600 border-blue-200" title="官方審核認證"><i class="fa-solid fa-circle-check"></i> 官方認證</span>` : ''}
+                        ${shop.isPartner ? `<span class="tag px-2 py-1 text-[10px] bg-yellow-50 text-yellow-600 border-yellow-200" title="合作店家"><i class="fa-solid fa-handshake"></i> 合作店家</span>` : ''}
                         <span class="px-2 py-1 text-[10px] font-bold rounded-full ${window.isOpenNow && window.isOpenNow(shop.openingHours) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}">
                             <span class="inline-block w-1.5 h-1.5 rounded-full ${window.isOpenNow && window.isOpenNow(shop.openingHours) ? 'bg-green-500' : 'bg-gray-400'} mr-1"></span>
                             ${window.isOpenNow && window.isOpenNow(shop.openingHours) ? '營業中' : '休息中'}

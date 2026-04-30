@@ -4,10 +4,32 @@ window.loadShops = async function() {
   const snap = await db.collection('merchants').get();
   window.adminAllShops = snap.docs.map(d => ({ id:d.id, ...d.data() }));
   window.renderShopsTable(window.adminAllShops);
+  window.renderAuditTable(window.adminAllShops.filter(s => !s.verified && s.status !== 'banned'));
   document.getElementById('shop-search').oninput = e => {
     const q = e.target.value.toLowerCase();
     window.renderShopsTable(window.adminAllShops.filter(s => (s.name?.['zh-TW']||'').toLowerCase().includes(q)));
   };
+};
+
+window.renderAuditTable = function(shops) {
+  const tbody = document.getElementById('audit-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = shops.map(s => `
+    <tr>
+      <td><strong>${s.name?.['zh-TW'] || '—'}</strong></td>
+      <td>${s.type?.['zh-TW'] || '—'}</td>
+      <td style="display:flex;gap:6px">
+        <button class="btn btn-green btn-sm" onclick="window.approveShop('${s.id}')"><i class="fa fa-check"></i> 審核通過</button>
+        <button class="btn btn-blue btn-sm" onclick="window.openShopModal('${s.id}')"><i class="fa fa-edit"></i> 編輯內容</button>
+        <button class="btn btn-red btn-sm" onclick="window.deleteShop('${s.id}')"><i class="fa fa-trash"></i> 移至垃圾桶</button>
+      </td>
+    </tr>`).join('');
+};
+
+window.approveShop = async function(id) {
+  if (!confirm('確認核發「官方審核認證」標章？')) return;
+  await db.collection('merchants').doc(id).update({ verified: true });
+  window.loadShops();
 };
 
 window.renderShopsTable = function(shops) {
@@ -35,6 +57,8 @@ window.openShopModal = function(id = null) {
   const fields = ['name-zh','name-en','type-zh','addr-zh','lat','lng','desc-zh','hours','eco','status','phone','website','image'];
   fields.forEach(f => { const el = document.getElementById('s-'+f); if(el) el.value=''; });
   document.getElementById('s-featured').checked = false;
+  document.getElementById('s-verified').checked = false;
+  document.getElementById('s-partner').checked = false;
   document.getElementById('shop-edit-id').value = '';
   document.getElementById('shop-modal-title').textContent = id ? '編輯商店' : '新增商店';
   
@@ -60,6 +84,8 @@ window.openShopModal = function(id = null) {
     document.getElementById('s-eco').value = (s.ecoFeatures || []).join(',');
     document.getElementById('s-status').value = s.status || 'active';
     document.getElementById('s-featured').checked = s.featured || false;
+    document.getElementById('s-verified').checked = s.verified || false;
+    document.getElementById('s-partner').checked = s.isPartner || false;
     
     if (s.isBranch) {
         modal.dataset.isBranch = 'true';
@@ -87,6 +113,8 @@ window.saveShop = async function() {
     ecoFeatures: document.getElementById('s-eco').value.split(',').map(x=>x.trim()).filter(Boolean),
     status: document.getElementById('s-status').value,
     featured: document.getElementById('s-featured').checked,
+    verified: document.getElementById('s-verified').checked,
+    isPartner: document.getElementById('s-partner').checked,
     location: !isNaN(lat) && !isNaN(lng) ? new firebase.firestore.GeoPoint(lat, lng) : null,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
@@ -152,7 +180,9 @@ if (csvInput) {
         openingHours: obj.opening_hours || '',
         ecoFeatures: obj.eco_features ? obj.eco_features.split(',').map(x=>x.trim()) : [],
         location: obj.lat && obj.lng ? new firebase.firestore.GeoPoint(parseFloat(obj.lat), parseFloat(obj.lng)) : null,
-        status: 'active', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        status: 'active', 
+        verified: false, // Default unverified for CSV import
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       count++;
     }
