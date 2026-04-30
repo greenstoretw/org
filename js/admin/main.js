@@ -2,8 +2,8 @@
 window.currentUserRole = 'admin';
 
 const pageTitles = {
-  dashboard:'儀表板', shops:'商店管理', reports:'查看問題',
-  newsletter:'電子報', announcements:'公告管理', policy:'政策管理',
+  dashboard:'儀表板', shops:'商店管理', audit:'審核工作區', reports:'查看問題',
+  newsletter:'電子報', reviews:'評價管理', announcements:'公告管理', policy:'政策管理',
   badges:'賦予徽章', users:'使用者管理', trash:'垃圾桶'
 };
 
@@ -23,8 +23,10 @@ window.loadPage = function(page) {
   switch(page) {
     case 'dashboard': window.loadDashboard(); break;
     case 'shops': window.loadShops(); break;
+    case 'audit': window.loadShops(); break; // Uses same data
     case 'reports': window.loadReports(); break;
     case 'newsletter': window.loadNewsletter(); break;
+    case 'reviews': window.loadReviews(); break;
     case 'announcements': window.loadAnnouncements(); break;
     case 'policy': window.loadPolicy(); break;
     case 'badges': window.loadBadges(); break;

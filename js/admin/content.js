@@ -17,7 +17,8 @@ window.loadReports = async function() {
         <strong>${shopMap[r.shopId]||'未知商店'}</strong>
         <span class="badge ${statusColor}">${r.status||'待處理'}</span>
       </div>
-      <p style="font-size:.8rem;color:#6b7280">${r.reason||'—'}</p>
+      <p style="font-size:.8rem;color:#6b7280;margin-top:4px"><strong>原因：</strong>${r.reason||'—'}</p>
+      ${r.description ? `<p style="font-size:.75rem;color:#6b7280;background:#fef2f2;padding:6px;border-radius:4px;margin-top:4px"><strong>補充說明：</strong>${r.description}</p>` : ''}
       <button class="btn btn-green btn-sm" style="margin-top:8px" onclick="window.resolveItem('reports','${doc.id}')">標記已處理</button>
     </div>`;
   }).join('') || '<p style="color:#9ca3af;font-size:.85rem">目前無檢舉</p>';
@@ -29,6 +30,30 @@ window.loadReports = async function() {
       <button class="btn btn-green btn-sm" style="margin-top:8px" onclick="window.resolveItem('issues','${doc.id}')">標記已處理</button>
     </div>`;
   }).join('') || '<p style="color:#9ca3af;font-size:.85rem">目前無問題回報</p>';
+};
+
+window.loadReviews = async function() {
+  const snap = await db.collection('reviews').orderBy('timestamp','desc').limit(50).get();
+  const shopMap = {};
+  (window.adminAllShops || []).forEach(s => { shopMap[s.id] = s.name?.['zh-TW'] || s.id; });
+  
+  document.getElementById('reviews-tbody').innerHTML = snap.docs.map(doc => {
+    const r = doc.data();
+    const date = r.timestamp?.toDate().toLocaleDateString() || '—';
+    return `<tr>
+      <td>${shopMap[r.shopId]||'未知商店'}</td>
+      <td style="color:#f59e0b;font-weight:bold">★ ${r.rating}</td>
+      <td style="font-size:.85rem">${r.comment||'<span style="color:#9ca3af">無評論</span>'}</td>
+      <td style="font-size:.8rem;color:#6b7280">${date}</td>
+      <td><button class="btn btn-red btn-sm" onclick="window.deleteReview('${doc.id}')"><i class="fa fa-trash"></i></button></td>
+    </tr>`;
+  }).join('');
+};
+
+window.deleteReview = async function(id) {
+  if (!confirm('確定永久刪除此評價？')) return;
+  await db.collection('reviews').doc(id).delete();
+  window.loadReviews();
 };
 
 window.resolveItem = async function(col, id) {

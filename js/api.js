@@ -1,10 +1,14 @@
 // ===== FIREBASE API CALLS =====
 window.fetchShops = async function() {
-    const loadingOverlay = document.getElementById('loading-overlay');
+    var loadingOverlay = document.getElementById('loading-overlay');
     if (loadingOverlay) loadingOverlay.classList.remove('hidden');
     try {
-        const snapshot = await db.collection('merchants').where('status', '==', 'active').get();
-        window.allShops = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        var snapshot = await db.collection('merchants').where('status', '==', 'active').get();
+        window.allShops = snapshot.docs.map(function(doc) { 
+            var data = doc.data();
+            data.id = doc.id;
+            return data;
+        });
         
         window.renderFilterButtons();
         window.filterAndDisplayShops();
@@ -16,8 +20,8 @@ window.fetchShops = async function() {
 };
 
 window.toggleFavorite = async function(shopId) {
-    const user = auth.currentUser;
-    const index = window.favoriteShops.indexOf(shopId);
+    var user = auth.currentUser;
+    var index = window.favoriteShops.indexOf(shopId);
     
     if (index === -1) {
         window.favoriteShops.push(shopId);
@@ -37,8 +41,6 @@ window.toggleFavorite = async function(shopId) {
         localStorage.setItem('favoriteShops', JSON.stringify(window.favoriteShops));
     }
     
-    // Only re-render if we are currently filtering by favorites, 
-    // otherwise the optimistic UI already handled the icon toggle.
     if (window.currentFilterCategory === 'favorites') {
         window.filterAndDisplayShops();
     }
@@ -46,9 +48,9 @@ window.toggleFavorite = async function(shopId) {
 
 window.fetchUserFavorites = async function(uid) {
     try {
-        const doc = await db.collection('users').doc(uid).get();
+        var doc = await db.collection('users').doc(uid).get();
         if (doc.exists && doc.data().favorites) {
-            favoriteShops = doc.data().favorites;
+            window.favoriteShops = doc.data().favorites;
             window.filterAndDisplayShops();
         }
     } catch (error) {
@@ -67,19 +69,24 @@ window.handleShopAction = function(shopId, action) {
             window.toggleFavorite(shopId);
             break;
         case 'rate':
-            // Open rate modal
             document.getElementById('rate-shop-id').value = shopId;
             document.getElementById('rate-value').value = '0';
             document.getElementById('rate-comment').value = '';
-            document.querySelectorAll('.star-btn').forEach(b => b.classList.replace('text-yellow-400', 'text-slate-300'));
-            // Setup star interaction
-            document.querySelectorAll('.star-btn').forEach(btn => {
-                btn.onclick = () => {
-                    const val = Number(btn.dataset.value);
+            document.querySelectorAll('.star-btn').forEach(function(b) { b.classList.replace('text-yellow-400', 'text-slate-300'); });
+            
+            document.querySelectorAll('.star-btn').forEach(function(btn) {
+                btn.onclick = function() {
+                    var val = Number(btn.dataset.value);
                     document.getElementById('rate-value').value = val;
-                    document.querySelectorAll('.star-btn').forEach(b => {
-                        b.classList.toggle('text-yellow-400', Number(b.dataset.value) <= val);
-                        b.classList.toggle('text-slate-300', Number(b.dataset.value) > val);
+                    document.querySelectorAll('.star-btn').forEach(function(b) {
+                        var bVal = Number(b.dataset.value);
+                        if (bVal <= val) {
+                            b.classList.add('text-yellow-400');
+                            b.classList.remove('text-slate-300');
+                        } else {
+                            b.classList.remove('text-yellow-400');
+                            b.classList.add('text-slate-300');
+                        }
                     });
                 };
             });
@@ -88,32 +95,31 @@ window.handleShopAction = function(shopId, action) {
         case 'report':
             document.getElementById('report-shop-id').value = shopId;
             document.getElementById('report-desc').value = '';
-            document.querySelectorAll('input[name="report-reason"]').forEach(r => r.checked = false);
+            document.querySelectorAll('input[name="report-reason"]').forEach(function(r) { r.checked = false; });
             document.getElementById('report-modal').classList.remove('hidden');
             break;
     }
 };
 
 window.submitRating = async function() {
-    const shopId = document.getElementById('rate-shop-id').value;
-    const rating = Number(document.getElementById('rate-value').value);
-    const comment = document.getElementById('rate-comment').value.trim();
+    var shopId = document.getElementById('rate-shop-id').value;
+    var rating = Number(document.getElementById('rate-value').value);
+    var comment = document.getElementById('rate-comment').value.trim();
     
     if (!rating) { window.showMessage("請選擇評分星數"); return; }
     
     try {
         await db.collection('reviews').add({
-            shopId,
+            shopId: shopId,
             userId: auth.currentUser.uid,
-            rating,
+            rating: rating,
             comment: comment || null,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
         document.getElementById('rate-modal').classList.add('hidden');
         window.showMessage("感謝您的評價！");
-        // Refresh reviews if detail modal is open
         if (!document.getElementById('shop-detail-modal').classList.contains('hidden')) {
-            fetchAndRenderShopReviews(shopId);
+            window.fetchAndRenderShopReviews(shopId);
         }
     } catch(err) {
         window.showErrorModal(err, "submitRating");
@@ -121,15 +127,15 @@ window.submitRating = async function() {
 };
 
 window.submitReport = async function() {
-    const shopId = document.getElementById('report-shop-id').value;
-    const reasonEl = document.querySelector('input[name="report-reason"]:checked');
-    const desc = document.getElementById('report-desc').value.trim();
+    var shopId = document.getElementById('report-shop-id').value;
+    var reasonEl = document.querySelector('input[name="report-reason"]:checked');
+    var desc = document.getElementById('report-desc').value.trim();
     
     if (!reasonEl) { window.showMessage("請選擇檢舉原因"); return; }
     
     try {
         await db.collection('reports').add({
-            shopId,
+            shopId: shopId,
             userId: auth.currentUser.uid,
             reason: reasonEl.value,
             description: desc || null,

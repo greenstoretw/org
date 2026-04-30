@@ -46,10 +46,22 @@ button, a, input, select, textarea {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ===== NAV ===== */
 nav {
     backdrop-filter: blur(8px);
     border-bottom: 2px solid #16a34a;
+}
+.nav-links {
+    display: none;
+    gap: 1.5rem;
+    align-items: center;
+}
+.mobile-toggle {
+    display: flex;
+    align-items: center;
+}
+@media (min-width: 768px) {
+    .nav-links { display: flex; }
+    .mobile-toggle { display: none; }
 }
 
 /* ===== ADMIN INDICATOR ===== */

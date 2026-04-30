@@ -168,6 +168,7 @@ tr:hover td{background:#f8faf9}
     <div class="nav-group">
       <div class="group-label">內容</div>
       <div class="nav-item" data-page="newsletter"><i class="fa fa-envelope"></i><span>電子報</span></div>
+      <div class="nav-item" data-page="reviews"><i class="fa fa-star"></i><span>評價管理</span></div>
       <div class="nav-item" data-page="announcements"><i class="fa fa-bullhorn"></i><span>公告</span></div>
       <div class="nav-item" data-page="policy"><i class="fa fa-file-text"></i><span>政策</span></div>
     </div>
@@ -249,6 +250,28 @@ tr:hover td{background:#f8faf9}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
         <div class="card"><h3><i class="fa fa-flag" style="color:#dc2626"></i> 檢舉紀錄</h3><div id="reports-list"></div></div>
         <div class="card"><h3><i class="fa fa-comment" style="color:#2563eb"></i> 問題回報</h3><div id="issues-list"></div></div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="page" id="page-reviews">
+      <div class="card">
+        <h3>全站評價列表</h3>
+        <p style="color:#666;font-size:14px;margin-bottom:15px">管理使用者留下的商店評價，可移除不當言論。</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>商店</th>
+                <th>評分</th>
+                <th>內容</th>
+                <th>時間</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="reviews-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
