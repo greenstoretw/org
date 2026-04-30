@@ -108,12 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 通用 Modal 關閉
-        document.querySelectorAll('.close-modal-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const modal = btn.closest('.fixed');
-                if (modal) modal.classList.add('hidden');
-            });
+        // 通用 Modal 關閉 (shop detail)
+        document.addEventListener('click', (e) => {
+            const shopModal = document.getElementById('shop-detail-modal');
+            if (shopModal && !shopModal.classList.contains('hidden') && e.target === shopModal) {
+                shopModal.classList.add('hidden');
+            }
+            const dashModal = document.getElementById('user-dashboard-modal');
+            if (dashModal && !dashModal.classList.contains('hidden') && e.target === dashModal) {
+                dashModal.classList.add('hidden');
+            }
         });
         
         // 政策連結

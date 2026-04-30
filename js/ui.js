@@ -199,7 +199,9 @@ window.showShopDetail = function(shopId) {
         </div>
     `;
     document.getElementById('shop-detail-modal').classList.remove('hidden');
-    container.querySelector('.close-modal-btn').onclick = () => document.getElementById('shop-detail-modal').classList.add('hidden');
+    // Close on button click
+    const closeBtn = container.querySelector('.close-modal-btn');
+    if (closeBtn) closeBtn.onclick = () => document.getElementById('shop-detail-modal').classList.add('hidden');
 };
 
 window.showUserDashboard = async function() {
