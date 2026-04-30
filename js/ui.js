@@ -476,15 +476,23 @@ window.showUserDashboard = async function() {
 };
 
 window.setLanguage = function(lang) {
-    currentLang = lang;
-    localStorage.setItem('lang', lang);
-    document.querySelectorAll('[data-i18n]').forEach(function(el) {
-        const key = el.getAttribute('data-i18n');
-        const translation = (window.locales[lang] && window.locales[lang][key]) || (window.locales['zh-TW'] && window.locales['zh-TW'][key]);
-        if (translation) {
-            el.textContent = translation;
-        }
-    });
-    currentLoadedShops = 0;
-    window.filterAndDisplayShops();
+    try {
+        currentLang = lang;
+        localStorage.setItem('lang', lang);
+        document.querySelectorAll('[data-i18n]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n');
+            var translation = (window.locales[lang] && window.locales[lang][key]) || (window.locales['zh-TW'] && window.locales['zh-TW'][key]);
+            if (translation) {
+                el.textContent = translation;
+            }
+        });
+        // Force show nav-links after translation to be safe
+        var navLinks = document.querySelector('.nav-links');
+        if (navLinks && window.innerWidth >= 768) navLinks.style.display = 'flex';
+        
+        currentLoadedShops = 0;
+        if (window.filterAndDisplayShops) window.filterAndDisplayShops();
+    } catch (e) {
+        console.error("setLanguage Error:", e);
+    }
 };

@@ -49,9 +49,13 @@ button, a, input, select, textarea {
 nav {
     backdrop-filter: blur(8px);
     border-bottom: 2px solid #16a34a;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.95);
 }
 .nav-links {
-    display: none;
+    display: flex;
     gap: 1.5rem;
     align-items: center;
 }
@@ -60,9 +64,25 @@ nav {
     align-items: center;
 }
 @media (min-width: 768px) {
-    .nav-links { display: flex; }
     .mobile-toggle { display: none; }
 }
+@media (max-width: 767px) {
+    .nav-links { display: none; }
+}
+/* Icon Sizing (Fallback for Tailwind) */
+.icon-sm { width: 1.25rem; height: 1.25rem; }
+.icon-md { width: 1.5rem; height: 1.5rem; }
+.icon-lg { width: 2rem; height: 2rem; }
+svg { display: inline-block; vertical-align: middle; }
+.nav-links a, .nav-links button, .nav-links select {
+    font-size: 0.9rem;
+    color: #4b5563;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.nav-links a:hover { color: #16a34a; }
 
 /* ===== ADMIN INDICATOR ===== */
 .admin-mode {
