@@ -17,6 +17,8 @@ button, a, input, select, textarea {
     touch-action: manipulation;
 }
 
+.hidden { display: none !important; }
+
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #f0f4f0; }

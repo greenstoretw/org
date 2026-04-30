@@ -4,7 +4,7 @@ window.fetchShops = async function() {
     if (loadingOverlay) loadingOverlay.classList.remove('hidden');
     try {
         const snapshot = await db.collection('merchants').where('status', '==', 'active').get();
-        allShops = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        window.allShops = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
         window.renderFilterButtons();
         window.filterAndDisplayShops();

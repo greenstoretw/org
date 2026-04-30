@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#16a34a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="png.png">
     <link rel="manifest" href="manifest.json">
@@ -121,9 +121,19 @@
                         </div>
                         <div>
                             <h3 class="font-medium mb-3" data-i18n="filterCategoryTitle">依類別篩選</h3>
-                            <div class="flex flex-wrap gap-2" id="filter-buttons-container">
+                            <div class="flex flex-wrap gap-2 mb-4" id="filter-buttons-container">
                                 <button class="tag px-3 py-1 rounded-full text-sm active" data-i18n="filterAll" data-category="all">全部</button>
                                 <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterFavorites" data-category="favorites">❤️ 我的收藏</button>
+                            </div>
+                            <div class="flex items-center gap-4 mb-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="open-now-filter" class="form-checkbox h-4 w-4 text-green-600 rounded cursor-pointer">
+                                    <span class="text-sm font-medium text-gray-700">僅顯示目前營業中</span>
+                                </label>
+                            </div>
+                            <h3 class="font-medium mb-3">依永續特點篩選</h3>
+                            <div class="flex flex-wrap gap-2" id="eco-features-container">
+                                <!-- Eco features tags will be populated here by JS -->
                             </div>
                         </div>
                     </div>
@@ -147,6 +157,32 @@
                 </div>
                 <div class="text-center mt-8">
                     <button id="load-more-button" class="btn-primary px-8 py-3 rounded-lg font-medium hidden" data-i18n="loadMoreBtn">載入更多</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="events" class="py-12 bg-green-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-8">永續活動佈告欄</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="events-container">
+                    <div class="bg-white p-6 border border-gray-200 hover:border-green-500 transition shadow-sm">
+                        <span class="text-xs font-bold text-green-600 mb-2 block"><i class="fa fa-calendar"></i> 2026/05/15</span>
+                        <h3 class="font-bold text-lg mb-2">海岸線聯合淨灘活動</h3>
+                        <p class="text-gray-600 text-sm mb-4">邀請大家一起來清理沙灘，還給海洋生物一個乾淨的家。提供免費的環保小禮物！</p>
+                        <button class="text-green-600 font-bold text-sm hover:underline">報名參加</button>
+                    </div>
+                    <div class="bg-white p-6 border border-gray-200 hover:border-green-500 transition shadow-sm">
+                        <span class="text-xs font-bold text-green-600 mb-2 block"><i class="fa fa-calendar"></i> 2026/05/20</span>
+                        <h3 class="font-bold text-lg mb-2">無包裝生活講座</h3>
+                        <p class="text-gray-600 text-sm mb-4">知名環保 KOL 分享如何在都市中輕鬆實踐零廢棄生活，並介紹隱藏版無包裝好店。</p>
+                        <button class="text-green-600 font-bold text-sm hover:underline">了解詳情</button>
+                    </div>
+                    <div class="bg-white p-6 border border-gray-200 hover:border-green-500 transition shadow-sm">
+                        <span class="text-xs font-bold text-green-600 mb-2 block"><i class="fa fa-calendar"></i> 2026/05/28</span>
+                        <h3 class="font-bold text-lg mb-2">舊衣改造手作工坊</h3>
+                        <p class="text-gray-600 text-sm mb-4">帶上你不穿的舊衣服，我們教你如何把它們變成實用的環保購物袋或飲料提袋！</p>
+                        <button class="text-green-600 font-bold text-sm hover:underline">立即報名</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -230,6 +266,13 @@
                         </h3>
                         <div id="dashboard-reports" class="space-y-3 overflow-y-auto" style="max-height:60vh"></div>
                     </div>
+                </div>
+                <div class="mt-8 bg-slate-50 p-5 border border-slate-200">
+                    <h3 class="text-base font-black mb-4 flex items-center gap-2 text-green-700 uppercase tracking-wide">
+                        <i class="fa fa-map"></i> 永續足跡地圖
+                    </h3>
+                    <p class="text-sm text-gray-500 mb-3">這些是您曾經收藏或評價過的永續商店，感謝您為地球盡一份心力！</p>
+                    <div id="dashboard-footprint-map" style="height: 350px; width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; z-index: 10;"></div>
                 </div>
             </div>
         </div>

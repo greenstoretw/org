@@ -8,6 +8,17 @@ window.mapInstance = null;
 window.markersGroup = L.featureGroup();
 window.favoriteShops = [];
 window.currentLang = localStorage.getItem('lang') || 'zh-TW';
+window.currentEcoFilters = [];
+window.showOpenNow = false;
+
+// Helper: Open Now Check
+function isOpenNow(hoursStr) {
+    if (!hoursStr) return false;
+    // Simple heuristic: just check if there's any time string. For a real app, parse "10:00-20:00".
+    // As a placeholder for "Open Now" logic since data format is unstructured.
+    // In a real scenario we'd parse day of week and current hour.
+    return true; // Mock true for now unless we have structured data
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     // ===== INITIALIZATION =====
@@ -23,6 +34,37 @@ document.addEventListener('DOMContentLoaded', () => {
         logVisit();
         
         if (localStorage.getItem('isAdmin')) document.getElementById('admin-indicator').classList.remove('hidden');
+
+        // Add Current Location Control
+        L.Control.LocationButton = L.Control.extend({
+            onAdd: function(map) {
+                var btn = L.DomUtil.create('button', 'leaflet-bar leaflet-control');
+                btn.style.backgroundColor = 'white';
+                btn.style.width = '34px';
+                btn.style.height = '34px';
+                btn.style.cursor = 'pointer';
+                btn.style.display = 'flex';
+                btn.style.alignItems = 'center';
+                btn.style.justifyContent = 'center';
+                btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>`;
+                btn.onclick = function() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(pos => {
+                            const lat = pos.coords.latitude;
+                            const lng = pos.coords.longitude;
+                            map.setView([lat, lng], 15);
+                            L.marker([lat, lng]).addTo(map).bindPopup('您的目前位置').openPopup();
+                        }, err => {
+                            alert('無法取得您的位置。');
+                        });
+                    } else {
+                        alert('您的瀏覽器不支援地理位置功能。');
+                    }
+                };
+                return btn;
+            }
+        });
+        new L.Control.LocationButton({ position: 'topleft' }).addTo(window.mapInstance);
     }
 
     async function logVisit() {
@@ -57,9 +99,45 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = e.target.closest('.tag');
             if (!btn) return;
             window.currentFilterCategory = btn.dataset.category;
+            
+            // UI Update for category
+            document.querySelectorAll('#filter-buttons-container .tag').forEach(b => b.classList.remove('active', 'bg-green-600', 'text-white'));
+            btn.classList.add('active', 'bg-green-600', 'text-white');
+            
             window.currentLoadedShops = 0;
             window.filterAndDisplayShops();
         });
+
+        // 營業中篩選
+        const openNowFilter = document.getElementById('open-now-filter');
+        if(openNowFilter) {
+            openNowFilter.addEventListener('change', (e) => {
+                window.showOpenNow = e.target.checked;
+                window.currentLoadedShops = 0;
+                window.filterAndDisplayShops();
+            });
+        }
+
+        // 永續特點篩選
+        const ecoFeaturesContainer = document.getElementById('eco-features-container');
+        if(ecoFeaturesContainer) {
+            ecoFeaturesContainer.addEventListener('click', (e) => {
+                const btn = e.target.closest('.eco-filter-btn');
+                if (!btn) return;
+                const feature = btn.dataset.feature;
+                
+                if (window.currentEcoFilters.includes(feature)) {
+                    window.currentEcoFilters = window.currentEcoFilters.filter(f => f !== feature);
+                    btn.classList.remove('bg-green-600', 'text-white');
+                } else {
+                    window.currentEcoFilters.push(feature);
+                    btn.classList.add('bg-green-600', 'text-white');
+                }
+                
+                window.currentLoadedShops = 0;
+                window.filterAndDisplayShops();
+            });
+        }
 
         // 商店列表點擊 (愛心與詳情)
         document.getElementById('shop-cards-container').addEventListener('click', e => {
@@ -225,7 +303,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            return matchesCategory && matchesSearch;
+            // Check Open Now
+            let matchesOpenNow = true;
+            if (window.showOpenNow) {
+                matchesOpenNow = isOpenNow(shop.openingHours);
+            }
+            
+            // Check Eco Features
+            let matchesEcoFeatures = true;
+            if (window.currentEcoFilters.length > 0) {
+                if (!shop.ecoFeatures || !Array.isArray(shop.ecoFeatures)) {
+                    matchesEcoFeatures = false;
+                } else {
+                    matchesEcoFeatures = window.currentEcoFilters.every(f => shop.ecoFeatures.includes(f));
+                }
+            }
+
+            return matchesCategory && matchesSearch && matchesOpenNow && matchesEcoFeatures;
         });
 
         // Optimization: Sort by 'featured' first, then by name

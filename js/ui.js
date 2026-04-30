@@ -16,6 +16,26 @@ window.renderFilterButtons = function() {
         btn.textContent = type;
         filterContainer.appendChild(btn);
     });
+
+    // Populate Eco Features
+    const ecoFeaturesContainer = document.getElementById('eco-features-container');
+    if (ecoFeaturesContainer) {
+        ecoFeaturesContainer.innerHTML = '';
+        let allFeatures = new Set();
+        allShops.forEach(s => {
+            if (s.ecoFeatures && Array.isArray(s.ecoFeatures)) {
+                s.ecoFeatures.forEach(f => allFeatures.add(f.trim()));
+            }
+        });
+        
+        [...allFeatures].filter(Boolean).forEach(feature => {
+            const btn = document.createElement('button');
+            btn.className = 'tag px-3 py-1 rounded-full text-sm eco-filter-btn';
+            btn.dataset.feature = feature;
+            btn.textContent = feature;
+            ecoFeaturesContainer.appendChild(btn);
+        });
+    }
 };
 
 window.renderShopCards = function(filteredShops) {
@@ -196,8 +216,45 @@ window.showShopDetail = function(shopId) {
                     </div>
                 </div>
             </div>
+            
+            <!-- Recommendations Section -->
+            <div class="mt-12 border-t border-slate-200 pt-8">
+                <h4 class="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    你可能也會喜歡
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="recommendations-container">
+                    <!-- Populated by JS below -->
+                </div>
+            </div>
         </div>
     `;
+    
+    // Logic for Recommendations (AI Recommendations substitute based on type/location)
+    const recContainer = container.querySelector('#recommendations-container');
+    const similarShops = allShops
+        .filter(s => s.id !== shop.id && s.type && shop.type && s.type['zh-TW'] === shop.type['zh-TW'])
+        .slice(0, 3);
+        
+    if (similarShops.length > 0) {
+        recContainer.innerHTML = similarShops.map(s => `
+            <div class="border border-slate-200 bg-white hover:border-green-500 transition cursor-pointer flex flex-col h-full group" onclick="window.showShopDetail('${s.id}')">
+                <div class="h-24 bg-slate-100 overflow-hidden relative">
+                    ${s.imageUrl ? `<img src="${s.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="">` : `<div class="flex items-center justify-center h-full"><i class="fa fa-image text-slate-300 text-2xl"></i></div>`}
+                </div>
+                <div class="p-3 flex flex-col flex-grow">
+                    <h5 class="font-bold text-slate-800 text-sm line-clamp-1">${s.name['zh-TW'] || ''}</h5>
+                    <p class="text-xs text-slate-500 mt-1 line-clamp-1">${s.address?.['zh-TW'] || ''}</p>
+                    <div class="mt-auto pt-2">
+                        <span class="text-[10px] bg-green-50 text-green-700 px-2 py-1">${s.type?.['zh-TW'] || ''}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        recContainer.innerHTML = '<p class="text-slate-500 text-sm col-span-3">暫無推薦商店</p>';
+    }
+
     document.getElementById('shop-detail-modal').classList.remove('hidden');
     // Close on button click
     const closeBtn = container.querySelector('.close-modal-btn');
@@ -263,6 +320,48 @@ window.showUserDashboard = async function() {
         }
 
         document.getElementById('user-dashboard-modal').classList.remove('hidden');
+        
+        // Initialize Footprint Map
+        setTimeout(() => {
+            const mapContainer = document.getElementById('dashboard-footprint-map');
+            if (!mapContainer) return;
+            
+            // Clear existing map if any
+            if (window.footprintMap) {
+                window.footprintMap.remove();
+            }
+            
+            window.footprintMap = L.map('dashboard-footprint-map').setView([23.6978, 120.9605], 7); // Center of Taiwan
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(window.footprintMap);
+            
+            const footprintMarkers = L.featureGroup().addTo(window.footprintMap);
+            
+            // Combine favorites and reviewed shops
+            const reviewedShopIds = revSnap.docs.map(doc => doc.data().shopId);
+            const footprintShopIds = [...new Set([...(window.favoriteShops || []), ...reviewedShopIds])];
+            
+            const footprintShops = window.allShops.filter(s => footprintShopIds.includes(s.id) && s.location);
+            
+            footprintShops.forEach(shop => {
+                const isFavorite = window.favoriteShops.includes(shop.id);
+                const isReviewed = reviewedShopIds.includes(shop.id);
+                
+                let iconColor = isFavorite ? 'red' : 'blue';
+                if (isFavorite && isReviewed) iconColor = 'purple';
+                
+                const markerHtml = `<div style="background-color: ${iconColor}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.5);"></div>`;
+                const customIcon = L.divIcon({ html: markerHtml, className: 'custom-footprint-icon', iconSize: [12, 12] });
+                
+                L.marker([shop.location.latitude, shop.location.longitude], { icon: customIcon })
+                    .bindPopup(`<div class="text-sm font-bold">${shop.name?.['zh-TW']}</div>`)
+                    .addTo(footprintMarkers);
+            });
+            
+            if (footprintShops.length > 0) {
+                window.footprintMap.fitBounds(footprintMarkers.getBounds(), { padding: [30, 30], maxZoom: 14 });
+            }
+        }, 300); // Slight delay to ensure modal is visible for Leaflet to calculate size
+        
     } catch (error) {
         window.showErrorModal(error, "showUserDashboard");
     }
