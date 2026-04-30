@@ -70,7 +70,7 @@ window.renderShopCards = function(filteredShops) {
                     <p class="text-slate-500 text-sm my-4 h-16 overflow-hidden">${(shop.description && shop.description[currentLang]) || (shop.description && shop.description['zh-TW'])}</p>
                     ${shopBranches.length > 0 ? `
                         <div class="mb-4 bg-slate-50 p-2 border border-slate-200 text-xs text-slate-600">
-                            <strong><i class="fa fa-map-marker-alt text-green-600 mr-1"></i>其他分店 (${shopBranches.length})</strong>
+                            <strong><i class="fa-solid fa-location-dot text-green-600 mr-1"></i>其他分店 (${shopBranches.length})</strong>
                             <ul class="mt-1 ml-4 list-disc space-y-1">
                                 ${shopBranches.slice(0, 2).map(b => `<li>${(b.name && b.name['zh-TW']) || '分店'}</li>`).join('')}
                                 ${shopBranches.length > 2 ? `<li>...及其他 ${shopBranches.length - 2} 間</li>` : ''}
@@ -118,7 +118,6 @@ window.showShopDetail = function(shopId) {
     const desc = (shop.description && shop.description[currentLang]) || (shop.description && shop.description['zh-TW']) || '';
     const isFavorited = favoriteShops.includes(shop.id);
     
-    // Find branches associated with this shop
     const shopBranches = window.allShops.filter(b => b.isBranch && b.parentId === shop.id);
 
     const container = document.getElementById('shop-detail-container');
@@ -159,7 +158,7 @@ window.showShopDetail = function(shopId) {
                     
                     <div class="bg-slate-50 p-5 md:p-6 border border-slate-200 mb-8">
                         <h4 class="text-green-800 font-bold mb-4 flex items-center gap-2">
-                            <i class="fa fa-leaf"></i> 永續特點
+                            <i class="fa-solid fa-leaf"></i> 永續特點
                         </h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-green-700">
                             ${shop.ecoFeatures && shop.ecoFeatures.length > 0 ? shop.ecoFeatures.map(f => `<div class="flex items-center gap-2">✓ ${f}</div>`).join('') : '暫無詳細資料'}
@@ -173,8 +172,8 @@ window.showShopDetail = function(shopId) {
                             ${shopBranches.map(b => `
                                 <div class="border border-slate-200 p-4 bg-white hover:border-blue-400 transition cursor-pointer">
                                     <h5 class="font-bold text-slate-800 mb-1">${(b.name && b.name['zh-TW']) || '分店'}</h5>
-                                    <p class="text-xs text-slate-500 flex items-start gap-1"><i class="fa fa-map-marker-alt mt-0.5"></i> ${(b.address && b.address['zh-TW']) || '地址未提供'}</p>
-                                    ${b.openingHours ? `<p class="text-xs text-slate-500 mt-2 flex items-start gap-1"><i class="fa fa-clock mt-0.5"></i> ${b.openingHours}</p>` : ''}
+                                    <p class="text-xs text-slate-500 flex items-start gap-1"><i class="fa-solid fa-location-dot mt-0.5"></i> ${(b.address && b.address['zh-TW']) || '地址未提供'}</p>
+                                    ${b.openingHours ? `<p class="text-xs text-slate-500 mt-2 flex items-start gap-1"><i class="fa-solid fa-clock mt-0.5"></i> ${b.openingHours}</p>` : ''}
                                 </div>
                             `).join('')}
                         </div>
@@ -201,7 +200,7 @@ window.showShopDetail = function(shopId) {
                     <hr class="border-slate-100">
                     <div>
                         <h4 class="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider mb-2">
-                            <i class="fa fa-phone text-green-600 w-5 text-center"></i>
+                            <i class="fa-solid fa-phone text-green-600 w-5 text-center"></i>
                             ${window.locales[currentLang]?.modalPhone || '電話'}
                         </h4>
                         <p class="mt-1 text-slate-600 text-sm whitespace-pre-line">${shop.phone || (window.locales[currentLang]?.notProvided || '未提供')}</p>
@@ -209,7 +208,7 @@ window.showShopDetail = function(shopId) {
                     <hr class="border-slate-100">
                     <div>
                         <h4 class="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider mb-2">
-                            <i class="fa fa-globe text-green-600 w-5 text-center"></i>
+                            <i class="fa-solid fa-globe text-green-600 w-5 text-center"></i>
                             ${window.locales[currentLang]?.modalWebsite || '網站'}
                         </h4>
                         ${shop.website ? `<a href="${shop.website}" target="_blank" class="mt-1 text-blue-600 hover:underline text-sm break-all">${shop.website}</a>` : `<p class="mt-1 text-slate-600 text-sm">${window.locales[currentLang]?.notProvided || '未提供'}</p>`}
@@ -233,17 +232,17 @@ window.showShopDetail = function(shopId) {
     // Logic for Recommendations (AI Recommendations substitute based on type/location)
     const recContainer = container.querySelector('#recommendations-container');
     const similarShops = allShops
-        .filter(s => s.id !== shop.id && s.type && shop.type && s.type['zh-TW'] === shop.type['zh-TW'])
+        .filter(s => s.id !== shop.id && s.type?.['zh-TW'] && shop.type?.['zh-TW'] && s.type['zh-TW'] === shop.type['zh-TW'])
         .slice(0, 3);
         
     if (similarShops.length > 0) {
         recContainer.innerHTML = similarShops.map(s => `
             <div class="border border-slate-200 bg-white hover:border-green-500 transition cursor-pointer flex flex-col h-full group" onclick="window.showShopDetail('${s.id}')">
                 <div class="h-24 bg-slate-100 overflow-hidden relative">
-                    ${s.imageUrl ? `<img src="${s.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="">` : `<div class="flex items-center justify-center h-full"><i class="fa fa-image text-slate-300 text-2xl"></i></div>`}
+                    ${s.imageUrl ? `<img src="${s.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="">` : `<div class="flex items-center justify-center h-full"><i class="fa-solid fa-image text-slate-300 text-2xl"></i></div>`}
                 </div>
                 <div class="p-3 flex flex-col flex-grow">
-                    <h5 class="font-bold text-slate-800 text-sm line-clamp-1">${s.name['zh-TW'] || ''}</h5>
+                    <h5 class="font-bold text-slate-800 text-sm line-clamp-1">${s.name?.['zh-TW'] || ''}</h5>
                     <p class="text-xs text-slate-500 mt-1 line-clamp-1">${s.address?.['zh-TW'] || ''}</p>
                     <div class="mt-auto pt-2">
                         <span class="text-[10px] bg-green-50 text-green-700 px-2 py-1">${s.type?.['zh-TW'] || ''}</span>
@@ -279,7 +278,7 @@ window.showUserDashboard = async function() {
                 <div class="p-3 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-red-200 transition">
                     <div class="font-bold text-gray-800">${(s.name && s.name['zh-TW']) || '未知商家'}</div>
                     <button onclick="window.showShopDetail('${s.id}')" class="text-xs text-red-500 mt-2 flex items-center gap-1">
-                        <i class="fa fa-external-link"></i> 查看詳情
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> 查看詳情
                     </button>
                 </div>
             `).join('') || '<p class="text-gray-400 text-sm">尚無收藏</p>';

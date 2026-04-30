@@ -58,7 +58,16 @@ window.addMessageToUI = function(text, sender) {
     msgDiv.innerHTML = formattedText;
   } else {
     // Basic text to HTML conversion
-    msgDiv.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    const safeText = text.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[m];
+    });
+    msgDiv.innerHTML = safeText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   }
   
   const container = document.getElementById('ai-messages');
