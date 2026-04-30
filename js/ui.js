@@ -342,7 +342,7 @@ window.shareShop = function(shopId) {
     if (navigator.share) {
         navigator.share({
             title: shopName,
-            text: \`來看看這間很棒的永續商店：\${shopName}\`,
+            text: '來看看這間很棒的永續商店：' + shopName,
             url: url
         }).catch(console.error);
     } else {
