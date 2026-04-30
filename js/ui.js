@@ -335,8 +335,9 @@ async function fetchAndRenderShopReviews(shopId) {
 
 // Helper: Share Shop
 window.shareShop = function(shopId) {
-    const shop = window.allShops.find(s => s.id === shopId);
-    const shopName = shop?.name?.['zh-TW'] || '綠簷永續商店';
+    const shop = window.allShops.find(function(s) { return s.id === shopId; });
+    const nameData = shop && shop.name ? shop.name : {};
+    const shopName = nameData['zh-TW'] || '綠簷永續商店';
     const url = window.location.origin + window.location.pathname + '?shop=' + shopId;
     
     if (navigator.share) {
@@ -346,7 +347,7 @@ window.shareShop = function(shopId) {
             url: url
         }).catch(console.error);
     } else {
-        navigator.clipboard.writeText(url).then(() => {
+        navigator.clipboard.writeText(url).then(function() {
             alert('商店連結已複製到剪貼簿！');
         });
     }
