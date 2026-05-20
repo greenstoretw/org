@@ -1,377 +1,462 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <link rel="icon" type="image/png" href="png.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#16a34a">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="綠簷 Green Eaves - 探索台北永續生活地圖。尋找減塑、在地、無毒的永續商店。">
+    <meta name="theme-color" content="#1a3a2a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="png.png">
     <link rel="manifest" href="manifest.json">
-    <title data-i18n="pageTitle">綠簷 Green Eaves - 永續商店地圖</title>
-    <meta name="description" content="全台最詳盡的永續商店地圖，包含無包裝商店、蔬食餐廳、二手交換與友善小農。一鍵尋找身邊的永續生活點。">
-    <meta name="keywords" content="永續商店, 無包裝, 減塑, 蔬食, 二手交換, 永續發展, 減碳">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://green-eaves.vercel.app/">
-    <meta property="og:title" content="綠簷 Green Eaves - 永續商店地圖">
-    <meta property="og:description" content="一鍵尋找身邊的永續生活點。支持在地小農、無包裝商店與友善環境品牌。">
-    <meta property="og:image" content="https://green-eaves.vercel.app/og-image.png">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="綠簷 Green Eaves - 永續商店地圖">
-    <meta property="twitter:description" content="一鍵尋找身邊的永續生活點。支持在地小農、無包裝商店與友善環境品牌。">
-    <meta property="twitter:image" content="https://green-eaves.vercel.app/og-image.png">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+    <title>綠簷 Green Eaves | 永續生活地圖</title>
     
     <!-- External Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/main.css">
+    <script>
+        // Check local storage or system preference for dark mode before rendering
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    
+    <link rel="stylesheet" href="css/main.css?v=2.6">
 </head>
-<body class="text-gray-800">
-
-    <div id="loading-overlay" class="flex items-center justify-center">
-        <div class="loader"></div>
+<body class="bg-slate-50 dark:bg-slate-950 font-['Inter',_'Noto_Sans_TC',_sans-serif] text-slate-800 dark:text-slate-200 transition-colors duration-300">
+    <div id="app-loading" class="fixed inset-0 bg-white dark:bg-slate-900 z-[9999] flex items-center justify-center transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-green-100 border-t-green-600 rounded-full animate-spin"></div>
+            <p class="mt-4 font-bold text-green-800 dark:text-green-400 tracking-widest animate-pulse">GREEN EAVES</p>
+        </div>
     </div>
 
-    <a href="admin.html" id="admin-indicator" class="admin-mode hidden hover:bg-red-700 transition" title="點擊進入管理後台">進入管理後台 <i class="fa fa-arrow-right ml-1"></i></a>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-[1000] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 bg-green-600 flex items-center justify-center text-white font-black text-xl">G</div>
+                    <span class="text-2xl font-black tracking-tighter text-slate-900 dark:text-white">GREEN <span class="text-green-600">EAVES</span></span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-6 nav-links">
+                    <a href="#" class="text-sm font-bold text-slate-900 dark:text-slate-100 hover:text-green-600 transition" data-i18n="navMap">探索地圖</a>
+                    <a href="#" class="text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-green-600 transition" data-i18n="navAbout">關於我們</a>
+                    <select id="language-select" class="bg-transparent border-none text-sm font-bold text-slate-500 dark:text-slate-400 focus:ring-0 cursor-pointer">
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="fr">Français</option>
+                        <option value="es">Español</option>
+                        <option value="de">Deutsch</option>
+                        <option value="la">Latina</option>
+                    </select>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button id="dark-mode-toggle" class="p-2 text-slate-500 dark:text-slate-400 hover:text-green-600 transition cursor-pointer" title="切換配色">
+                        <i class="fa-solid fa-moon text-xl dark:hidden"></i>
+                        <i class="fa-solid fa-sun text-xl hidden dark:inline-block text-amber-400"></i>
+                    </button>
+                    
+                    <button id="login-btn" class="bg-slate-900 dark:bg-white dark:text-slate-900 text-white px-6 py-2.5 text-sm font-bold hover:bg-green-600 transition shadow-lg shadow-slate-200 dark:shadow-none" data-i18n="navLogin">登入</button>
+                    <button id="dashboard-btn" class="hidden text-slate-900 dark:text-white hover:text-green-600 transition"><i class="fa-solid fa-user-circle text-2xl"></i></button>
+                    <a href="admin.html" id="admin-indicator" class="hidden text-amber-500 hover:text-amber-600 transition" title="管理後台"><i class="fa-solid fa-shield-halved text-xl"></i></a>
+                </div>
 
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-             <div class="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 icon-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <a href="#" class="text-2xl font-bold text-gray-800" data-i18n="appName">永續商店地圖</a>
+                <div class="md:hidden flex items-center gap-4">
+                    <button id="dark-mode-toggle-mobile" class="p-2 text-slate-500 dark:text-slate-400 hover:text-green-600 transition cursor-pointer">
+                        <i class="fa-solid fa-moon text-xl dark:hidden"></i>
+                        <i class="fa-solid fa-sun text-xl hidden dark:inline-block text-amber-400"></i>
+                    </button>
+                    <button id="menu-toggle" class="text-slate-900 dark:text-white p-2"><i class="fa-solid fa-bars-staggered text-2xl"></i></button>
+                </div>
             </div>
-            <div class="nav-links">
-                <a href="#" class="transition" data-i18n="home">首頁</a>
-                <a href="#map" class="transition" data-i18n="map">地圖</a>
-                <a href="#shops" class="transition" data-i18n="shopList">商店列表</a>
-                <a href="#newsletter" class="transition" data-i18n="newsletter">訂閱電子報</a>
-                <a href="#report-issue" class="transition" data-i18n="reportIssueNavLink">問題回報</a>
-                <button id="dashboard-btn" class="text-gray-700 hover:text-green-600 transition font-bold hidden px-4" data-i18n="dashboard">儀表板</button>
-                <select id="language-select" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition cursor-pointer">
-                    <option value="zh-TW" data-i18n="langChinese">繁體中文</option>
-                    <option value="en" data-i18n="langEnglish">English</option>
-                    <option value="fr" data-i18n="langFrench">Français</option>
-                    <option value="es" data-i18n="langSpanish">Español</option>
-                    <option value="de" data-i18n="langGerman">Deutsch</option>
-                    <option value="ja" data-i18n="langJapanese">日本語</option>
-                    <option value="ko" data-i18n="langKorean">한국어</option>
-                    <option value="la" data-i18n="langLatin">Latina</option>
-                </select>
-                <button id="login-btn" class="bg-white text-green-600 border border-green-600 px-4 py-1 rounded-full hover:bg-green-600 hover:text-white transition" data-i18n="login">登入</button>
-            </div>
-             <div class="mobile-toggle">
-                <select id="language-select-mobile" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full hover:bg-green-700 transition cursor-pointer mr-2">
-                    <option value="zh-TW" data-i18n="langChinese">繁體中文</option>
-                    <option value="en" data-i18n="langEnglish">English</option>
-                    <option value="fr" data-i18n="langFrench">Français</option>
-                    <option value="es" data-i18n="langSpanish">Español</option>
-                    <option value="de" data-i18n="langGerman">Deutsch</option>
-                    <option value="ja" data-i18n="langJapanese">日本語</option>
-                    <option value="ko" data-i18n="langKorean">한국어</option>
-                    <option value="la" data-i18n="langLatin">Latina</option>
-                </select>
-                <button id="menu-toggle" class="text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
-                </button>
-            </div>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden px-4 py-2 bg-white">
-            <a href="#" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="home">首頁</a>
-            <a href="#map" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="map">地圖</a>
-            <a href="#shops" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="shopList">商店列表</a>
-            <a href="#newsletter" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="newsletter">訂閱電子報</a>
-            <a href="#report-issue" class="block py-2 text-gray-700 hover:text-green-600" data-i18n="reportIssueNavLink">問題回報</a>
-            <button id="login-btn-mobile" class="w-full text-left py-2 text-green-600 font-bold" data-i18n="login">登入</button>
         </div>
     </nav>
 
-    <div id="announcement-bar" class="hidden bg-yellow-200 border-b-2 border-yellow-300 text-yellow-800 p-3 text-center">
-        <p id="announcement-text" class="font-medium"></p>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 bg-white dark:bg-slate-900 z-[1100] hidden flex flex-col p-8 md:hidden transition-colors">
+        <div class="flex justify-between items-center mb-12">
+            <span class="text-2xl font-black tracking-tighter text-slate-900 dark:text-white">GREEN <span class="text-green-600">EAVES</span></span>
+            <button onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="text-slate-900 dark:text-white"><i class="fa-solid fa-xmark text-3xl"></i></button>
+        </div>
+        <div class="flex flex-col space-y-8">
+            <a href="#" class="text-3xl font-black text-slate-900 dark:text-slate-100">探索地圖</a>
+            <a href="#" class="text-3xl font-black text-slate-400 dark:text-slate-500">關於我們</a>
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+                <select id="language-select-mobile" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-xl font-bold text-slate-700 dark:text-slate-300">
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="en">English</option>
+                    <option value="ja">日本語</option>
+                    <option value="ko">한국어</option>
+                </select>
+            </div>
+            <button id="login-btn-mobile" class="w-full bg-green-600 text-white p-5 rounded-2xl font-black text-xl shadow-xl shadow-green-100 mt-4">會員登入</button>
+        </div>
     </div>
 
-    <section class="hero-section py-20 md:py-32 text-white">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6" data-i18n="heroTitle">探索台灣永續商店</h1>
-            <p class="text-xl max-w-2xl mx-auto mb-8" data-i18n="heroSubtitle">找到支持環保、公平貿易和永續發展的商店，一起為地球盡一份心力</p>
-            <div class="flex flex-col md:flex-row justify-center gap-4">
-                <a href="#map" class="btn-primary px-8 py-3 rounded-lg font-medium" data-i18n="viewMapBtn">查看地圖</a>
-                <a href="#shops" class="bg-white text-green-600 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition" data-i18n="browseShopsBtn">瀏覽商店列表</a>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <!-- Hero Section -->
+        <div class="mb-12 md:mb-20">
+            <h1 class="text-5xl md:text-8xl font-black text-slate-900 dark:text-white leading-[0.9] tracking-tighter mb-8" data-i18n="heroTitle">
+                LIVING <br><span class="text-green-600 italic">SUSTAINABLY</span>.
+            </h1>
+            <p class="max-w-2xl text-lg md:text-xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed" data-i18n="heroSubtitle">
+                探索台北最棒的永續商店。從無毒食材到減塑生活，我們為您精選每一個對地球友好的選擇。
+            </p>
+        </div>
+
+        <!-- Search & Filters -->
+        <div class="mb-12 sticky top-24 z-[900]">
+            <div class="bg-white dark:bg-slate-900 p-2 border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col md:flex-row gap-2 transition-colors">
+                <div class="relative flex-grow">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input id="search-input" type="text" placeholder="搜尋店名、地址或關鍵字..." class="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-green-600 text-slate-900 dark:text-white font-bold transition-colors" data-i18n="searchPlaceholder">
+                </div>
+                <button id="search-button" class="bg-green-600 text-white px-10 py-4 font-black tracking-widest hover:bg-slate-900 dark:hover:bg-slate-950 transition flex items-center justify-center gap-2" data-i18n="searchBtn">
+                    SEARCH
+                </button>
+            </div>
+            
+            <div class="mt-4 flex flex-wrap gap-2 items-center justify-between">
+                <div class="flex flex-wrap gap-2" id="filter-buttons-container">
+                    <button class="tag active px-4 py-2 rounded-full text-sm font-bold" data-category="all" data-i18n="filterAll">全部商店</button>
+                    <button class="tag px-4 py-2 rounded-full text-sm font-bold" data-category="favorites" data-i18n="filterFav">收藏清單</button>
+                    <!-- Dynamic categories inject here -->
+                </div>
+                
+                <!-- Premium Control Tools -->
+                <div class="flex flex-wrap gap-2 mt-2 md:mt-0">
+                    <button id="closest-sort-btn" class="tag px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1.5 border-green-200 hover:border-green-600">
+                        <i class="fa-solid fa-location-arrow text-green-600 animate-pulse"></i> <span>離我最近</span>
+                    </button>
+                    <button id="surprise-me-btn" class="tag px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1.5 border-amber-200 hover:border-amber-500">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> <span>隨機探索</span>
+                    </button>
+                    <button id="routing-toggle-btn" class="tag px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1.5 border-blue-200 hover:border-blue-500">
+                        <i class="fa-solid fa-route text-blue-500"></i> <span>規劃散步路線</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-4 flex flex-wrap gap-4 items-center">
+                <div class="flex items-center gap-2">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="open-now-filter" class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-200 dark:bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                        <span class="ml-3 text-xs font-bold text-slate-600 dark:text-slate-400" data-i18n="filterOpenNow">營業中</span>
+                    </label>
+                </div>
+                <div class="h-4 w-px bg-slate-200 dark:bg-slate-800"></div>
+                <div id="eco-features-container" class="flex flex-wrap gap-2">
+                    <!-- Dynamic eco features inject here -->
+                </div>
             </div>
         </div>
-    </section>
 
-    <main>
-        <section class="py-12 bg-white">
-            <div class="container mx-auto px-4">
-                <div class="max-w-4xl mx-auto">
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <div class="mb-6">
-                            <h2 class="text-2xl font-bold mb-4" data-i18n="searchTitle">搜尋永續商店</h2>
-                            <div class="flex">
-                                <input type="text" id="search-input" class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500" data-i18n="searchPlaceholder" placeholder="輸入商店名稱或地址...">
-                                <button id="search-button" class="btn-primary px-6 py-3 rounded-r-lg">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 class="font-medium mb-3" data-i18n="filterCategoryTitle">依類別篩選</h3>
-                            <div class="flex flex-wrap gap-2 mb-4" id="filter-buttons-container">
-                                <button class="tag px-3 py-1 rounded-full text-sm active" data-i18n="filterAll" data-category="all">全部</button>
-                                <button class="tag px-3 py-1 rounded-full text-sm" data-i18n="filterFavorites" data-category="favorites">❤️ 我的收藏</button>
-                            </div>
-                            <div class="flex items-center gap-4 mb-4">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" id="open-now-filter" class="form-checkbox h-4 w-4 text-green-600 rounded cursor-pointer">
-                                    <span class="text-sm font-medium text-gray-700">僅顯示目前營業中</span>
-                                </label>
-                            </div>
-                            <h3 class="font-medium mb-3">依永續特點篩選</h3>
-                            <div class="flex flex-wrap gap-2" id="eco-features-container">
-                                <!-- Eco features tags will be populated here by JS -->
-                            </div>
-                        </div>
-                    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Shop Cards Grid -->
+            <div class="lg:col-span-7">
+                <div id="shop-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Skeletons will appear here dynamically first -->
+                </div>
+                <div class="mt-12 text-center">
+                    <button id="load-more-button" class="px-12 py-4 border-2 border-slate-900 dark:border-white font-black tracking-widest hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-slate-950 transition hidden" data-i18n="loadMoreBtn">LOAD MORE</button>
                 </div>
             </div>
-        </section>
 
-        <section id="map" class="py-12 bg-green-50">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-bold text-center mb-8" data-i18n="mapSectionTitle">永續商店地圖</h2>
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div id="sustainability-map" class="h-96 md:h-[500px] w-full z-10"></div>
+            <!-- Map View -->
+            <div class="lg:col-span-5 relative">
+                <div class="sticky top-40 h-[600px] bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
+                    <div id="sustainability-map" class="w-full h-full"></div>
                 </div>
             </div>
-        </section>
-
-        <section id="shops" class="py-12 bg-white">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-bold text-center mb-8" data-i18n="shopListSectionTitle">永續商店列表</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="shop-cards-container">
-                </div>
-                <div class="text-center mt-8">
-                    <button id="load-more-button" class="btn-primary px-8 py-3 rounded-lg font-medium hidden" data-i18n="loadMoreBtn">載入更多</button>
-                </div>
-            </div>
-        </section>
-
-        <section id="events" class="py-12 bg-green-50">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-bold text-center mb-8">永續活動佈告欄</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="events-container">
-                    <div class="bg-white p-6 border border-gray-200 hover:border-green-500 transition shadow-sm">
-                        <span class="text-xs font-bold text-green-600 mb-2 block"><i class="fa fa-calendar"></i> 2026/05/15</span>
-                        <h3 class="font-bold text-lg mb-2">海岸線聯合淨灘活動</h3>
-                        <p class="text-gray-600 text-sm mb-4">邀請大家一起來清理沙灘，還給海洋生物一個乾淨的家。提供免費的環保小禮物！</p>
-                        <button class="text-green-600 font-bold text-sm hover:underline">報名參加</button>
-                    </div>
-                    <div class="bg-white p-6 border border-gray-200 hover:border-green-500 transition shadow-sm">
-                        <span class="text-xs font-bold text-green-600 mb-2 block"><i class="fa fa-calendar"></i> 2026/05/20</span>
-                        <h3 class="font-bold text-lg mb-2">無包裝生活講座</h3>
-                        <p class="text-gray-600 text-sm mb-4">知名環保 KOL 分享如何在都市中輕鬆實踐零廢棄生活，並介紹隱藏版無包裝好店。</p>
-                        <button class="text-green-600 font-bold text-sm hover:underline">了解詳情</button>
-                    </div>
-                    <div class="bg-white p-6 border border-gray-200 hover:border-green-500 transition shadow-sm">
-                        <span class="text-xs font-bold text-green-600 mb-2 block"><i class="fa fa-calendar"></i> 2026/05/28</span>
-                        <h3 class="font-bold text-lg mb-2">舊衣改造手作工坊</h3>
-                        <p class="text-gray-600 text-sm mb-4">帶上你不穿的舊衣服，我們教你如何把它們變成實用的環保購物袋或飲料提袋！</p>
-                        <button class="text-green-600 font-bold text-sm hover:underline">立即報名</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="newsletter" class="py-12 bg-green-600 text-white">
-            <div class="container mx-auto px-4">
-                <div class="max-w-2xl mx-auto text-center">
-                    <h2 class="text-3xl font-bold mb-4" data-i18n="newsletterTitle">訂閱永續生活電子報</h2>
-                    <p class="mb-6" data-i18n="newsletterSubtitle">獲取最新的永續商店資訊、環保生活技巧和特別優惠</p>
-                    <form id="newsletter-form" class="flex flex-col md:flex-row gap-2">
-                        <input type="email" id="newsletter-email" required class="flex-1 px-4 py-3 rounded-lg text-gray-800 focus:outline-none" data-i18n="newsletterPlaceholder" placeholder="您的電子郵件">
-                        <button type="submit" id="subscribe-button" class="bg-white text-green-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition" data-i18n="subscribeBtn">訂閱</button>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <section id="report-issue" class="py-12 bg-yellow-50">
-            <div class="container mx-auto px-4">
-                <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
-                    <h2 class="text-3xl font-bold text-center mb-6" data-i18n="reportIssueTitle">問題回報</h2>
-                    <form id="issue-form">
-                        <div class="mb-4">
-                            <label for="issue" class="block text-gray-700 text-sm font-bold mb-2" data-i18n="reportIssueLabel">請描述您遇到的問題：</label>
-                            <textarea id="issue" name="issue" rows="6" required
-                                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                      data-i18n="reportIssuePlaceholder"
-                                      placeholder="例如：某間商店資訊錯誤、地圖位置有誤..."></textarea>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit"
-                                    class="btn-primary px-6 py-2 rounded-lg font-medium"
-                                    data-i18n="reportIssueSubmitBtn">
-                                送出回報
-                            </button>
-                        </div>
-                    </form>
-                    <p id="issue-message" class="text-center text-green-600 mt-4 hidden" data-i18n="reportIssueSuccessMsg">感謝您的回報，我們會儘快處理！</p>
-                </div>
-            </div>
-        </section>
+        </div>
     </main>
 
-    <footer class="bg-gray-800 text-white py-10">
-        <div class="container mx-auto px-4 text-center text-gray-400">
-            <p data-i18n="copyright">© 2025 永續商店地圖 - 版權所有</p>
-            <div class="mt-4">
-                <a href="#" id="policy-link" class="hover:text-white transition" data-i18n="policyLink">政策條款</a>
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-20 mt-20 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="w-8 h-8 bg-green-600 flex items-center justify-center text-white font-black">G</div>
+                        <span class="text-xl font-black tracking-tighter">GREEN EAVES</span>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 font-medium mb-8 max-w-sm">
+                        為您的永續生活提供指引。我們致力於推廣台北在地的永續商店，讓綠色消費成為您的日常。
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-slate-900 dark:hover:bg-white hover:text-white dark:hover:text-slate-950 transition"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-slate-900 dark:hover:bg-white hover:text-white dark:hover:text-slate-950 transition"><i class="fa-brands fa-facebook-f"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-black text-slate-900 dark:text-white mb-6">探索</h4>
+                    <ul class="space-y-4 text-slate-500 dark:text-slate-400 font-bold text-sm">
+                        <li><a href="#" class="hover:text-green-600 transition">探索地圖</a></li>
+                        <li><a href="#" class="hover:text-green-600 transition">精選推薦</a></li>
+                        <li><a href="#" class="hover:text-green-600 transition">關於我們</a></li>
+                        <li><a href="#" id="policy-link" class="hover:text-green-600 transition">網站政策</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-black text-slate-900 dark:text-white mb-6">回報與建議</h4>
+                    <form id="issue-form" class="space-y-4">
+                        <textarea id="issue" placeholder="告訴我們哪裡可以更好..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3 text-sm focus:outline-none focus:border-green-600 resize-none text-slate-900 dark:text-white transition-colors"></textarea>
+                        <button class="w-full bg-slate-900 dark:bg-white dark:text-slate-950 text-white py-3 font-bold text-xs tracking-widest hover:bg-green-600 transition">送出訊息</button>
+                    </form>
+                    <p id="issue-message" class="mt-2 text-green-600 text-xs font-bold hidden">感謝您的回報！</p>
+                </div>
+            </div>
+            <div class="mt-20 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold text-slate-400 tracking-widest uppercase">
+                <p>&copy; 2024 GREEN EAVES PROJECT. ALL RIGHTS RESERVED.</p>
+                <p>Designed for a sustainable future.</p>
             </div>
         </div>
     </footer>
 
-    <div id="user-dashboard-modal" class="hidden">
-        <div class="bg-white p-6 md:p-10">
-            <div class="max-w-6xl mx-auto">
-                <div class="flex justify-between items-center mb-8">
+    <!-- Modals -->
+    <div id="shop-detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[1500] hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-5xl max-h-[90vh] overflow-y-auto modal-content shadow-2xl relative transition-colors">
+            <div id="shop-detail-container"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard Modal -->
+    <div id="user-dashboard-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[1500] hidden flex items-center justify-center p-0 md:p-8">
+        <div class="bg-slate-50 dark:bg-slate-950 w-full max-w-6xl h-full md:h-[85vh] shadow-2xl flex flex-col md:flex-row relative overflow-hidden transition-colors">
+            <button id="close-dashboard-btn" class="absolute top-4 right-4 z-[1600] bg-white dark:bg-slate-800 w-10 h-10 flex items-center justify-center shadow-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer dark:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            
+            <div class="w-full md:w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-8 flex-shrink-0 transition-colors">
+                <div class="flex items-center gap-4 mb-10">
+                    <div id="dashboard-avatar" class="w-16 h-16 bg-green-600 flex items-center justify-center text-white text-2xl font-black">U</div>
                     <div>
-                        <p class="text-xs font-bold text-green-600 tracking-widest uppercase mb-1">MY ACCOUNT</p>
-                        <h2 class="text-3xl font-black text-slate-900" style="letter-spacing:-0.02em">個人儀表板</h2>
-                    </div>
-                    <button id="close-dashboard-btn" class="p-2 border border-slate-200 hover:border-slate-400 text-slate-500 hover:text-slate-800 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-slate-50 p-5 border border-slate-200">
-                        <h3 class="text-base font-black mb-4 flex items-center gap-2 text-red-600 uppercase tracking-wide">
-                            <i class="fa fa-heart"></i> 我的收藏
-                        </h3>
-                        <div id="dashboard-favorites" class="space-y-3 overflow-y-auto" style="max-height:60vh"></div>
-                    </div>
-                    <div class="bg-slate-50 p-5 border border-slate-200">
-                        <h3 class="text-base font-black mb-4 flex items-center gap-2 text-yellow-600 uppercase tracking-wide">
-                            <i class="fa fa-star"></i> 我的評價
-                        </h3>
-                        <div id="dashboard-reviews" class="space-y-3 overflow-y-auto" style="max-height:60vh"></div>
-                    </div>
-                    <div class="bg-slate-50 p-5 border border-slate-200">
-                        <h3 class="text-base font-black mb-4 flex items-center gap-2 text-blue-600 uppercase tracking-wide">
-                            <i class="fa fa-flag"></i> 檢舉追蹤
-                        </h3>
-                        <div id="dashboard-reports" class="space-y-3 overflow-y-auto" style="max-height:60vh"></div>
+                        <h3 class="font-black text-slate-900 dark:text-white text-xl" id="dashboard-username">會員名稱</h3>
+                        <p class="text-xs font-bold text-slate-400 tracking-widest">ECO MEMBER</p>
                     </div>
                 </div>
-                <div class="mt-8 bg-slate-50 p-5 border border-slate-200">
-                    <h3 class="text-base font-black mb-4 flex items-center gap-2 text-green-700 uppercase tracking-wide">
-                        <i class="fa fa-map"></i> 永續足跡地圖
-                    </h3>
-                    <p class="text-sm text-gray-500 mb-3">這些是您曾經收藏或評價過的永續商店，感謝您為地球盡一份心力！</p>
-                    <div id="dashboard-footprint-map" style="height: 350px; width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; z-index: 10;"></div>
+                
+                <nav class="space-y-2">
+                    <button class="w-full text-left px-4 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-sm font-bold flex items-center gap-3"><i class="fa-solid fa-chart-pie"></i> 個人數據</button>
+                    <button class="w-full text-left px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-bold flex items-center gap-3 transition"><i class="fa-solid fa-heart"></i> 收藏店家</button>
+                    <button class="w-full text-left px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-bold flex items-center gap-3 transition"><i class="fa-solid fa-star"></i> 我的評價</button>
+                    <button id="logout-btn-dash" class="w-full text-left px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 text-sm font-bold flex items-center gap-3 transition mt-10"><i class="fa-solid fa-right-from-bracket"></i> 登出帳號</button>
+                </nav>
+            </div>
+            
+            <div class="flex-grow overflow-y-auto p-8">
+                <!-- Virtual Forest visual section -->
+                <div class="mb-8 p-6 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-emerald-950/30 dark:to-teal-900/10 border border-green-200 dark:border-emerald-800/30 flex flex-col md:flex-row items-center gap-6 shadow-sm">
+                    <div class="w-24 h-24 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center text-4xl shadow-inner select-none border border-green-200 dark:border-emerald-800/40" id="virtual-forest-visual">🌱</div>
+                    <div class="text-center md:text-left">
+                        <h4 class="text-lg font-black text-green-900 dark:text-green-300">我的個人虛擬綠地</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1" id="dashboard-carbon-text">您正為地球帶來美好的正向改變！</p>
+                        <div class="mt-3 w-full bg-slate-200 dark:bg-slate-800 h-2 max-w-sm rounded-full overflow-hidden">
+                            <div id="virtual-forest-progress" class="bg-green-600 h-full rounded-full transition-all duration-1000" style="width: 10%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <div class="bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 transition-colors">
+                        <p class="text-[10px] font-black text-slate-400 tracking-widest uppercase mb-1">Total Carbon Saved</p>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-4xl font-black text-green-600" id="dashboard-carbon-saved">0.0</span>
+                            <span class="font-bold text-slate-400">KG</span>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 transition-colors">
+                        <p class="text-[10px] font-black text-slate-400 tracking-widest uppercase mb-1">Trees Equivalent</p>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-4xl font-black text-slate-900 dark:text-white" id="dashboard-trees-equivalent">0.0</span>
+                            <span class="font-bold text-slate-400">TREES</span>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 transition-colors">
+                        <p class="text-[10px] font-black text-slate-400 tracking-widest uppercase mb-1">Eco Actions</p>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-4xl font-black text-slate-900 dark:text-white" id="dashboard-bags-equivalent">0</span>
+                            <span class="font-bold text-slate-400">TIMES</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unlocked Achievements Badges -->
+                <div class="mb-10">
+                    <h4 class="font-black text-slate-900 dark:text-white text-lg mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-trophy text-amber-500"></i> 永續成就勳章 (Eco Achievements)
+                    </h4>
+                    <div id="dashboard-achievements" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- User Base64 Receipts Section -->
+                <div class="mb-10">
+                    <h4 class="font-black text-slate-900 dark:text-white text-lg mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt text-green-600"></i> 我的綠色打卡憑證 (Eco Receipts)
+                    </h4>
+                    <div id="dashboard-receipts" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <div class="mb-10">
+                    <h4 class="font-black text-slate-900 dark:text-white text-lg mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-green-600"></i> 永續足跡地圖
+                    </h4>
+                    <div class="h-64 bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 relative overflow-hidden transition-colors">
+                        <div id="dashboard-footprint-map" class="w-full h-full"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-black text-slate-900 dark:text-white text-lg mb-6 flex items-center gap-2">
+                            <i class="fa-solid fa-heart text-red-500"></i> 最近收藏
+                        </h4>
+                        <div id="dashboard-favorites" class="space-y-4">
+                            <!-- Injected by ui.js -->
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-slate-900 dark:text-white text-lg mb-6 flex items-center gap-2">
+                            <i class="fa-solid fa-star text-yellow-500"></i> 我的評價
+                        </h4>
+                        <div id="dashboard-reviews" class="space-y-4">
+                            <!-- Injected by ui.js -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="shop-detail-modal" class="hidden">
-        <div id="shop-detail-container" class="relative overflow-hidden">
-        </div>
-    </div>
-
-    <!-- Rate Modal -->
-    <div id="rate-modal" class="fixed inset-0 bg-black/60 z-[2100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md shadow-2xl">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="text-lg font-black text-slate-900">⭐ 評價商店</h3>
-                <button onclick="document.getElementById('rate-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+    <!-- Form Modals -->
+    <div id="rate-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[2000] hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md modal-content overflow-hidden transition-colors">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white" data-i18n="rateModalTitle">發表評價</h3>
+                <button onclick="document.getElementById('rate-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-900 dark:hover:text-white text-2xl">&times;</button>
             </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">評分</label>
-                    <div id="star-rating-container" class="flex gap-2">
-                        <button class="star-btn text-3xl text-slate-300 hover:text-yellow-400 transition" data-value="1">★</button>
-                        <button class="star-btn text-3xl text-slate-300 hover:text-yellow-400 transition" data-value="2">★</button>
-                        <button class="star-btn text-3xl text-slate-300 hover:text-yellow-400 transition" data-value="3">★</button>
-                        <button class="star-btn text-3xl text-slate-300 hover:text-yellow-400 transition" data-value="4">★</button>
-                        <button class="star-btn text-3xl text-slate-300 hover:text-yellow-400 transition" data-value="5">★</button>
-                    </div>
-                    <input type="hidden" id="rate-value" value="0">
+            <div class="p-6">
+                <div class="flex justify-center gap-2 mb-8" id="star-rating">
+                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-val="1">★</button>
+                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-val="2">★</button>
+                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-val="3">★</button>
+                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-val="4">★</button>
+                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-val="5">★</button>
                 </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">評論 (選填)</label>
-                    <textarea id="rate-comment" rows="3" placeholder="分享您的消費體驗..." class="w-full border border-slate-200 p-3 text-sm focus:outline-none focus:border-green-500 resize-none"></textarea>
+                <div class="form-group mb-6">
+                    <label class="block text-xs font-black text-slate-400 tracking-widest uppercase mb-2">你的心得</label>
+                    <textarea id="rate-comment" rows="4" placeholder="分享你的購物體驗或永續發現..." class="w-full border border-slate-200 dark:border-slate-800 p-4 text-sm focus:outline-none focus:border-green-600 resize-none text-slate-900 dark:text-white bg-white dark:bg-slate-800 transition-colors"></textarea>
+                </div>
+                <div class="bg-green-50 dark:bg-green-950/20 p-4 border border-green-100 dark:border-green-900 mb-6 flex items-start gap-3">
+                    <i class="fa-solid fa-circle-info text-green-600 mt-1"></i>
+                    <p class="text-xs text-green-800 dark:text-green-300 leading-relaxed font-medium">您的評價將幫助更多人了解這間店的永續實踐。審核通過後，您將獲得綠色積分回饋！</p>
                 </div>
                 <input type="hidden" id="rate-shop-id">
-            </div>
-            <div class="p-4 border-t border-slate-100 flex justify-end gap-3">
-                <button onclick="document.getElementById('rate-modal').classList.add('hidden')" class="px-4 py-2 text-sm text-slate-600 border border-slate-200 hover:bg-slate-50 transition">取消</button>
-                <button onclick="window.submitRating()" class="px-6 py-2 text-sm font-bold bg-green-600 text-white hover:bg-green-700 transition">送出評價</button>
+                <button onclick="window.submitReview()" class="w-full bg-slate-900 dark:bg-white dark:text-slate-950 text-white py-4 font-black tracking-widest hover:bg-green-600 transition shadow-xl shadow-slate-200">送出評價</button>
             </div>
         </div>
     </div>
 
     <!-- Report Modal -->
-    <div id="report-modal" class="fixed inset-0 bg-black/60 z-[2100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md shadow-2xl">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="text-lg font-black text-slate-900">🚩 檢舉商店資訊</h3>
-                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+    <div id="report-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[2000] hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md modal-content overflow-hidden transition-colors">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white" data-i18n="reportModalTitle">檢舉錯誤資訊</h3>
+                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-900 dark:hover:text-white text-2xl">&times;</button>
             </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">檢舉原因</label>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="report-reason" value="資訊錯誤"> 資訊錯誤（地址/電話/時間）</label>
-                        <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="report-reason" value="已停業"> 商店已停業或搬遷</label>
-                        <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="report-reason" value="非永續商店"> 並非永續/環保相關商店</label>
-                        <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="report-reason" value="其他"> 其他原因</label>
-                    </div>
+            <div class="p-6">
+                <div class="form-group mb-6">
+                    <label class="block text-xs font-black text-slate-400 tracking-widest uppercase mb-2" data-i18n="reportReasonLabel">錯誤原因</label>
+                    <select id="report-reason" class="w-full border border-slate-200 dark:border-slate-800 p-3 text-sm focus:outline-none focus:border-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white transition-colors">
+                        <option value="closed">店家已結束營業</option>
+                        <option value="wrong-info">營業時間或電話錯誤</option>
+                        <option value="wrong-location">地圖標點位置不正確</option>
+                        <option value="not-eco">並非永續商店/名不副實</option>
+                        <option value="other">其他問題</option>
+                    </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">補充說明 (選填)</label>
-                    <textarea id="report-desc" rows="2" placeholder="請詳細描述..." class="w-full border border-slate-200 p-3 text-sm focus:outline-none focus:border-blue-500 resize-none"></textarea>
+                <div class="form-group">
+                    <label class="block text-xs font-black text-slate-400 tracking-widest uppercase mb-2" data-i18n="reportDescLabel">詳情說明</label>
+                    <textarea id="report-desc" rows="2" placeholder="請詳細描述..." class="w-full border border-slate-200 dark:border-slate-800 p-3 text-sm focus:outline-none focus:border-blue-500 resize-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white transition-colors"></textarea>
                 </div>
                 <input type="hidden" id="report-shop-id">
             </div>
-            <div class="p-4 border-t border-slate-100 flex justify-end gap-3">
-                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="px-4 py-2 text-sm text-slate-600 border border-slate-200 hover:bg-slate-50 transition">取消</button>
+            <div class="p-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
+                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="px-4 py-2 text-sm text-slate-600 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition dark:text-slate-400">取消</button>
                 <button onclick="window.submitReport()" class="px-6 py-2 text-sm font-bold bg-red-600 text-white hover:bg-red-700 transition">送出檢舉</button>
             </div>
         </div>
     </div>
 
+    <!-- Eco-Tour Routing Panel -->
+    <div id="routing-panel" class="fixed bottom-6 right-6 z-[1200] bg-white dark:bg-slate-900 border-2 border-green-600 dark:border-green-500 p-6 shadow-2xl max-w-sm w-full hidden transition-colors">
+        <div class="flex justify-between items-center mb-4">
+            <h4 class="font-black text-slate-900 dark:text-white flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-route text-green-600"></i> 永續散步路線規劃
+            </h4>
+            <button id="close-routing-btn" class="text-slate-400 hover:text-slate-900 dark:hover:text-white text-xl cursor-pointer">&times;</button>
+        </div>
+        <div id="routing-shops-list" class="space-y-2 mb-4 max-h-40 overflow-y-auto text-xs text-slate-600 dark:text-slate-400 pr-1">
+            <!-- Injected dynamically -->
+        </div>
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-3 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+            <div class="flex justify-between">
+                <span>預估距離:</span>
+                <span id="routing-distance" class="font-bold text-slate-900 dark:text-white">0 km</span>
+            </div>
+            <div class="flex justify-between">
+                <span>步行時間 (以 5 km/h 計):</span>
+                <span id="routing-time" class="font-bold text-slate-900 dark:text-white">0 分鐘</span>
+            </div>
+            <div class="flex justify-between">
+                <span>預估碳排節省總量:</span>
+                <span id="routing-carbon" class="font-bold text-green-600">0 g 🌿</span>
+            </div>
+        </div>
+        <div class="mt-4 flex gap-2">
+            <button id="clear-routing-btn" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 py-2.5 text-xs font-bold hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20 transition cursor-pointer">清空路線</button>
+            <button id="draw-route-polyline-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 text-xs font-bold transition cursor-pointer">於地圖連線</button>
+        </div>
+    </div>
+
+    <!-- Receipt Preview Modal (Click to pop up as requested by user) -->
+    <div id="receipt-preview-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[2500] hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 p-6 max-w-sm w-full relative modal-content flex flex-col items-center border border-slate-200 dark:border-slate-800">
+            <button id="close-receipt-preview" class="absolute top-2 right-2 text-slate-400 hover:text-slate-900 dark:hover:text-white text-2xl cursor-pointer" onclick="document.getElementById('receipt-preview-modal').classList.add('hidden')">&times;</button>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 text-center flex items-center gap-2">
+                <i class="fa-solid fa-receipt text-green-600"></i> 打卡電子憑證
+            </h3>
+            <img id="receipt-preview-img" class="w-full shadow-lg border border-slate-200 dark:border-slate-800" src="" alt="打卡收據">
+            <a id="receipt-download-btn" href="" download="Green-Eaves-Checkin.png" class="mt-4 w-full text-center bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 text-xs transition uppercase tracking-wider">下載收據檔</a>
+        </div>
+    </div>
+
     <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[2000] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg p-6 shadow-xl max-w-sm mx-auto text-center">
-            <p id="message-modal-text" class="text-gray-800 text-lg mb-4"></p>
+        <div class="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-xl max-w-sm mx-auto text-center border dark:border-slate-800">
+            <p id="message-modal-text" class="text-gray-800 dark:text-white text-lg mb-4"></p>
             <button id="close-message-modal" onclick="document.getElementById('message-modal').classList.add('hidden')" class="btn-primary px-6 py-2 rounded-lg font-medium" data-i18n="okButton">確定</button>
         </div>
     </div>
 
     <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-75 z-[3000] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg p-6 shadow-xl max-w-2xl w-full mx-auto">
+        <div class="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-xl max-w-2xl w-full mx-auto border dark:border-slate-800">
             <h3 class="text-xl font-bold text-red-600 mb-4" data-i18n="errorModalTitle">發生錯誤</h3>
-            <div class="bg-red-50 p-4 rounded-md error-modal-content overflow-y-auto">
-                <pre id="error-details" class="text-sm text-gray-800 whitespace-pre-wrap break-all"></pre>
+            <div class="bg-red-50 dark:bg-red-950/20 p-4 rounded-md error-modal-content overflow-y-auto">
+                <pre id="error-details" class="text-sm text-gray-800 dark:text-red-300 whitespace-pre-wrap break-all"></pre>
             </div>
             <div class="mt-6 text-right">
                 <button id="close-error-modal" onclick="document.getElementById('error-modal').classList.add('hidden')" class="bg-red-600 text-white px-6 py-2 rounded-lg font-medium">關閉</button>
@@ -381,10 +466,10 @@
 
     <!-- Policy Modal -->
     <div id="policy-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-4xl w-full mx-4 modal-content flex flex-col">
-            <div class="p-4 border-b flex justify-between items-center flex-shrink-0">
-                <h2 id="policy-modal-title" class="text-xl font-bold text-gray-800" data-i18n="policyModalTitle">網站政策</h2>
-                <button id="close-policy-modal-btn" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+        <div class="bg-white dark:bg-slate-900 rounded-xl max-w-4xl w-full mx-4 modal-content flex flex-col border dark:border-slate-800">
+            <div class="p-4 border-b dark:border-slate-800 flex justify-between items-center flex-shrink-0">
+                <h2 id="policy-modal-title" class="text-xl font-bold text-gray-800 dark:text-white" data-i18n="policyModalTitle">網站政策</h2>
+                <button id="close-policy-modal-btn" class="text-gray-500 hover:text-gray-800 dark:hover:text-white text-2xl">&times;</button>
             </div>
             <div id="policy-modal-body" class="p-6 overflow-y-auto">
                 <!-- Policy content will be injected here -->
@@ -396,21 +481,15 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="js/firebase-config.js"></script>
-    <!-- Locales -->
+    <!-- Locales (Essential only) -->
     <script src="js/locales/zh-TW.js"></script>
     <script src="js/locales/en.js"></script>
-    <script src="js/locales/ja.js"></script>
-    <script src="js/locales/ko.js"></script>
-    <script src="js/locales/fr.js"></script>
-    <script src="js/locales/es.js"></script>
-    <script src="js/locales/de.js"></script>
-    <script src="js/locales/la.js"></script>
     <!-- App scripts -->
-    <script src="js/state.js?v=2.1"></script>
-    <script src="js/utils.js?v=2.1"></script>
-    <script src="js/ui.js?v=2.1"></script>
-    <script src="js/api.js?v=2.1"></script>
-    <script src="js/auth.js?v=2.1"></script>
-    <script src="js/app.js?v=2.1"></script>
+    <script src="js/state.js?v=2.6"></script>
+    <script src="js/utils.js?v=2.6"></script>
+    <script src="js/ui.js?v=2.6"></script>
+    <script src="js/api.js?v=2.6"></script>
+    <script src="js/auth.js?v=2.6"></script>
+    <script src="js/app.js?v=2.6"></script>
 </body>
 </html>

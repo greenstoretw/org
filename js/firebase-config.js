@@ -1,5 +1,5 @@
 // Firebase 配置資訊 - 已更新為您的專案設定
-const firebaseConfig = {
+var firebaseConfig = {
   apiKey: "AIzaSyBYVzIEA4RxUH2IxojDnln0QNKC8gyemfg",
   authDomain: "greenstore-1ce0f.firebaseapp.com",
   databaseURL: "https://greenstore-1ce0f-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -12,8 +12,9 @@ const firebaseConfig = {
 
 // 初始化 Firebase (使用 Compat 模式以支援 CDN 引入)
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
-const analytics = firebase.analytics();
+var db = firebase.firestore();
+var auth = firebase.auth();
+var storage = firebase.storage();
+var analytics = firebase.analytics();
 
 console.log("Firebase 雲端連線已成功初始化！");

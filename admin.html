@@ -175,6 +175,7 @@ tr:hover td{background:#f8faf9}
     <div class="nav-group">
       <div class="group-label">功能</div>
       <div class="nav-item" data-page="badges"><i class="fa fa-certificate"></i><span>賦予徽章</span></div>
+      <div class="nav-item" data-page="receipts"><i class="fa fa-file-image-o"></i><span>打卡憑證</span></div>
       <div class="nav-item owner-only" data-page="users"><i class="fa fa-users"></i><span>管理使用者</span></div>
       <div class="nav-item" data-page="trash"><i class="fa fa-trash"></i><span>垃圾桶</span></div>
     </div>
@@ -280,7 +281,7 @@ tr:hover td{background:#f8faf9}
       <div class="card">
         <h3>訂閱者列表 (<span id="sub-count">0</span> 人)</h3>
         <div class="table-wrap"><table>
-          <thead><tr><th>Email</th><th>訂閱時間</th><th>操作</th></tr></thead>
+          <thead><tr><th>Email</th><th>來源</th><th>訂閱時間</th><th>操作</th></tr></thead>
           <tbody id="newsletter-tbody"></tbody>
         </table></div>
       </div>
@@ -375,6 +376,28 @@ tr:hover td{background:#f8faf9}
             <button class="btn btn-red btn-sm" onclick="window.emptyTrash('users')"><i class="fa fa-trash"></i> 清空用戶</button>
           </div>
           <div id="trash-users"></div>
+      </div>
+    </div>
+
+    <!-- RECEIPTS -->
+    <div class="page" id="page-receipts">
+      <div class="card" style="border-radius: 0 !important;">
+        <h3 style="border-radius: 0 !important;">打卡憑證記錄 (點擊整列可彈出圖片預覽)</h3>
+        <div class="table-wrap" style="border-radius: 0 !important;">
+          <table style="border-radius: 0 !important;">
+            <thead>
+              <tr style="border-radius: 0 !important;">
+                <th>憑證編號</th>
+                <th>用戶名稱</th>
+                <th>商店名稱</th>
+                <th>減碳貢獻</th>
+                <th>打卡時間</th>
+              </tr>
+            </thead>
+            <tbody id="receipts-tbody" style="border-radius: 0 !important;">
+              <tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:16px">載入中...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -408,7 +431,22 @@ tr:hover td{background:#f8faf9}
         <div class="form-group"><label>電話</label><input id="s-phone" placeholder="02-12345678"></div>
         <div class="form-group"><label>官方網站</label><input id="s-website" placeholder="https://..."></div>
       </div>
-      <div class="form-group"><label>商店街景 / 圖片連結 (Image URL)</label><input id="s-image" placeholder="https://..."></div>
+      <div class="form-group">
+        <label>商店店面圖片 (街景圖)</label>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="s-image" placeholder="https://... (圖片連結)" style="flex:1">
+          <label class="btn btn-purple" style="cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px">
+            <i class="fa fa-image"></i> 傳圖轉 WebP
+            <input type="file" id="s-image-upload" accept="image/png, image/jpeg" style="display:none" onchange="window.handleImageUpload(this)">
+          </label>
+        </div>
+        <div id="upload-status" style="font-size:12px;color:#666;margin-top:-4px">將圖片轉為 WebP 並直接嵌入資料庫 (免雲端空間費)</div>
+        <div id="image-preview" style="margin-top:8px; display:none;">
+          <img id="s-image-preview" src="" style="max-height:120px; border:2px solid #16a34a; margin-bottom:8px">
+          <br>
+          <a id="download-webp" class="btn btn-gray btn-sm" style="text-decoration:none"><i class="fa fa-download"></i> 下載此 WebP 檔案</a>
+        </div>
+      </div>
       <div class="form-group"><label>營業時間</label><input id="s-hours" placeholder="週一至五 10:00-20:00"></div>
       <div class="form-row">
         <div class="form-group"><label>永續特點 (逗號分隔)</label><input id="s-eco" placeholder="減塑包裝,在地食材"></div>
@@ -484,14 +522,31 @@ tr:hover td{background:#f8faf9}
     </div>
   </div>
 </div>
+<!-- Admin Receipt Modal -->
+<div class="modal-overlay" id="admin-receipt-modal" style="border-radius: 0 !important;">
+  <div class="modal" style="max-width: 440px; border-radius: 0 !important;">
+    <div class="modal-header" style="border-radius: 0 !important;">
+      <h3>打卡憑證預覽</h3>
+      <button class="btn btn-gray btn-sm" onclick="closeModal('admin-receipt-modal')" style="border-radius: 0 !important;">✕</button>
+    </div>
+    <div class="modal-body" style="text-align: center; background: #f8fafc; padding: 20px; border-radius: 0 !important;">
+      <img id="admin-receipt-img" src="" style="max-width: 100%; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border-radius: 0 !important;">
+    </div>
+    <div class="modal-footer" style="border-radius: 0 !important;">
+      <a id="admin-receipt-download" class="btn btn-blue" style="text-decoration: none; border-radius: 0 !important;" download="eco-receipt.png"><i class="fa fa-download"></i> 下載憑證</a>
+      <button class="btn btn-gray" onclick="closeModal('admin-receipt-modal')" style="border-radius: 0 !important;">關閉</button>
+    </div>
+  </div>
+</div>
 
 <script src="js/firebase-config.js"></script>
-<script src="js/admin/main.js"></script>
-<script src="js/admin/auth.js"></script>
-<script src="js/admin/dashboard.js"></script>
-<script src="js/admin/shops.js"></script>
-<script src="js/admin/content.js"></script>
-<script src="js/admin/users.js"></script>
-<script src="js/admin/ai.js"></script>
+<script src="js/admin/main.js?v=2.2"></script>
+<script src="js/admin/auth.js?v=2.2"></script>
+<script src="js/admin/dashboard.js?v=2.2"></script>
+<script src="js/admin/shops.js?v=2.2"></script>
+<script src="js/admin/content.js?v=2.2"></script>
+<script src="js/admin/users.js?v=2.2"></script>
+<script src="js/admin/rag.js?v=2.3"></script>
+<script src="js/admin/ai.js?v=2.3"></script>
 </body>
 </html>

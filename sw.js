@@ -1,14 +1,14 @@
-var CACHE_NAME = 'green-eaves-v2.2';
+var CACHE_NAME = 'green-eaves-v2.6';
 var ASSETS = [
   './',
   './index.html',
   './css/main.css',
-  './js/state.js',
-  './js/app.js',
-  './js/ui.js',
-  './js/api.js',
-  './js/auth.js',
-  './js/utils.js',
+  './js/state.js?v=2.6',
+  './js/utils.js?v=2.6',
+  './js/ui.js?v=2.6',
+  './js/api.js?v=2.6',
+  './js/auth.js?v=2.6',
+  './js/app.js?v=2.6',
   './js/firebase-config.js',
   './js/locales/zh-TW.js',
   './js/locales/en.js',
@@ -28,20 +28,42 @@ self.addEventListener('activate', function(event) {
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
       return Promise.all(
-        cacheNames.filter(function(name) {
-          return name !== CACHE_NAME;
-        }).map(function(name) {
-          return caches.delete(name);
+        cacheNames.map(function(name) {
+          if (name !== CACHE_NAME) {
+            console.log('Cleaning old cache:', name);
+            return caches.delete(name);
+          }
         })
       );
     })
   );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', function(event) {
+  // Only cache GET requests
+  if (event.request.method !== 'GET') return;
+  
+  // Skip external APIs (Firebase, etc.) to avoid caching errors
+  var url = event.request.url;
+  if (url.includes('firestore.googleapis.com') || url.includes('identitytoolkit.googleapis.com')) return;
+  if (url.includes('generativelanguage.googleapis.com')) return;
+
   event.respondWith(
-    caches.match(event.request).then(function(response) {
-      return response || fetch(event.request);
+    caches.match(event.request).then(function(cachedResponse) {
+      var fetchPromise = fetch(event.request).then(function(networkResponse) {
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          var responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      }).catch(function() {
+        return cachedResponse;
+      });
+      
+      return cachedResponse || fetchPromise;
     })
   );
 });

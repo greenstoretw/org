@@ -1,27 +1,42 @@
 // ===== admin/auth.js =====
-auth.onAuthStateChanged(async user => {
+auth.onAuthStateChanged(function(user) {
   if (!user) { window.showLogin(); return; }
-  const doc = await db.collection('users').doc(user.uid).get();
-  if (!doc.exists || !['admin','owner'].includes(doc.data().role)) {
-    alert('無管理員權限'); auth.signOut(); return;
-  }
-  window.currentUserRole = doc.data().role;
-  document.getElementById('user-name').textContent = user.displayName || user.email.split('@')[0];
-  document.getElementById('user-avatar').textContent = (user.displayName || 'A')[0].toUpperCase();
-  document.getElementById('role-badge').textContent = window.currentUserRole === 'owner' ? '版主' : '管理員';
-  if (window.currentUserRole === 'owner') document.body.classList.add('is-owner');
-  window.hideLogin();
-  window.loadDashboard();
+  db.collection('users').doc(user.uid).get().then(function(doc) {
+    if (!doc.exists || (doc.data().role !== 'admin' && doc.data().role !== 'owner')) {
+      alert('無管理員權限'); auth.signOut(); return;
+    }
+    window.currentUserRole = doc.data().role;
+    document.getElementById('user-name').textContent = user.displayName || user.email.split('@')[0];
+    document.getElementById('user-avatar').textContent = (user.displayName || 'A')[0].toUpperCase();
+    document.getElementById('role-badge').textContent = window.currentUserRole === 'owner' ? '版主' : '管理員';
+    if (window.currentUserRole === 'owner') document.body.classList.add('is-owner');
+    window.hideLogin();
+    window.loadDashboard();
+  }).catch(function(err) {
+    console.error('Auth error:', err);
+    auth.signOut();
+  });
 });
 
-document.getElementById('login-btn').onclick = async () => {
-  const email = document.getElementById('login-email').value;
-  const pass = document.getElementById('login-pass').value;
-  const err = document.getElementById('login-err');
-  try { await auth.signInWithEmailAndPassword(email, pass); }
-  catch(e) { err.textContent = '登入失敗：' + e.message; err.style.display = 'block'; }
-};
-document.getElementById('logout-btn').onclick = () => auth.signOut();
+var loginBtn = document.getElementById('login-btn');
+if (loginBtn) {
+  loginBtn.onclick = function() {
+    var email = document.getElementById('login-email').value;
+    var pass = document.getElementById('login-pass').value;
+    var err = document.getElementById('login-err');
+    auth.signInWithEmailAndPassword(email, pass).catch(function(e) {
+      err.textContent = '登入失敗：' + e.message;
+      err.style.display = 'block';
+    });
+  };
+}
+
+var logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+  logoutBtn.onclick = function() {
+    auth.signOut();
+  };
+}
 
 window.showLogin = function() { document.getElementById('login-screen').style.display = 'flex'; };
 window.hideLogin = function() { document.getElementById('login-screen').style.display = 'none'; };

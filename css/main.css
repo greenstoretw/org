@@ -87,17 +87,23 @@ svg { display: inline-block; vertical-align: middle; }
 /* ===== ADMIN INDICATOR ===== */
 .admin-mode {
     position: fixed;
-    top: 0;
-    right: 0;
+    bottom: 20px;
+    left: 20px;
     background: #dc2626;
     color: white;
-    padding: 10px 20px;
-    z-index: 1000;
-    font-size: 13px;
-    font-weight: 800;
+    padding: 12px 18px;
+    z-index: 2000;
+    font-size: 12px;
+    font-weight: 900;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    box-shadow: -4px 4px 0 rgba(0,0,0,0.1);
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+    border: 2px solid white;
+    text-decoration: none;
+}
+.admin-mode:hover {
+    background: #b91c1c;
+    transform: scale(1.05);
 }
 
 /* ===== HERO SECTION ===== */
@@ -212,10 +218,35 @@ svg { display: inline-block; vertical-align: middle; }
     padding: 4px 14px 4px 10px;
     font-size: 0.68rem;
     font-weight: 900;
-    z-index: 10;
+    z-index: 30;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%);
+}
+
+.shop-image-container {
+    position: relative;
+}
+
+.card-shimmer {
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    transition: none;
+    pointer-events: none;
+}
+
+.shop-card:hover .card-shimmer {
+    animation: shimmer 1s ease-out;
+}
+
+@keyframes shimmer {
+    from { left: -150%; }
+    to { left: 150%; }
 }
 
 /* ===== FAVORITE BUTTON ===== */
@@ -423,3 +454,256 @@ footer {
     .hero-section h1 { letter-spacing: -0.01em; }
     #sustainability-map { height: 320px; }
 }
+
+/* ===== SKELETON LOADER (SHARP CORNERS) ===== */
+.skeleton-card {
+    border: 1.5px solid #e2e8f0;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 0 !important;
+}
+.skeleton-img {
+    height: 14rem;
+    background: #e2e8f0;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 !important;
+}
+.skeleton-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.skeleton-text {
+    height: 16px;
+    background: #e2e8f0;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 !important;
+}
+.skeleton-title {
+    width: 60%;
+    height: 24px;
+}
+.skeleton-desc {
+    width: 100%;
+    height: 48px;
+}
+.skeleton-btn {
+    width: 100%;
+    height: 40px;
+    background: #e2e8f0;
+    border-radius: 0 !important;
+}
+.pulse::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 100%);
+    animation: shimmer-pulse 1.5s infinite;
+}
+@keyframes shimmer-pulse {
+    100% { transform: translateX(100%); }
+}
+
+/* ===== DARK MODE OVERRIDES ===== */
+.dark body {
+    background-color: #0f172a;
+    color: #f1f5f9;
+}
+.dark nav {
+    background-color: rgba(15, 23, 42, 0.95);
+    border-bottom: 2px solid #22c55e;
+}
+.dark .nav-links a, .dark .nav-links button, .dark .nav-links select {
+    color: #cbd5e1;
+}
+.dark .nav-links a:hover, .dark .nav-links button:hover {
+    color: #22c55e;
+}
+.dark .tag {
+    background-color: #1e293b;
+    color: #cbd5e1;
+    border-color: #334155;
+}
+.dark .tag:hover {
+    border-color: #22c55e;
+    color: #22c55e;
+    background: #0f2f1a;
+}
+.dark .tag.active {
+    background: #22c55e;
+    color: white;
+    border-color: #22c55e;
+    box-shadow: 3px 3px 0 rgba(34, 197, 94, 0.2);
+}
+.dark .shop-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+.dark .shop-card:hover {
+    border-color: #22c55e;
+    box-shadow: 8px 16px 0 rgba(0, 0, 0, 0.2), 0 4px 12px rgba(34, 197, 94, 0.15);
+}
+.dark .shop-card .text-slate-900, .dark .text-slate-900 {
+    color: #f8fafc !important;
+}
+.dark .shop-card .text-slate-500, .dark .text-slate-500 {
+    color: #94a3b8 !important;
+}
+.dark .favorite-btn {
+    background: rgba(30, 41, 59, 0.92);
+    border-color: rgba(51, 65, 85, 0.8);
+}
+.dark .favorite-btn:hover {
+    border-color: #ef4444;
+    background: #1e293b;
+}
+.dark .favorite-btn svg {
+    stroke: #64748b;
+}
+.dark .favorite-btn.favorited svg {
+    stroke: #ef4444;
+}
+.dark #search-input {
+    background-color: #1e293b;
+    color: #f8fafc;
+    border-color: #334155;
+}
+.dark #search-input:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+}
+.dark footer {
+    background-color: #0f172a;
+    border-top: 3px solid #22c55e;
+    color: #94a3b8;
+}
+.dark #shop-detail-container {
+    background: #1e293b;
+    border-top: 3px solid #22c55e;
+}
+.dark #shop-detail-container .bg-slate-50 {
+    background: #0f172a;
+    border-color: #334155;
+}
+.dark #shop-detail-container .border-slate-200 {
+    border-color: #334155;
+}
+.dark #shop-detail-container .text-slate-700 {
+    color: #cbd5e1;
+}
+.dark #shop-detail-container .bg-white {
+    background: #0f172a;
+}
+.dark #shop-detail-container .border-slate-100 {
+    border-color: #1e293b;
+}
+.dark #shop-reviews-container .bg-slate-50 {
+    background: #0f172a;
+    border-color: #334155;
+}
+.dark #shop-reviews-container .bg-white {
+    background: #1e293b;
+    border-color: #334155;
+}
+.dark #shop-reviews-container .text-slate-700 {
+    color: #cbd5e1;
+}
+.dark #shop-reviews-container .text-slate-600 {
+    color: #94a3b8;
+}
+.dark #user-dashboard-modal > div {
+    background: #1e293b;
+    border-top: 3px solid #22c55e;
+}
+.dark #user-dashboard-modal .bg-white {
+    background: #0f172a;
+    border-color: #334155;
+}
+.dark #user-dashboard-modal .border-gray-100 {
+    border-color: #334155;
+}
+.dark #user-dashboard-modal .text-gray-800 {
+    color: #f8fafc;
+}
+.dark #user-dashboard-modal .text-gray-600 {
+    color: #cbd5e1;
+}
+.dark #user-dashboard-modal .text-gray-400 {
+    color: #94a3b8;
+}
+.dark #user-dashboard-modal .border-slate-200 {
+    border-color: #334155;
+}
+.dark #user-dashboard-modal .bg-slate-200 {
+    background: #334155;
+}
+
+/* Leaflet Dark Mode Tiles Override via CSS Filter */
+.dark .leaflet-tile-container {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+.dark .leaflet-popup-content-wrapper {
+    background: #1e293b;
+    border: 1.5px solid #22c55e;
+    color: #f8fafc;
+}
+.dark .leaflet-popup-content h3 {
+    color: #4ade80;
+}
+.dark .leaflet-popup-content button {
+    background: #22c55e;
+}
+.dark .leaflet-popup-content button:hover {
+    background: #16a34a;
+}
+.dark .leaflet-popup-tip {
+    background: #1e293b;
+}
+
+/* ===== SKELETON / SATELLITE SKELETON CARD (SHARP) ===== */
+.dark .skeleton-card {
+    border-color: #334155;
+    background: #1e293b;
+}
+.dark .skeleton-img, .dark .skeleton-text, .dark .skeleton-btn {
+    background: #334155;
+}
+
+/* ===== ECO ACHIEVEMENTS TIMELINE (SHARP) ===== */
+.badge-glow {
+    position: relative;
+    border: 2px solid #f59e0b !important;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+    background: #fffbeb;
+    animation: achievement-pulse 2s infinite ease-in-out;
+}
+.dark .badge-glow {
+    background: #2d1c07;
+    border-color: #fbbf24 !important;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+}
+.badge-locked {
+    filter: grayscale(100%);
+    opacity: 0.4;
+    border: 1.5px dashed #cbd5e1 !important;
+    background: #f8fafc;
+}
+.dark .badge-locked {
+    border-color: #475569 !important;
+    background: #1e293b;
+}
+@keyframes achievement-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); box-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
+    100% { transform: scale(1); }
+}
+
