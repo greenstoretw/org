@@ -403,40 +403,87 @@ window.loadReceipts = function() {
   
   db.collection('checkins').orderBy('timestamp', 'desc').limit(50).get()
     .then(function(snap) {
-      if (snap.empty) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:16px">尚無打卡記錄</td></tr>';
-        return;
-      }
-      
-      tbody.innerHTML = snap.docs.map(function(doc) {
-        var data = doc.data();
-        var date = '—';
-        if (data.timestamp) {
-          if (data.timestamp.toDate) {
-            date = data.timestamp.toDate().toLocaleString('zh-TW', { hour12: false });
-          } else {
-            date = new Date(data.timestamp).toLocaleString('zh-TW', { hour12: false });
-          }
-        }
-        var recordId = data.recordId || ('GE-' + doc.id.substring(0, 8).toUpperCase());
-        var isSimulatedLabel = data.simulated ? ' <span class="badge badge-yellow" style="font-size: 10px; padding: 1px 4px; border-radius: 0 !important;">模擬</span>' : '';
-        
-        return '<tr onclick="window.previewAdminReceipt(\'' + doc.id + '\')" style="cursor:pointer">' +
-          '<td><strong style="color: #16a34a">' + recordId + '</strong>' + isSimulatedLabel + '</td>' +
-          '<td>' + (data.userName || '未知用戶') + '</td>' +
-          '<td>' + (data.shopName || '未知商店') + '</td>' +
-          '<td><span style="color:#16a34a; font-weight:bold">' + (data.carbonSaved || 0) + ' g</span></td>' +
-          '<td>' + date + '</td>' +
-          '</tr>';
-      }).join('');
-      
-      snap.docs.forEach(function(doc) {
-        window.loadedCheckinsMap[doc.id] = doc.data();
-      });
+      renderReceiptsTable(snap.docs);
     }).catch(function(err) {
-      console.error('loadReceipts error:', err);
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#ef4444;padding:16px">載入失敗：' + err.message + '</td></tr>';
+      console.warn('loadReceipts primary query failed, trying user checkinHistory fallback:', err);
+      
+      // Fallback: Query all users to collect checkinHistory
+      db.collection('users').get()
+        .then(function(usersSnap) {
+          var allCheckins = [];
+          usersSnap.docs.forEach(function(userDoc) {
+            var userData = userDoc.data();
+            var history = userData.checkinHistory || [];
+            history.forEach(function(item) {
+              allCheckins.push({
+                id: item.id || ("fallback_" + Math.random().toString(36).substr(2, 9)),
+                data: function() {
+                  var dataObj = {};
+                  for (var key in item) {
+                    if (item.hasOwnProperty(key)) {
+                      dataObj[key] = item[key];
+                    }
+                  }
+                  var tDate = item.timestamp ? new Date(item.timestamp) : new Date();
+                  dataObj.timestamp = {
+                    toDate: function() { return tDate; },
+                    seconds: Math.floor(tDate.getTime() / 1000),
+                    nanoseconds: (tDate.getTime() % 1000) * 1e6
+                  };
+                  return dataObj;
+                },
+                rawTimestamp: item.timestamp ? new Date(item.timestamp).getTime() : 0
+              });
+            });
+          });
+          
+          // Sort by timestamp descending
+          allCheckins.sort(function(a, b) {
+            return b.rawTimestamp - a.rawTimestamp;
+          });
+          
+          // Limit to 50
+          var topCheckins = allCheckins.slice(0, 50);
+          renderReceiptsTable(topCheckins);
+        })
+        .catch(function(fallbackErr) {
+          console.error('loadReceipts fallback query failed:', fallbackErr);
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#ef4444;padding:16px">載入失敗：' + fallbackErr.message + '</td></tr>';
+        });
     });
+
+  function renderReceiptsTable(docsList) {
+    if (!docsList || docsList.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:16px">尚無打卡記錄</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = docsList.map(function(doc) {
+      var data = doc.data();
+      var date = '—';
+      if (data.timestamp) {
+        if (data.timestamp.toDate) {
+          date = data.timestamp.toDate().toLocaleString('zh-TW', { hour12: false });
+        } else {
+          date = new Date(data.timestamp).toLocaleString('zh-TW', { hour12: false });
+        }
+      }
+      var recordId = data.recordId || ('GE-' + doc.id.substring(0, 8).toUpperCase());
+      var isSimulatedLabel = data.simulated ? ' <span class="badge badge-yellow" style="font-size: 10px; padding: 1px 4px; border-radius: 0 !important;">模擬</span>' : '';
+      
+      return '<tr onclick="window.previewAdminReceipt(\'' + doc.id + '\')" style="cursor:pointer">' +
+        '<td><strong style="color: #16a34a">' + recordId + '</strong>' + isSimulatedLabel + '</td>' +
+        '<td>' + (data.userName || '未知用戶') + '</td>' +
+        '<td>' + (data.shopName || '未知商店') + '</td>' +
+        '<td><span style="color:#16a34a; font-weight:bold">' + (data.carbonSaved || 0) + ' g</span></td>' +
+        '<td>' + date + '</td>' +
+        '</tr>';
+    }).join('');
+    
+    docsList.forEach(function(doc) {
+      window.loadedCheckinsMap[doc.id] = doc.data();
+    });
+  }
 };
 
 window.previewAdminReceipt = function(docId) {

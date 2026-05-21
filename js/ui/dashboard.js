@@ -201,7 +201,7 @@ window.Gateway.register('checkAndUnlockBadges', function() {
     var favoritesCount = (window.favoriteShops || []).length;
     
     var p1 = db.collection('reviews').where('userId', '==', user.uid).get();
-    var p2 = db.collection('checkins').where('userId', '==', user.uid).get();
+    var p2 = window.fetchUserCheckins ? window.fetchUserCheckins(user.uid) : db.collection('checkins').where('userId', '==', user.uid).get();
     var p3 = db.collection('users').doc(user.uid).get();
     
     Promise.all([p1, p2, p3]).then(function(results) {

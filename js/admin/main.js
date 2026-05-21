@@ -1,12 +1,19 @@
-// ===== admin/main.js =====
+﻿// ===== admin/main.js =====
 window.currentPage = 'dashboard';
 
 var pageTitles = {
   'dashboard': '後台數據總覽',
   'shops': '商店管理系統',
-  'content': '內容與報告管理',
+  'audit': '商店審核工作區',
+  'reports': '回報問題清單',
+  'newsletter': '電子報訂閱管理',
+  'reviews': '商店評價管理',
+  'announcements': '系統公告發布',
+  'policy': '網站政策修訂',
+  'badges': '會員徽章賦予',
   'receipts': '打卡憑證管理',
-  'users': '權限與垃圾桶'
+  'users': '使用者帳號管理',
+  'trash': '回收站與垃圾桶'
 };
 
 var navItems = document.querySelectorAll('.nav-item');
@@ -29,18 +36,18 @@ for (var i = 0; i < navItems.length; i++) {
       var titleEl = document.getElementById('page-title') || document.getElementById('header-title');
       if (titleEl) titleEl.textContent = pageTitles[page] || '管理後台';
       
+      if (page === 'dashboard' && window.loadDashboard) window.loadDashboard();
       if (page === 'shops' && window.loadShops) window.loadShops();
+      if (page === 'audit' && window.loadShops) window.loadShops();
+      if (page === 'reports' && window.loadReports) window.loadReports();
+      if (page === 'newsletter' && window.loadNewsletter) window.loadNewsletter();
+      if (page === 'reviews' && window.loadReviews) window.loadReviews();
+      if (page === 'announcements' && window.loadAnnouncements) window.loadAnnouncements();
+      if (page === 'policy' && window.loadPolicy) window.loadPolicy();
+      if (page === 'badges' && window.loadBadges) window.loadBadges();
       if (page === 'receipts' && window.loadReceipts) window.loadReceipts();
-      if (page === 'content') {
-        if (window.loadReports) window.loadReports();
-        if (window.loadReviews) window.loadReviews();
-        if (window.loadNewsletter) window.loadNewsletter();
-      }
-      if (page === 'users') {
-        if (window.loadUsers) window.loadUsers();
-        if (window.loadBadges) window.loadBadges();
-        if (window.loadTrash) window.loadTrash();
-      }
+      if (page === 'users' && window.loadUsers) window.loadUsers();
+      if (page === 'trash' && window.loadTrash) window.loadTrash();
     });
   })(navItems[i]);
 }
@@ -55,21 +62,4 @@ document.addEventListener('click', function(e) {
   if (e.target.classList.contains('modal-overlay')) {
     e.target.classList.remove('open');
   }
-});
-
-// Initialization
-auth.onAuthStateChanged(function(user) {
-  if (!user) {
-    window.location.href = 'index.html';
-    return;
-  }
-  db.collection('users').doc(user.uid).get().then(function(doc) {
-    if (!doc.exists || (doc.data().role !== 'admin' && doc.data().role !== 'owner')) {
-      alert('權限不足，將返回首頁');
-      window.location.href = 'index.html';
-    } else {
-      // Authorized
-      if (window.loadShops) window.loadShops();
-    }
-  });
 });
