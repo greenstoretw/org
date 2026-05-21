@@ -707,3 +707,5 @@ footer {
     100% { transform: scale(1); }
 }
 
+
+.hidden { display: none !important; }

@@ -1,9 +1,10 @@
-// ===== FIREBASE API CALLS =====
+﻿// ===== FIREBASE API CALLS =====
 window.fetchShops = function() {
     var loadingOverlay = document.getElementById('loading-overlay');
     if (loadingOverlay) loadingOverlay.classList.remove('hidden');
     if (window.renderSkeletonCards) window.renderSkeletonCards();
     
+    if (typeof db === 'undefined' || !db) { console.error('Firebase DB not initialized'); if (loadingOverlay) loadingOverlay.classList.add('hidden'); return; }
     db.collection('merchants').where('status', '==', 'active').get()
         .then(function(snapshot) {
             window.allShops = snapshot.docs.map(function(doc) { 
@@ -234,3 +235,4 @@ window.fetchUserCheckins = function(uid) {
         .orderBy('timestamp', 'desc')
         .get();
 };
+

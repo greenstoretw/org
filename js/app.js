@@ -1,4 +1,4 @@
-// app.js — main initialization
+﻿// app.js — main initialization
 
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function logVisit() {
+        if (!db) return;
         db.collection('analytics').add({
             type: 'page_view',
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -482,3 +483,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initialize();
 });
+
