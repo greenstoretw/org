@@ -1,14 +1,20 @@
-﻿var CACHE_NAME = 'greenroof-v2.14';
+var CACHE_NAME = 'greenroof-v2.17';
 var ASSETS = [
   './',
   './index.html',
   './css/main.css',
-  './js/state.js?v=2.14',
-  './js/utils.js?v=2.14',
-  './js/ui.js?v=2.14',
-  './js/api.js?v=2.14',
-  './js/auth.js?v=2.14',
-  './js/app.js?v=2.14',
+  './js/gateway.js?v=2.17',
+  './js/state.js?v=2.17',
+  './js/utils.js?v=2.17',
+  './js/ui/cards.js?v=2.17',
+  './js/ui/modal.js?v=2.17',
+  './js/ui/dashboard.js?v=2.17',
+  './js/ui/map-route.js?v=2.17',
+  './js/ui/checkin.js?v=2.17',
+  './js/ui/common.js?v=2.17',
+  './js/api.js?v=2.17',
+  './js/auth.js?v=2.17',
+  './js/app.js?v=2.17',
   './js/firebase-config.js',
   './js/locales/zh-TW.js',
   './js/locales/en.js',
@@ -67,12 +73,3 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
-
-
-
-
-
-
-
-
-

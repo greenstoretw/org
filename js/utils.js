@@ -1,5 +1,5 @@
 ﻿// ===== UTILS & UI HELPERS =====
-window.showMessage = function(msg) {
+window.Gateway.register('showMessage', function(msg) {
     var modal = document.getElementById('message-modal');
     var text = document.getElementById('message-modal-text');
     if (text) text.textContent = msg;
@@ -7,17 +7,17 @@ window.showMessage = function(msg) {
         modal.classList.remove('hidden');
         setTimeout(function() { modal.classList.add('hidden'); }, 3000);
     }
-};
+});
 
-window.showErrorModal = function(error, context) {
+window.Gateway.register('showErrorModal', function(error, context) {
     console.error('Error in ' + context + ':', error);
     var modal = document.getElementById('error-modal');
     var details = document.getElementById('error-details');
     if (details) details.textContent = '[' + context + '] ' + (error.message || String(error));
     if (modal) modal.classList.remove('hidden');
-};
+});
 
-window.formatTime = function(seconds) {
+window.Gateway.register('formatTime', function(seconds) {
     var hours = Math.floor(seconds / 3600);
     var minutes = Math.floor((seconds % 3600) / 60);
     var secs = seconds % 60;
@@ -28,10 +28,10 @@ window.formatTime = function(seconds) {
     };
     
     return hours > 0 ? hours + ':' + pad(minutes) + ':' + pad(secs) : minutes + ':' + pad(secs);
-};
+});
 
 // Debounce helper for search performance
-window.debounce = function(fn, delay) {
+window.Gateway.register('debounce', function(fn, delay) {
     var timer;
     return function() {
         clearTimeout(timer);
@@ -39,9 +39,9 @@ window.debounce = function(fn, delay) {
         var ctx = this;
         timer = setTimeout(function() { fn.apply(ctx, args); }, delay);
     };
-};
+});
 
-window.isOpenNow = function(hoursString) {
+window.Gateway.register('isOpenNow', function(hoursString) {
     if (!hoursString) return true; 
     
     var now = new Date();
@@ -63,10 +63,10 @@ window.isOpenNow = function(hoursString) {
     }
     
     return true; 
-};
+});
 
 // Haversine Distance Calculator (returns distance in meters)
-window.getDistance = function(lat1, lon1, lat2, lon2) {
+window.Gateway.register('getDistance', function(lat1, lon1, lat2, lon2) {
     var R = 6371e3; // Earth radius in meters
     var phi1 = lat1 * Math.PI / 180;
     var phi2 = lat2 * Math.PI / 180;
@@ -79,10 +79,10 @@ window.getDistance = function(lat1, lon1, lat2, lon2) {
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c; // in meters
-};
+});
 
 // Fullscreen Canvas Confetti Particle System
-window.triggerConfetti = function() {
+window.Gateway.register('triggerConfetti', function() {
     var canvas = document.getElementById('confetti-canvas');
     if (!canvas) {
         canvas = document.createElement('canvas');
@@ -159,10 +159,10 @@ window.triggerConfetti = function() {
     };
     
     animate();
-};
+});
 
 // Canvas-based Green Check-in Receipt Generator (Base64)
-window.generateReceiptBase64 = function(shopName, userName, carbonSaved, callback) {
+window.Gateway.register('generateReceiptBase64', function(shopName, userName, carbonSaved, callback) {
     var canvas = document.createElement('canvas');
     canvas.width = 400;
     canvas.height = 560;
@@ -275,5 +275,5 @@ window.generateReceiptBase64 = function(shopName, userName, carbonSaved, callbac
         var base64 = canvas.toDataURL('image/png');
         if (callback) callback(base64, recordId);
     }, 100);
-};
+});
 

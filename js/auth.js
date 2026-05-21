@@ -1,7 +1,7 @@
 // ===== AUTHENTICATION LOGIC =====
 var isLoggingIn = false;
 
-window.handleLogin = function() {
+window.Gateway.register('handleLogin', function() {
     if (isLoggingIn) return;
     if (auth.currentUser) {
         auth.signOut().then(function() {
@@ -35,12 +35,12 @@ window.handleLogin = function() {
     }).finally(function() {
         isLoggingIn = false;
     });
-};
+});
 
-window.updateLoginButtons = function(isLoggedIn) {
+window.Gateway.register('updateLoginButtons', function(isLoggedIn) {
     var text = isLoggedIn ? ((window.locales[window.currentLang] && window.locales[window.currentLang].logout) || 'Logout') : ((window.locales[window.currentLang] && window.locales[window.currentLang].login) || 'Login');
     var btn = document.getElementById('login-btn');
     var btnMobile = document.getElementById('login-btn-mobile');
     if (btn) btn.textContent = text;
     if (btnMobile) btnMobile.textContent = text;
-};
+});

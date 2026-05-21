@@ -1,5 +1,5 @@
 ﻿// ===== FIREBASE API CALLS =====
-window.fetchShops = function() {
+window.Gateway.register('fetchShops', function() {
     var loadingOverlay = document.getElementById('app-loading');
     if (loadingOverlay) loadingOverlay.classList.remove('hidden');
     if (window.renderSkeletonCards) window.renderSkeletonCards();
@@ -22,9 +22,9 @@ window.fetchShops = function() {
         .finally(function() {
             if (loadingOverlay) loadingOverlay.classList.add('hidden');
         });
-};
+});
 
-window.toggleFavorite = function(shopId) {
+window.Gateway.register('toggleFavorite', function(shopId) {
     var user = auth.currentUser;
     var index = window.favoriteShops.indexOf(shopId);
     
@@ -47,9 +47,9 @@ window.toggleFavorite = function(shopId) {
     if (window.currentFilterCategory === 'favorites') {
         window.filterAndDisplayShops();
     }
-};
+});
 
-window.fetchUserFavorites = function(uid) {
+window.Gateway.register('fetchUserFavorites', function(uid) {
     db.collection('users').doc(uid).get()
         .then(function(doc) {
             if (doc.exists && doc.data().favorites) {
@@ -60,9 +60,9 @@ window.fetchUserFavorites = function(uid) {
         .catch(function(error) {
             console.error("Error fetching favorites:", error);
         });
-};
+});
 
-window.handleShopAction = function(shopId, action) {
+window.Gateway.register('handleShopAction', function(shopId, action) {
     if (!auth.currentUser) {
         window.showMessage("請先登入後再執行此操作");
         return;
@@ -113,9 +113,9 @@ window.handleShopAction = function(shopId, action) {
             document.getElementById('report-modal').classList.remove('hidden');
             break;
     }
-};
+});
 
-window.calculateCarbonSaving = function(shop) {
+window.Gateway.register('calculateCarbonSaving', function(shop) {
     if (shop.carbonSavingPerVisit) return Number(shop.carbonSavingPerVisit);
     
     var type = (shop.type && shop.type['zh-TW']) || '';
@@ -126,9 +126,9 @@ window.calculateCarbonSaving = function(shop) {
     if (type.indexOf('二手') !== -1 || type.indexOf('循環') !== -1 || features.indexOf('二手') !== -1) return 500;
     
     return 50; 
-};
+});
 
-window.submitRating = function() {
+window.Gateway.register('submitRating', function() {
     var shopId = document.getElementById('rate-shop-id').value;
     var rating = Number(document.getElementById('rate-value').value);
     var comment = document.getElementById('rate-comment').value.trim();
@@ -173,9 +173,9 @@ window.submitRating = function() {
         .catch(function(err) {
             window.showErrorModal(err, "submitRating");
         });
-};
+});
 
-window.submitReport = function() {
+window.Gateway.register('submitReport', function() {
     var shopId = document.getElementById('report-shop-id').value;
     var reasonEl = document.querySelector('input[name="report-reason"]:checked');
     var desc = document.getElementById('report-desc').value.trim();
@@ -197,9 +197,9 @@ window.submitReport = function() {
     .catch(function(err) {
         window.showErrorModal(err, "submitReport");
     });
-};
+});
 
-window.submitCheckIn = function(shopId, shopName, userName, carbonSaved, base64Receipt, recordId, simulated) {
+window.Gateway.register('submitCheckIn', function(shopId, shopName, userName, carbonSaved, base64Receipt, recordId, simulated) {
     var user = auth.currentUser;
     if (!user) {
         return Promise.reject(new Error("用戶未登入"));
@@ -227,13 +227,13 @@ window.submitCheckIn = function(shopId, shopName, userName, carbonSaved, base64R
     }, { merge: true });
     
     return batch.commit();
-};
+});
 
-window.fetchUserCheckins = function(uid) {
+window.Gateway.register('fetchUserCheckins', function(uid) {
     return db.collection('checkins')
         .where('userId', '==', uid)
         .orderBy('timestamp', 'desc')
         .get();
-};
+});
 
 

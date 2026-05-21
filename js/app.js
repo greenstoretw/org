@@ -414,6 +414,101 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+        // ===== FLOATING ACTION PANEL (FAB) =====
+        (function() {
+            var fabBar = document.getElementById('fab-bar');
+            var fabTrigger = document.getElementById('fab-main-trigger');
+            var fabMobileMenu = document.getElementById('fab-mobile-menu');
+            var fabOpen = false;
+
+            if (fabBar) {
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 180) {
+                        fabBar.classList.remove('hidden-fab');
+                        fabBar.classList.add('visible-fab');
+                    } else {
+                        fabBar.classList.remove('visible-fab');
+                        fabBar.classList.add('hidden-fab');
+                    }
+                });
+            }
+
+            if (fabTrigger && fabMobileMenu) {
+                fabTrigger.addEventListener('click', function() {
+                    fabOpen = !fabOpen;
+                    fabTrigger.classList.toggle('open', fabOpen);
+                    if (fabOpen) {
+                        fabMobileMenu.classList.remove('hidden');
+                        setTimeout(function() { fabMobileMenu.classList.add('open'); }, 10);
+                    } else {
+                        fabMobileMenu.classList.remove('open');
+                    }
+                });
+            }
+
+            function triggerClosest() {
+                var btn = document.getElementById('closest-sort-btn');
+                if (btn) btn.click();
+                if (fabOpen && fabTrigger) { fabOpen = false; fabTrigger.classList.remove('open'); if (fabMobileMenu) fabMobileMenu.classList.remove('open'); }
+            }
+            function triggerSurprise() {
+                if (window.surpriseMe) window.surpriseMe();
+                if (fabOpen && fabTrigger) { fabOpen = false; fabTrigger.classList.remove('open'); if (fabMobileMenu) fabMobileMenu.classList.remove('open'); }
+            }
+            function triggerRouting() {
+                var btn = document.getElementById('routing-toggle-btn');
+                if (btn) btn.click();
+                if (fabOpen && fabTrigger) { fabOpen = false; fabTrigger.classList.remove('open'); if (fabMobileMenu) fabMobileMenu.classList.remove('open'); }
+            }
+
+            [['fab-closest-btn', triggerClosest], ['fab-surprise-btn', triggerSurprise], ['fab-routing-btn', triggerRouting],
+             ['fab-m-closest-btn', triggerClosest], ['fab-m-surprise-btn', triggerSurprise], ['fab-m-routing-btn', triggerRouting]
+            ].forEach(function(pair) {
+                var el = document.getElementById(pair[0]);
+                if (el) el.addEventListener('click', pair[1]);
+            });
+        })();
+
+        // ===== REPORT SECTION FORM =====
+        (function() {
+            var issueFormSection = document.getElementById('issue-form-section');
+            if (issueFormSection) {
+                issueFormSection.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    var text = (document.getElementById('issue-section') || {}).value;
+                    if (!text || !text.trim()) return;
+                    if (!db) { window.showMessage('資料庫連線中斷，請稍後再試。'); return; }
+                    db.collection('issues').add({
+                        description: text.trim(),
+                        reportedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        status: 'pending'
+                    }).then(function() {
+                        var msg = document.getElementById('issue-section-message');
+                        if (msg) { msg.classList.remove('hidden'); setTimeout(function() { msg.classList.add('hidden'); }, 4000); }
+                        issueFormSection.reset();
+                    }).catch(function(err) { window.showErrorModal(err, 'ReportSection'); });
+                });
+            }
+            var newsletterFormSection = document.getElementById('newsletter-form-section');
+            if (newsletterFormSection) {
+                newsletterFormSection.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    var email = (document.getElementById('newsletter-email-section') || {}).value;
+                    if (!email || !email.trim()) return;
+                    var source = document.referrer.indexOf('google') !== -1 ? 'Google' : document.referrer.indexOf('facebook') !== -1 ? 'Facebook' : 'Direct';
+                    if (!db) { window.showMessage('資料庫連線中斷，請稍後再試。'); return; }
+                    db.collection('subscribers').add({
+                        email: email.trim(),
+                        source: source,
+                        subscribedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(function() {
+                        var msg = document.getElementById('newsletter-section-message');
+                        if (msg) { msg.classList.remove('hidden'); setTimeout(function() { msg.classList.add('hidden'); }, 4000); }
+                        newsletterFormSection.reset();
+                    }).catch(function(err) { window.showErrorModal(err, 'NewsletterSection'); });
+                });
+            }
+        })();
     // ===== CORE LOGIC =====
     window.getFilteredShops = function() {
         var branches = window.allShops.filter(function(s) { return s.isBranch && s.parentId; });
@@ -483,4 +578,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initialize();
 });
+
+
 

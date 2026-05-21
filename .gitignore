@@ -7,3 +7,4 @@ Thumbs.db
 # js/firebase-config.js 
 # Note: In a real project, we'd use environment variables, but for this simple setup, 
 # we'll let the user decide whether to commit their config or use placeholders.
+tailwindcss.exe
