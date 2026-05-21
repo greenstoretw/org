@@ -1,6 +1,6 @@
 ﻿// ===== FIREBASE API CALLS =====
 window.fetchShops = function() {
-    var loadingOverlay = document.getElementById('loading-overlay');
+    var loadingOverlay = document.getElementById('app-loading');
     if (loadingOverlay) loadingOverlay.classList.remove('hidden');
     if (window.renderSkeletonCards) window.renderSkeletonCards();
     
@@ -235,4 +235,5 @@ window.fetchUserCheckins = function(uid) {
         .orderBy('timestamp', 'desc')
         .get();
 };
+
 

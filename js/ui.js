@@ -1,4 +1,4 @@
-// ===== UI RENDERING & MODALS =====
+﻿// ===== UI RENDERING & MODALS =====
 window.renderFilterButtons = function() {
     var shopTypes = [];
     var typeSet = {};
@@ -656,7 +656,7 @@ window.handleCheckIn = function(shopId) {
 
     var userName = user.displayName || user.email || '環保旅客';
 
-    var loadingOverlay = document.getElementById('loading-overlay');
+    var loadingOverlay = document.getElementById('app-loading');
     if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
     window.generateReceiptBase64(shopName, userName, carbonSaved, function(base64Receipt, recordId) {
@@ -885,3 +885,4 @@ window.previewUserReceipt = function(docId) {
         modal.classList.remove('hidden');
     }
 };
+
