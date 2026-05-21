@@ -1,18 +1,19 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="綠簷 Green Eaves - 探索台北永續生活地圖。尋找減塑、在地、無毒的永續商店。">
     <meta name="theme-color" content="#1a3a2a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="png.png">
     <link rel="manifest" href="manifest.json">
     <title>綠簷 Green Eaves | 永續生活地圖</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     
     <!-- External Dependencies -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/tailwind.css">
     <script>
         // Check local storage or system preference for dark mode before rendering
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -26,6 +27,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     
     <link rel="stylesheet" href="css/main.css?v=2.6">
 </head>
@@ -493,3 +495,4 @@
     <script src="js/app.js?v=2.6"></script>
 </body>
 </html>
+
