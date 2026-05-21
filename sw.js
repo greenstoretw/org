@@ -1,4 +1,4 @@
-﻿var CACHE_NAME = 'green-eaves-v2.8';
+﻿var CACHE_NAME = 'green-eaves-v2.9';
 var ASSETS = [
   './',
   './index.html',
@@ -67,5 +67,6 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
+
 
 

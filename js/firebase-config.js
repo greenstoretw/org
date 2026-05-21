@@ -1,4 +1,4 @@
-// Firebase 配置資訊 - 已更新為您的專案設定
+﻿// Firebase 配置資訊 - 已更新為您的專案設定
 var firebaseConfig = {
   apiKey: "AIzaSyBYVzIEA4RxUH2IxojDnln0QNKC8gyemfg",
   authDomain: "greenstore-1ce0f.firebaseapp.com",
@@ -14,7 +14,8 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var auth = firebase.auth();
-var storage = firebase.storage();
-var analytics = firebase.analytics();
+var storage = (typeof firebase.storage === 'function') ? firebase.storage() : null;
+var analytics = (typeof firebase.analytics === 'function') ? firebase.analytics() : null;
 
 console.log("Firebase 雲端連線已成功初始化！");
+
