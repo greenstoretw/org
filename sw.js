@@ -1,14 +1,14 @@
-﻿var CACHE_NAME = 'green-eaves-v2.13';
+﻿var CACHE_NAME = 'greenroof-v2.14';
 var ASSETS = [
   './',
   './index.html',
   './css/main.css',
-  './js/state.js?v=2.6',
-  './js/utils.js?v=2.6',
-  './js/ui.js?v=2.6',
-  './js/api.js?v=2.6',
-  './js/auth.js?v=2.6',
-  './js/app.js?v=2.6',
+  './js/state.js?v=2.14',
+  './js/utils.js?v=2.14',
+  './js/ui.js?v=2.14',
+  './js/api.js?v=2.14',
+  './js/auth.js?v=2.14',
+  './js/app.js?v=2.14',
   './js/firebase-config.js',
   './js/locales/zh-TW.js',
   './js/locales/en.js',
@@ -67,6 +67,8 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
+
+
 
 
 

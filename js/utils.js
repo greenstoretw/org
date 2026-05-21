@@ -1,4 +1,4 @@
-// ===== UTILS & UI HELPERS =====
+﻿// ===== UTILS & UI HELPERS =====
 window.showMessage = function(msg) {
     var modal = document.getElementById('message-modal');
     var text = document.getElementById('message-modal-text');
@@ -187,7 +187,7 @@ window.generateReceiptBase64 = function(shopName, userName, carbonSaved, callbac
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.font = 'bold 20px "Noto Sans TC", sans-serif';
-    ctx.fillText('GREEN EAVES ECO-CHECKIN', canvas.width / 2, 60);
+    ctx.fillText('GREENROOF ECO-CHECKIN', canvas.width / 2, 60);
     ctx.font = 'bold 12px "Inter", sans-serif';
     ctx.fillText('SUSTAINABLE FOOTPRINT RECORD', canvas.width / 2, 85);
     
@@ -268,7 +268,7 @@ window.generateReceiptBase64 = function(shopName, userName, carbonSaved, callbac
     ctx.font = 'italic 12px "Noto Sans TC", sans-serif';
     ctx.fillText('Thank you for making our planet greener!', canvas.width / 2, barY + 70);
     ctx.font = 'bold 11px "Inter", sans-serif';
-    ctx.fillText('GREEN EAVES PROJECT • GREENSTORE-1CE0F', canvas.width / 2, barY + 90);
+    ctx.fillText('GREENROOF PROJECT • GREENSTORE-1CE0F', canvas.width / 2, barY + 90);
     
     // Output base64
     setTimeout(function() {
@@ -276,3 +276,4 @@ window.generateReceiptBase64 = function(shopName, userName, carbonSaved, callbac
         if (callback) callback(base64, recordId);
     }, 100);
 };
+
