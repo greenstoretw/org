@@ -224,11 +224,7 @@ window.Gateway.register('submitCheckIn', function(shopId, shopName, userName, ca
         totalCarbonSaved: firebase.firestore.FieldValue.increment(carbonSaved),
         checkinCount: firebase.firestore.FieldValue.increment(1),
         lastActionAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: mergeCheckedInCount() });
-    
-    function mergeCheckedInCount() {
-        return true;
-    }
+    }, { merge: true });
     
     return batch.commit().catch(function(error) {
         console.warn("First checkin attempt failed (likely permissions). Trying inline fallback in users collection...", error);

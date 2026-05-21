@@ -1,4 +1,4 @@
-﻿// ===== admin/main.js =====
+// ===== admin/main.js =====
 window.currentPage = 'dashboard';
 
 var pageTitles = {
