@@ -1,4 +1,4 @@
-var CACHE_NAME = 'greenroof-v2.18';
+var CACHE_NAME = 'greenroof-v2.19';
 var ASSETS = [
   './',
   './index.html',
