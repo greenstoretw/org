@@ -1,4 +1,4 @@
-﻿/* ===== IMPORTS ===== */
+/* ===== IMPORTS ===== */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;500;700;900&display=swap');
 
 /* ===== BASE ===== */
@@ -1338,4 +1338,205 @@ html:not(.dark) .hero-stat-card .stat-label {
 }
 #fab-main-trigger {
     border-radius: 50% !important;
+}
+
+/* ===== STRICT HIGH-CONTRAST (BLACK/WHITE) UNIVERSAL MATCHING RULES ===== */
+
+/* --- Light Mode: Pure White Background (#ffffff) & Pure Black Text (#000000) --- */
+html:not(.dark) body,
+html:not(.dark) #search-input,
+html:not(.dark) nav,
+html:not(.dark) footer,
+html:not(.dark) #shop-detail-container,
+html:not(.dark) #user-dashboard-modal > div,
+html:not(.dark) .shop-card,
+html:not(.dark) .hero-stat-card,
+html:not(.dark) .bg-white,
+html:not(.dark) .bg-slate-50,
+html:not(.dark) .bg-slate-100,
+html:not(.dark) .bg-slate-200,
+html:not(.dark) .bg-gray-50,
+html:not(.dark) .bg-gray-100,
+html:not(.dark) .bg-gray-200,
+html:not(.dark) .bg-green-50,
+html:not(.dark) .bg-emerald-50,
+html:not(.dark) .bg-zinc-50,
+html:not(.dark) .bg-neutral-50,
+html:not(.dark) #search-input-container,
+html:not(.dark) .modal-content,
+html:not(.dark) .modal-body,
+html:not(.dark) div[id$="-modal"] > div,
+html:not(.dark) div[id*="-modal"] > div,
+html:not(.dark) .card,
+html:not(.dark) .panel,
+html:not(.dark) select,
+html:not(.dark) select option,
+html:not(.dark) input,
+html:not(.dark) textarea {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+/* Force pure black text for all semantic text containers in Light Mode */
+html:not(.dark) p,
+html:not(.dark) span,
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4,
+html:not(.dark) h5,
+html:not(.dark) h6,
+html:not(.dark) label,
+html:not(.dark) li,
+html:not(.dark) a:not(.bg-green-600):not(.bg-green-700):not(.bg-slate-900):not(.btn-green):not(.btn-blue):not(.btn-red):not(.tag.active),
+html:not(.dark) i:not(.text-white):not(.text-green-600):not(.text-amber-400),
+html:not(.dark) select,
+html:not(.dark) select option,
+html:not(.dark) input,
+html:not(.dark) textarea,
+html:not(.dark) option,
+html:not(.dark) .stat-label,
+html:not(.dark) .shop-card p,
+html:not(.dark) .shop-card h3,
+html:not(.dark) .shop-card span,
+html:not(.dark) #shop-detail-container .text-slate-700,
+html:not(.dark) #shop-reviews-container .text-slate-700,
+html:not(.dark) #shop-reviews-container .text-slate-600,
+html:not(.dark) #user-dashboard-modal .text-gray-800,
+html:not(.dark) #user-dashboard-modal .text-gray-600,
+html:not(.dark) #user-dashboard-modal .text-gray-400 {
+    color: #000000 !important;
+}
+
+/* Ensure light mode inactive tags have pure black border and text */
+html:not(.dark) .tag:not(.active) {
+    border-color: #000000 !important;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+/* Override all light-mode utility text classes to be strictly black */
+html:not(.dark) [class*="text-slate-"],
+html:not(.dark) [class*="text-gray-"],
+html:not(.dark) [class*="text-neutral-"],
+html:not(.dark) [class*="text-zinc-"],
+html:not(.dark) [class*="text-stone-"] {
+    color: #000000 !important;
+}
+
+
+/* --- Dark Mode: Pure Black Background (#000000) & Pure White Text (#ffffff) --- */
+.dark body,
+.dark nav,
+.dark footer,
+.dark #shop-detail-container,
+.dark #user-dashboard-modal > div,
+.dark .shop-card,
+.dark .hero-stat-card,
+.dark .bg-slate-50,
+.dark .bg-slate-100,
+.dark .bg-slate-200,
+.dark .bg-slate-800,
+.dark .bg-slate-900,
+.dark .bg-slate-950,
+.dark .bg-gray-50,
+.dark .bg-gray-800,
+.dark .bg-gray-900,
+.dark .bg-white,
+.dark .bg-emerald-950,
+.dark .bg-green-950,
+.dark #shop-reviews-container .bg-white,
+.dark #shop-reviews-container .bg-slate-50,
+.dark #search-input-container,
+.dark .modal-content,
+.dark .modal-body,
+.dark div[id$="-modal"] > div,
+.dark div[id*="-modal"] > div,
+.dark .card,
+.dark .panel,
+.dark select,
+.dark select option,
+.dark input,
+.dark textarea {
+    background-color: #000000 !important;
+    background: #000000 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+/* Force pure white text for all semantic text containers in Dark Mode */
+.dark p,
+.dark span,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6,
+.dark label,
+.dark li,
+.dark a:not(.bg-green-600):not(.bg-green-700):not(.btn-green):not(.btn-blue):not(.btn-red):not(.tag.active),
+.dark i:not(.text-green-600):not(.text-amber-400),
+.dark select,
+.dark select option,
+.dark input,
+.dark textarea,
+.dark option,
+.dark .stat-label,
+.dark .shop-card p,
+.dark .shop-card h3,
+.dark .shop-card span,
+.dark #shop-detail-container .text-slate-700,
+.dark #shop-reviews-container .text-slate-700,
+.dark #shop-reviews-container .text-slate-600,
+.dark #user-dashboard-modal .text-gray-800,
+.dark #user-dashboard-modal .text-gray-600,
+.dark #user-dashboard-modal .text-gray-400 {
+    color: #ffffff !important;
+}
+
+/* Ensure dark mode inactive tags have pure white border and text */
+.dark .tag:not(.active) {
+    border-color: #ffffff !important;
+    color: #ffffff !important;
+    background-color: #000000 !important;
+}
+.dark #search-input {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+/* Override all dark-mode utility text classes to be strictly white */
+.dark [class*="text-slate-"],
+.dark [class*="text-gray-"],
+.dark [class*="text-neutral-"],
+.dark [class*="text-zinc-"],
+.dark [class*="text-stone-"] {
+    color: #ffffff !important;
+}
+
+
+/* --- Leaflet Map Popup High Contrast Overrides --- */
+html:not(.dark) .leaflet-popup-content-wrapper,
+html:not(.dark) .leaflet-popup-tip {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.4) !important;
+}
+html:not(.dark) .leaflet-popup-content {
+    color: #000000 !important;
+}
+
+.dark .leaflet-popup-content-wrapper,
+.dark .leaflet-popup-tip {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 1px solid #ffffff !important;
+    box-shadow: 0 3px 14px rgba(255,255,255,0.2) !important;
+}
+.dark .leaflet-popup-content {
+    color: #ffffff !important;
 }
