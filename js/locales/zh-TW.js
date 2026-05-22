@@ -2,7 +2,7 @@ window.locales = window.locales || {};
 window.locales['zh-TW'] = {
     pageTitle: '永續商店地圖系統', appName: '永續商店地圖', home: '首頁', map: '地圖', shopList: '商店資料列表', newsletter: '訂閱通知', reportIssueNavLink: '問題回報',
     langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langLatin: 'Latina', langSpanish: 'Español', langGerman: 'Deutsch', langJapanese: '日本語', langKorean: '한국어',
-    heroTitle: '台灣永續商店檢索系統', heroSubtitle: '查詢具備環境友善、公平貿易與永續實踐特徵之商店地理位置與營業資訊',
+    heroTitle: 'LIVING <br><span class="text-green-600 italic">SUSTAINABLY</span>.', heroSubtitle: '查詢具備環境友善、公平貿易與永續實踐特徵之商店地理位置與營業資訊',
     viewMapBtn: '開啟地圖', browseShopsBtn: '瀏覽商店列表', searchTitle: '搜尋商店', searchPlaceholder: '輸入商店名稱、地址或關鍵字...', searchBtn: '搜尋',
     filterCategoryTitle: '類別篩選', filterAll: '全部商店', filterFav: '收藏清單', filterTagsBtn: '篩選標籤',
     advTagFilter: '進階標籤篩選', shopTypes: '商店類型', ecoFeatures: '綠色特徵', filterOpenNow: '營業中', applyFilterBtn: '套用篩選',

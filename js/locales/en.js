@@ -2,7 +2,7 @@ window.locales = window.locales || {};
 window.locales['en'] = {
     pageTitle: 'Sustainable Store Map System', appName: 'Sustainable Store Map', home: 'Home', map: 'Map', shopList: 'Store Database', newsletter: 'Subscribe Updates', reportIssueNavLink: 'Report Issue',
     langChinese: '繁體中文', langEnglish: 'English', langFrench: 'Français', langLatin: 'Latina', langSpanish: 'Español', langGerman: 'Deutsch', langJapanese: '日本語', langKorean: '한국어',
-    heroTitle: 'Taiwan Sustainable Stores Database', heroSubtitle: 'Query the geographic locations and operational information of stores featuring eco-friendly, fair trade, and sustainable practices.',
+    heroTitle: 'LIVING <br><span class="text-green-600 italic">SUSTAINABLY</span>.', heroSubtitle: 'Query the geographic locations and operational information of stores featuring eco-friendly, fair trade, and sustainable practices.',
     viewMapBtn: 'Open Map', browseShopsBtn: 'Browse Store List', searchTitle: 'Search Stores', searchPlaceholder: 'Enter store name, address or keyword...', searchBtn: 'Search',
     filterCategoryTitle: 'Filter Categories', filterAll: 'All Stores', filterFav: 'Favorites', filterTagsBtn: 'Filter Tags',
     advTagFilter: 'Advanced Tag Filtering', shopTypes: 'Store Types', ecoFeatures: 'Eco Features', filterOpenNow: 'Open Now', applyFilterBtn: 'Apply Filters',
