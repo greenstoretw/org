@@ -57,7 +57,23 @@ self.addEventListener('fetch', function(event) {
 
   event.respondWith(
     caches.match(event.request).then(function(cachedResponse) {
-      var fetchPromise = fetch(event.request).then(function(networkResponse) {
+      if (cachedResponse) {
+        // Stale-while-revalidate: return cached response, update cache in the background
+        fetch(event.request).then(function(networkResponse) {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            var responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(function(cache) {
+              cache.put(event.request, responseToCache);
+            });
+          }
+        }).catch(function() {
+          // Ignore background fetch errors
+        });
+        return cachedResponse;
+      }
+      
+      // If not in cache, fetch from network directly and return it
+      return fetch(event.request).then(function(networkResponse) {
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           var responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then(function(cache) {
@@ -65,11 +81,7 @@ self.addEventListener('fetch', function(event) {
           });
         }
         return networkResponse;
-      }).catch(function() {
-        return cachedResponse;
       });
-      
-      return cachedResponse || fetchPromise;
     })
   );
 });
