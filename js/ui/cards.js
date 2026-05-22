@@ -28,7 +28,7 @@ window.Gateway.register('renderFilterButtons', function() {
     shopTypes.forEach(function(type) {
         if(!type) return;
         var btn = document.createElement('button');
-        btn.className = 'tag px-3 py-1 rounded-full text-sm';
+        btn.className = 'tag px-4 py-2 rounded-full text-sm font-bold';
         btn.dataset.category = type; 
         btn.textContent = type;
         filterContainer.appendChild(btn);
@@ -54,7 +54,7 @@ window.Gateway.register('renderFilterButtons', function() {
         
         allFeatures.forEach(function(feature) {
             var btn = document.createElement('button');
-            btn.className = 'tag px-3 py-1 rounded-full text-sm eco-filter-btn';
+            btn.className = 'tag px-4 py-2 rounded-full text-sm font-bold eco-filter-btn';
             btn.dataset.feature = feature;
             btn.textContent = feature;
             ecoFeaturesContainer.appendChild(btn);

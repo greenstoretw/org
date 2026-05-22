@@ -1311,3 +1311,31 @@ footer::before {
     100% { transform: translateX(100%); }
 }
 
+
+
+/* ===== CUSTOM WEB APP OVERRIDES FOR CONTRAST & VISUAL BEAUTY ===== */
+
+/* 1. Global light mode text contrast overrides for WCAG AA standard */
+html:not(.dark) .text-slate-500,
+html:not(.dark) .text-gray-500,
+html:not(.dark) .text-slate-400 {
+    color: #4b5563 !important;
+}
+
+/* 2. Premium glassy Hero Stat Card Enhancements */
+html:not(.dark) .hero-stat-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(22, 163, 74, 0.15) !important;
+    box-shadow: 0 8px 30px rgba(22, 163, 74, 0.06), 0 2px 8px rgba(22, 163, 74, 0.04) !important;
+}
+html:not(.dark) .hero-stat-card .stat-label {
+    color: #4b5563 !important;
+}
+
+/* 3. Floating Action Bar (FAB) Visual Radiuses */
+#fab-bar {
+    border-radius: 9999px !important;
+}
+#fab-main-trigger {
+    border-radius: 50% !important;
+}
