@@ -248,6 +248,7 @@ window.loadBadges = function() {
   
   db.collection('badges').get().then(function(snap) {
     var badges = snap.docs.map(function(doc) { var d = doc.data(); d.id = doc.id; return d; });
+    window.allBadges = badges;
     if (grantSelect) {
       grantSelect.innerHTML = badges.map(function(b) {
         return '<option value="' + b.id + '">' + (b.icon || '') + ' ' + (b.name || b.id) + '</option>';
@@ -371,8 +372,9 @@ window.permanentDelete = function(id) {
 };
 
 window.restoreUser = function(id) {
-  db.collection('users').doc(id).update({ status: 'active' }).then(function() {
+  db.collection('users').doc(id).update({ status: 'active', role: 'user' }).then(function() {
     window.loadTrash();
+    if (window.loadUsers) window.loadUsers();
   });
 };
 
