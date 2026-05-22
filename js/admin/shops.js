@@ -134,11 +134,52 @@ window.openShopModal = function(id) {
   modal.classList.add('open');
 };
 
+
+window.geocodeAddress = function() {
+  var addr = document.getElementById('s-addr-zh').value.trim();
+  if (!addr) {
+    alert('請先輸入中文地址！');
+    return Promise.reject('No address');
+  }
+  
+  var url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(addr);
+  return fetch(url)
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data && data.length > 0) {
+        document.getElementById('s-lat').value = data[0].lat;
+        document.getElementById('s-lng').value = data[0].lon;
+        alert('成功取得座標：' + data[0].lat + ', ' + data[0].lon);
+        return true;
+      } else {
+        alert('無法解析該地址的座標，請手動確認地址是否正確。');
+        return false;
+      }
+    })
+    .catch(function(err) {
+      alert('自動取得座標失敗：' + err.message);
+      return false;
+    });
+};
+
 window.saveShop = function() {
   var id = document.getElementById('shop-edit-id').value;
   var latVal = document.getElementById('s-lat').value;
   var lngVal = document.getElementById('s-lng').value;
   var nameZh = document.getElementById('s-name-zh').value.trim();
+
+  if (!latVal || !lngVal) {
+    var addr = document.getElementById('s-addr-zh').value.trim();
+    if (addr) {
+      alert('座標未填寫，系統正自動嘗試從地址取得座標...');
+      window.geocodeAddress().then(function(success) {
+        if (success) {
+          window.saveShop();
+        }
+      });
+      return;
+    }
+  }
 
   var data = {
     name: { 'zh-TW': nameZh, 'en': document.getElementById('s-name-en').value.trim() },
