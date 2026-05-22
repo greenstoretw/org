@@ -11,7 +11,13 @@ window.Gateway.register('setLanguage', function(lang) {
             var el = i18nElements[i];
             var key = el.getAttribute('data-i18n');
             var translation = (window.locales[lang] && window.locales[lang][key]) || (window.locales['zh-TW'] && window.locales['zh-TW'][key]);
-            if (translation) el.textContent = translation;
+            if (translation) {
+                if (translation.indexOf('<') !== -1 && translation.indexOf('>') !== -1) {
+                    el.innerHTML = translation;
+                } else {
+                    el.textContent = translation;
+                }
+            }
         }
         var navLinks = document.querySelector('.nav-links');
         if (navLinks && window.innerWidth >= 768) navLinks.style.display = 'flex';
