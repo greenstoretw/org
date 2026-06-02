@@ -1,4 +1,4 @@
-﻿// app.js — main initialization
+// app.js — main initialization
 
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {

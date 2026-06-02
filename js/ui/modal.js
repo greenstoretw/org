@@ -6,10 +6,10 @@ window.Gateway.register('showShopDetail', function(shopId) {
     var shop = allShops.find(function(s) { return s.id === shopId; });
     if (!shop) return;
 
-    var name = (shop.name && shop.name[currentLang]) || (shop.name && shop.name['zh-TW']) || '';
-    var type = (shop.type && shop.type[currentLang]) || (shop.type && shop.type['zh-TW']) || '';
-    var addr = (shop.address && shop.address[currentLang]) || (shop.address && shop.address['zh-TW']) || '';
-    var desc = (shop.description && shop.description[currentLang]) || (shop.description && shop.description['zh-TW']) || '';
+    var name = escapeHtml((shop.name && shop.name[currentLang]) || (shop.name && shop.name['zh-TW']) || '');
+    var type = escapeHtml((shop.type && shop.type[currentLang]) || (shop.type && shop.type['zh-TW']) || '');
+    var addr = escapeHtml((shop.address && shop.address[currentLang]) || (shop.address && shop.address['zh-TW']) || '');
+    var desc = escapeHtml((shop.description && shop.description[currentLang]) || (shop.description && shop.description['zh-TW']) || '');
     var isFavorited = favoriteShops.indexOf(shop.id) !== -1;
     
     var shopBranches = window.allShops.filter(function(b) { return b.isBranch && b.parentId === shop.id; });
@@ -81,9 +81,9 @@ window.Gateway.register('showShopDetail', function(shopId) {
         html += '<a href="' + mapUrl + '" target="_blank" class="ml-3 px-3 py-1 bg-green-50 text-green-700 text-xs hover:bg-green-100 transition flex items-center gap-1 shrink-0"><i class="fa-solid fa-map-location-dot"></i> 導航</a>';
     }
     html += '</div></div><hr class="border-slate-100"><div><h4 class="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider mb-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>營業時間</h4>';
-    html += '<p class="mt-1 text-slate-600 text-sm whitespace-pre-line">' + (shop.openingHours || '未提供') + '</p></div><hr class="border-slate-100"><div><h4 class="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider mb-2"><i class="fa-solid fa-phone text-green-600 w-5 text-center"></i>電話</h4>';
-    html += '<p class="mt-1 text-slate-600 text-sm whitespace-pre-line">' + (shop.phone || '未提供') + '</p></div><hr class="border-slate-100"><div><h4 class="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider mb-2"><i class="fa-solid fa-globe text-green-600 w-5 text-center"></i>網站</h4>';
-    if (shop.website) html += '<a href="' + shop.website + '" target="_blank" class="mt-1 text-blue-600 hover:underline text-sm break-all">' + shop.website + '</a>';
+    html += '<p class="mt-1 text-slate-600 text-sm whitespace-pre-line">' + escapeHtml(shop.openingHours || '暫無營業時間') + '</p></div><hr class="border-slate-100"><div><h4 class="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider mb-2"><i class="fa-solid fa-phone text-green-600 w-5 text-center"></i>電話</h4>';
+    html += '<p class="mt-1 text-slate-600 text-sm whitespace-pre-line">' + escapeHtml(shop.phone || '暫無資料') + '</p></div><hr class="border-slate-100"><div><h4 class="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider mb-2"><i class="fa-solid fa-globe text-green-600 w-5 text-center"></i>網站</h4>';
+    if (shop.website) html += '<a href="' + escapeHtml(shop.website) + '" target="_blank" class="mt-1 text-blue-600 hover:underline text-sm break-all">' + escapeHtml(shop.website) + '</a>';
     else html += '<p class="mt-1 text-slate-600 text-sm">未提供</p>';
     html += '</div></div></div>';
     
@@ -103,9 +103,9 @@ window.Gateway.register('showShopDetail', function(shopId) {
         
     if (similarShops.length > 0) {
         recContainer.innerHTML = similarShops.map(function(s) { 
-            var sName = (s.name && s.name['zh-TW']) || '';
-            var sAddr = (s.address && s.address['zh-TW']) || '';
-            var sType = (s.type && s.type['zh-TW']) || '';
+            var sName = escapeHtml((s.name && s.name['zh-TW']) || '');
+            var sAddr = escapeHtml((s.address && s.address['zh-TW']) || '');
+            var sType = escapeHtml((s.type && s.type['zh-TW']) || '');
             var recInner = '<div class="border border-slate-200 bg-white hover:border-green-500 transition cursor-pointer flex flex-col h-full group" onclick="window.showShopDetail(\'' + s.id + '\')">';
             recInner += '<div class="h-24 bg-slate-100 overflow-hidden relative">';
             if (s.imageUrl) recInner += '<img src="' + s.imageUrl + '" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="' + sName + '" loading="lazy">';

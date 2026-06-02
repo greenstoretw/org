@@ -26,7 +26,7 @@ window.loadReports = function() {
           '<span class="badge ' + statusColor + '">' + (r.status || '待處理') + '</span>' +
           '</div>' +
           '<p style="font-size:.8rem;color:#6b7280;margin-top:4px"><strong>原因：</strong>' + (r.reason || '—') + '</p>' +
-          (r.description ? '<p style="font-size:.75rem;color:#6b7280;background:#fef2f2;padding:6px;border-radius:4px;margin-top:4px"><strong>補充說明：</strong>' + r.description + '</p>' : '') +
+          (r.description ? '<p style="font-size:.75rem;color:#6b7280;background:#fef2f2;padding:6px;border-radius:4px;margin-top:4px"><strong>補充說明：</strong>' + escapeHtml(r.description || '') + '</p>' : '') +
           '<div style="display:flex;gap:6px;margin-top:8px">' +
           '<button class="btn btn-green btn-sm" onclick="window.resolveItem(\'reports\',\'' + doc.id + '\')">標記已處理</button>' +
           '<span style="font-size:11px;color:#9ca3af;align-self:center">' + date + '</span>' +

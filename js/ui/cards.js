@@ -88,9 +88,9 @@ window.Gateway.register('renderShopCards', function(filteredShops) {
         var card = document.createElement('div');
         card.className = 'shop-card bg-white overflow-hidden relative';
         
-        var shopName = (shop.name && shop.name[currentLang]) || (shop.name && shop.name['zh-TW']) || 'Shop';
-        var shopType = (shop.type && shop.type[currentLang]) || (shop.type && shop.type['zh-TW']) || '';
-        var shopDesc = (shop.description && shop.description[currentLang]) || (shop.description && shop.description['zh-TW']) || '';
+        var shopName = escapeHtml((shop.name && shop.name[currentLang]) || (shop.name && shop.name['zh-TW']) || 'Shop');
+        var shopType = escapeHtml((shop.type && shop.type[currentLang]) || (shop.type && shop.type['zh-TW']) || '');
+        var shopDesc = escapeHtml((shop.description && shop.description[currentLang]) || (shop.description && shop.description['zh-TW']) || '');
 
         var html = '';
         if (shop.featured) html += '<div class="featured-badge">FEATURED</div>';

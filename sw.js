@@ -1,23 +1,24 @@
-var CACHE_NAME = 'greenroof-v2.24';
+var CACHE_NAME = 'greenroof-v2.25';
 var ASSETS = [
   './',
   './index.html',
   './css/main.css',
-  './js/gateway.js?v=2.24',
-  './js/state.js?v=2.24',
-  './js/utils.js?v=2.24',
-  './js/ui/cards.js?v=2.24',
-  './js/ui/modal.js?v=2.24',
-  './js/ui/dashboard.js?v=2.24',
-  './js/ui/map-route.js?v=2.24',
-  './js/ui/checkin.js?v=2.24',
-  './js/ui/common.js?v=2.24',
-  './js/api.js?v=2.24',
-  './js/auth.js?v=2.24',
-  './js/app.js?v=2.24',
-  './js/firebase-config.js',
-  './js/locales/zh-TW.js',
-  './js/locales/en.js',
+  './js/gateway.js?v=2.25',
+  './js/state.js?v=2.25',
+  './js/utils.js?v=2.25',
+  './js/ui/cards.js?v=2.25',
+  './js/ui/modal.js?v=2.25',
+  './js/ui/dashboard.js?v=2.25',
+  './js/ui/map-route.js?v=2.25',
+  './js/ui/checkin.js?v=2.25',
+  './js/ui/common.js?v=2.25',
+  './js/api.js?v=2.25',
+  './js/auth.js?v=2.25',
+  './js/app.js?v=2.25',
+  './js/firebase-config.js?v=2.25',
+  './js/error-reporter.js?v=2.25',
+  './js/locales/zh-TW.js?v=2.25',
+  './js/locales/en.js?v=2.25',
   './png.png'
 ];
 
@@ -81,6 +82,12 @@ self.addEventListener('fetch', function(event) {
           });
         }
         return networkResponse;
+      }).catch(function(err) {
+        // Safe fallback for navigation requests when offline
+        if (event.request.mode === 'navigate') {
+          return caches.match('./index.html') || caches.match('./');
+        }
+        throw err;
       });
     })
   );

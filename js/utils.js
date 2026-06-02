@@ -1,4 +1,10 @@
 ﻿// ===== UTILS & UI HELPERS =====
+window.Gateway.register('escapeHtml', function(text) {
+    if (!text) return '';
+    var map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+});
+
 window.Gateway.register('showMessage', function(msg) {
     var modal = document.getElementById('message-modal');
     var text = document.getElementById('message-modal-text');

@@ -39,8 +39,8 @@ window.renderAuditTable = function(shops) {
     return;
   }
   tbody.innerHTML = shops.map(function(s) {
-    var nameZh = (s.name && s.name['zh-TW']) || '—';
-    var typeZh = (s.type && s.type['zh-TW']) || '—';
+    var nameZh = escapeHtml((s.name && s.name['zh-TW']) || '—');
+    var typeZh = escapeHtml((s.type && s.type['zh-TW']) || '—');
     return '<tr>' +
       '<td><strong>' + nameZh + '</strong></td>' +
       '<td>' + typeZh + '</td>' +
@@ -64,8 +64,8 @@ window.renderShopsTable = function(shops) {
   var tbody = document.getElementById('shops-tbody');
   if (!tbody) return;
   tbody.innerHTML = shops.map(function(s) {
-    var nameZh = (s.name && s.name['zh-TW']) || '—';
-    var typeZh = (s.type && s.type['zh-TW']) || '—';
+    var nameZh = escapeHtml((s.name && s.name['zh-TW']) || '—');
+    var typeZh = escapeHtml((s.type && s.type['zh-TW']) || '—');
     var statusClass = s.status === 'active' ? 'badge-green' : 'badge-gray';
     var statusText = s.status === 'active' ? '上架' : '隱藏';
     var toggleBtnClass = s.status === 'active' ? 'btn-gray' : 'btn-green';

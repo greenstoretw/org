@@ -174,6 +174,7 @@ window.Gateway.register('submitRating', function() {
             window.showErrorModal(err, "submitRating");
         });
 });
+window.submitReview = window.submitRating;
 
 window.Gateway.register('submitReport', function() {
     var shopId = document.getElementById('report-shop-id').value;

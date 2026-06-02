@@ -43,8 +43,8 @@ window.loadUsers = function() {
       var roleLabel = roleLabels[r] || '未知';
 
       return '<tr>' +
-        '<td><div style="font-size:.85rem;font-weight:600">' + (u.displayName || '未設定名稱') + '</div><div style="font-size:.7rem;color:#9ca3af">' + doc.id + '</div></td>' +
-        '<td>' + (u.email || '—') + '</td>' +
+        '<td><div style="font-size:.85rem;font-weight:600">' + (escapeHtml(u.displayName || '未設定名稱')) + '</div><div style="font-size:.7rem;color:#9ca3af">' + doc.id + '</div></td>' +
+        '<td>' + (escapeHtml(u.email || '—')) + '</td>' +
         '<td><span class="badge ' + roleClass + '">' + roleLabel + '</span></td>' +
         '<td>' + (u.totalCarbonSaved || 0) + 'g</td>' +
         '<td><div style="display:flex;gap:4px">' +

@@ -37,8 +37,9 @@ window.Gateway.register('showUserDashboard', function() {
             return (window.favoriteShops || []).indexOf(s.id) !== -1; 
         });
         if (favContainer) {
-            favContainer.innerHTML = favShops.map(function(s) { 
-                return '<div class="p-3 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-red-200 transition"><div class="font-bold text-gray-800">' + ((s.name && s.name['zh-TW']) || '未知商家') + '</div><button onclick="window.showShopDetail(\'' + s.id + '\')" class="text-xs text-red-500 mt-2 flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> 查看詳情</button></div>';
+            favContainer.innerHTML = favShops.map(function(s) {
+                var sName = escapeHtml((s.name && s.name['zh-TW']) || '未命名');
+                return '<div class="p-3 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-red-200 transition"><div class="font-bold text-gray-800">' + sName + '</div><button onclick="window.showShopDetail(\'' + s.id + '\')" class="text-xs text-red-500 mt-2 flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> 查看詳情</button></div>';
             }).join('') || '<p class="text-gray-400 text-sm">尚無收藏</p>';
         }
 

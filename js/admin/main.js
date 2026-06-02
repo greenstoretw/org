@@ -1,4 +1,10 @@
 // ===== admin/main.js =====
+window.escapeHtml = function(text) {
+  if (!text) return '';
+  var map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+};
+
 window.currentPage = 'dashboard';
 
 var pageTitles = {

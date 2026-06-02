@@ -375,7 +375,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div>
                         <h4 class="font-black text-slate-900 dark:text-white text-lg mb-6 flex items-center gap-2">
                             <i class="fa-solid fa-heart text-red-500"></i> 最近收藏
@@ -389,6 +389,14 @@
                             <i class="fa-solid fa-star text-yellow-500"></i> 我的評價
                         </h4>
                         <div id="dashboard-reviews" class="space-y-4">
+                            <!-- Injected by ui.js -->
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-slate-900 dark:text-white text-lg mb-6 flex items-center gap-2" data-i18n="reportModalTitle">
+                            <i class="fa-solid fa-circle-exclamation text-blue-500"></i> 檢舉與錯誤回報
+                        </h4>
+                        <div id="dashboard-reports" class="space-y-4">
                             <!-- Injected by ui.js -->
                         </div>
                     </div>
@@ -406,11 +414,11 @@
             </div>
             <div class="p-6">
                 <div class="flex justify-center gap-2 mb-8" id="star-rating">
-                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-val="1">★</button>
-                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-val="2">★</button>
-                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-val="3">★</button>
-                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-val="4">★</button>
-                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-val="5">★</button>
+                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-value="1">★</button>
+                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-value="2">★</button>
+                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-value="3">★</button>
+                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-value="4">★</button>
+                    <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-value="5">★</button>
                 </div>
                 <div class="form-group mb-6">
                     <label class="block text-xs font-black text-slate-400 tracking-widest uppercase mb-2">你的心得</label>
@@ -421,7 +429,8 @@
                     <p class="text-xs text-green-800 dark:text-green-300 leading-relaxed font-medium">您的評價將幫助更多人了解這間店的永續實踐。審核通過後，您將獲得綠色積分回饋！</p>
                 </div>
                 <input type="hidden" id="rate-shop-id">
-                <button onclick="window.submitReview()" class="w-full bg-slate-900 dark:bg-white dark:text-slate-950 text-white py-4 font-black tracking-widest hover:bg-green-600 transition shadow-xl shadow-slate-200">送出評價</button>
+                <input type="hidden" id="rate-value" value="0">
+                <button onclick="window.submitRating()" class="w-full bg-slate-900 dark:bg-white dark:text-slate-950 text-white py-4 font-black tracking-widest hover:bg-green-600 transition shadow-xl shadow-slate-200">送出評價</button>
             </div>
         </div>
     </div>
@@ -618,23 +627,24 @@
     <!-- Custom Scripts (Modularized) -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-config.js?v=2.25"></script>
+    <script src="js/error-reporter.js?v=2.25"></script>
     <!-- Locales (Essential only) -->
-    <script src="js/locales/zh-TW.js"></script>
-    <script src="js/locales/en.js"></script>
+    <script src="js/locales/zh-TW.js?v=2.25"></script>
+    <script src="js/locales/en.js?v=2.25"></script>
         <!-- App scripts -->
-    <script src="js/gateway.js?v=2.24"></script>
-    <script src="js/state.js?v=2.24"></script>
-    <script src="js/utils.js?v=2.24"></script>
-    <script src="js/ui/cards.js?v=2.24"></script>
-    <script src="js/ui/modal.js?v=2.24"></script>
-    <script src="js/ui/dashboard.js?v=2.24"></script>
-    <script src="js/ui/map-route.js?v=2.24"></script>
-    <script src="js/ui/checkin.js?v=2.24"></script>
-    <script src="js/ui/common.js?v=2.24"></script>
-    <script src="js/api.js?v=2.24"></script>
-    <script src="js/auth.js?v=2.24"></script>
-    <script src="js/app.js?v=2.24"></script>
+    <script src="js/gateway.js?v=2.25"></script>
+    <script src="js/state.js?v=2.25"></script>
+    <script src="js/utils.js?v=2.25"></script>
+    <script src="js/ui/cards.js?v=2.25"></script>
+    <script src="js/ui/modal.js?v=2.25"></script>
+    <script src="js/ui/dashboard.js?v=2.25"></script>
+    <script src="js/ui/map-route.js?v=2.25"></script>
+    <script src="js/ui/checkin.js?v=2.25"></script>
+    <script src="js/ui/common.js?v=2.25"></script>
+    <script src="js/api.js?v=2.25"></script>
+    <script src="js/auth.js?v=2.25"></script>
+    <script src="js/app.js?v=2.25"></script>
 </body>
 </html>
 
