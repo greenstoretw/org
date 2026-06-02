@@ -16,7 +16,7 @@ window.isOpenNow = function(hoursStr) { return !!hoursStr; };
 // Premium Features State
 window.userCheckins = [];
 window.userAchievements = [];
-window.isDarkMode = localStorage.getItem('theme') === 'dark';
+window.isDarkMode = localStorage.getItem('theme') !== 'light';
 window.activeRoutingList = [];
 window.isRoutingMode = false;
 window.userLocation = null;

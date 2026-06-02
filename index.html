@@ -10,6 +10,11 @@
     <link rel="apple-touch-icon" href="png.png">
     <link rel="manifest" href="manifest.json">
     <title>綠簷 GREENROOF | 永續生活地圖</title>
+    <script>
+        if (localStorage.getItem('theme') !== 'light') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     
     <!-- External Dependencies -->
@@ -84,6 +89,23 @@
             </div>
         </div>
     </nav>
+    <!-- Dynamic Prominent Announcement Section -->
+    <div id="prominent-announcement-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 hidden transition-all duration-300">
+        <div class="relative bg-slate-900/10 dark:bg-white/10 backdrop-blur-md border border-slate-200 dark:border-white/15 p-4 flex items-center justify-between shadow-lg" style="border-radius:0!important">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3 shrink-0">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                </span>
+                <div class="text-sm font-bold text-slate-800 dark:text-white flex-1" id="announcement-text-content">
+                    載入最新公告中...
+                </div>
+            </div>
+            <button onclick="document.getElementById('prominent-announcement-container').classList.add('hidden')" class="ml-4 text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer" aria-label="關閉公告">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
 
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="fixed inset-0 bg-white dark:bg-slate-900 z-[1100] hidden flex flex-col p-8 md:hidden transition-colors">
@@ -627,24 +649,24 @@
     <!-- Custom Scripts (Modularized) -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="js/firebase-config.js?v=2.25"></script>
-    <script src="js/error-reporter.js?v=2.25"></script>
+    <script src="js/firebase-config.js?v=2.26"></script>
+    <script src="js/error-reporter.js?v=2.26"></script>
     <!-- Locales (Essential only) -->
-    <script src="js/locales/zh-TW.js?v=2.25"></script>
-    <script src="js/locales/en.js?v=2.25"></script>
+    <script src="js/locales/zh-TW.js?v=2.26"></script>
+    <script src="js/locales/en.js?v=2.26"></script>
         <!-- App scripts -->
-    <script src="js/gateway.js?v=2.25"></script>
-    <script src="js/state.js?v=2.25"></script>
-    <script src="js/utils.js?v=2.25"></script>
-    <script src="js/ui/cards.js?v=2.25"></script>
-    <script src="js/ui/modal.js?v=2.25"></script>
-    <script src="js/ui/dashboard.js?v=2.25"></script>
-    <script src="js/ui/map-route.js?v=2.25"></script>
-    <script src="js/ui/checkin.js?v=2.25"></script>
-    <script src="js/ui/common.js?v=2.25"></script>
-    <script src="js/api.js?v=2.25"></script>
-    <script src="js/auth.js?v=2.25"></script>
-    <script src="js/app.js?v=2.25"></script>
+    <script src="js/gateway.js?v=2.26"></script>
+    <script src="js/state.js?v=2.26"></script>
+    <script src="js/utils.js?v=2.26"></script>
+    <script src="js/ui/cards.js?v=2.26"></script>
+    <script src="js/ui/modal.js?v=2.26"></script>
+    <script src="js/ui/dashboard.js?v=2.26"></script>
+    <script src="js/ui/map-route.js?v=2.26"></script>
+    <script src="js/ui/checkin.js?v=2.26"></script>
+    <script src="js/ui/common.js?v=2.26"></script>
+    <script src="js/api.js?v=2.26"></script>
+    <script src="js/auth.js?v=2.26"></script>
+    <script src="js/app.js?v=2.26"></script>
 </body>
 </html>
 

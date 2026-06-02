@@ -9,6 +9,11 @@
 <link rel="apple-touch-icon" href="png.png">
 <link rel="manifest" href="manifest.json">
 <title>綠簷後台管理系統</title>
+    <script>
+        if (localStorage.getItem('theme') !== 'light') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -267,6 +272,46 @@ tr:hover td {
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="stat-grid" id="stat-grid"></div>
+      <!-- Maintenance Mode Control Console -->
+      <div class="card" style="margin-bottom:20px;border-radius:0!important">
+        <h3><i class="fa fa-cogs" style="color:#d97706;margin-right:6px"></i> 系統維護控制台 (Maintenance Console)</h3>
+        <p style="font-size:0.8rem;color:#64748b;margin-bottom:16px">當啟動手動無限期維護，或當前時間處於排程維護區間內，前台網站將會立即進入全螢幕維護模式，並向使用者顯示您自訂的維護訊息。</p>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:16px">
+          <div>
+            <label style="font-weight:bold;font-size:0.85rem;display:flex;align-items:center;gap:6px">
+              <input type="checkbox" id="maint-manual" style="width:auto"> 手動無限期即時維護模式 (Manual Indefinite Maintenance)
+            </label>
+            <span style="font-size:0.75rem;color:#94a3b8;display:block;margin-left:20px">勾選並保存後，前台將立即停止服務，不受排程時間限制。</span>
+          </div>
+          <div>
+            <label style="font-weight:bold;font-size:0.85rem;display:flex;align-items:center;gap:6px">
+              <input type="checkbox" id="maint-scheduled" style="width:auto"> 啟用排程維護 (Enable Scheduled Maintenance)
+            </label>
+            <span style="font-size:0.75rem;color:#94a3b8;display:block;margin-left:20px">僅在當前時間進入下方排程的維護區間內時才會啟動維護。</span>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:16px">
+          <div class="form-group">
+            <label for="maint-start" style="font-size:0.8rem;font-weight:bold">排程開始時間 (Start Time)</label>
+            <input type="datetime-local" id="maint-start">
+          </div>
+          <div class="form-group">
+            <label for="maint-end" style="font-size:0.8rem;font-weight:bold">排程結束時間 (End Time)</label>
+            <input type="datetime-local" id="maint-end">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:16px">
+          <label for="maint-message" style="font-size:0.8rem;font-weight:bold">維護說明訊息 (Maintenance Message)</label>
+          <input type="text" id="maint-message" placeholder="網站停服更新中，預計將於今日 24:00 前完成..." style="width:100%">
+        </div>
+
+        <div style="text-align:right">
+          <button class="btn btn-green" onclick="window.saveMaintenanceSettings()"><i class="fa fa-save"></i> 儲存維護設定</button>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
         <div class="card"><h3>訪問趨勢 (PV)</h3><canvas id="trend-chart" height="200"></canvas></div>
         <div class="card"><h3>訂閱來源</h3><canvas id="source-chart"></canvas></div>
@@ -607,16 +652,16 @@ tr:hover td {
   </div>
 </div>
 
-<script src="js/firebase-config.js?v=2.25"></script>
-<script src="js/error-reporter.js?v=2.25"></script>
-<script src="js/admin/main.js?v=2.25"></script>
-<script src="js/admin/auth.js?v=2.25"></script>
-<script src="js/admin/dashboard.js?v=2.25"></script>
-<script src="js/admin/shops.js?v=2.25"></script>
-<script src="js/admin/content.js?v=2.25"></script>
-<script src="js/admin/users.js?v=2.25"></script>
-<script src="js/admin/rag.js?v=2.25"></script>
-<script src="js/admin/ai.js?v=2.25"></script>
+<script src="js/firebase-config.js?v=2.26"></script>
+<script src="js/error-reporter.js?v=2.26"></script>
+<script src="js/admin/main.js?v=2.26"></script>
+<script src="js/admin/auth.js?v=2.26"></script>
+<script src="js/admin/dashboard.js?v=2.26"></script>
+<script src="js/admin/shops.js?v=2.26"></script>
+<script src="js/admin/content.js?v=2.26"></script>
+<script src="js/admin/users.js?v=2.26"></script>
+<script src="js/admin/rag.js?v=2.26"></script>
+<script src="js/admin/ai.js?v=2.26"></script>
 </body>
 </html>
 

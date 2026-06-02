@@ -53,6 +53,69 @@ document.addEventListener('DOMContentLoaded', function() {
         // Force show nav-links on desktop
         var navLinks = document.querySelector('.nav-links');
         if (navLinks && window.innerWidth >= 768) navLinks.style.display = 'flex';
+        // Real-time Announcements Listener
+        if (window.db) {
+            window.db.collection('announcements').orderBy('createdAt', 'desc').limit(1).onSnapshot(function(snap) {
+                var container = document.getElementById('prominent-announcement-container');
+                var content = document.getElementById('announcement-text-content');
+                if (container && content) {
+                    if (!snap.empty) {
+                        var data = snap.docs[0].data();
+                        content.textContent = data.content || '';
+                        container.classList.remove('hidden');
+                    } else {
+                        container.classList.add('hidden');
+                    }
+                }
+            }, function(err) {
+                console.warn("Failed to listen to announcements:", err);
+            });
+
+            // Real-time Maintenance Mode Interceptor
+            window.db.collection('settings').doc('maintenance').onSnapshot(function(doc) {
+                if (doc.exists) {
+                    var data = doc.data();
+                    var isUnderMaint = false;
+                    
+                    if (data.active) {
+                        isUnderMaint = true;
+                    } else if (data.scheduled && data.startTime && data.endTime) {
+                        var localNow = new Date();
+                        var offset = localNow.getTimezoneOffset() * 60000;
+                        var localISOTime = new Date(localNow - offset).toISOString().slice(0, 16);
+                        if (localISOTime >= data.startTime && localISOTime <= data.endTime) {
+                            isUnderMaint = true;
+                        }
+                    }
+                    
+                    if (isUnderMaint) {
+                        var maintenanceHtml = `
+                        <div style="position:fixed;inset:0;background:linear-gradient(135deg,#000000,#111827);z-index:99999;display:flex;align-items:center;justify-content:center;color:#ffffff;font-family:'Noto Sans TC',sans-serif;text-align:center;padding:24px;">
+                            <div>
+                                <div style="background:#dc262615;width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;border:2px solid #dc2626;animation:pulse 2s infinite">
+                                    <i class="fa-solid fa-triangle-exclamation" style="font-size:2.2rem;color:#dc2626"></i>
+                                </div>
+                                <h1 style="font-size:2.5rem;font-weight:900;letter-spacing:-0.03em;margin-bottom:16px;text-shadow:0 2px 10px rgba(0,0,0,0.5)">網站停服更新中</h1>
+                                <p style="font-size:1.1rem;color:#9ca3af;max-width:500px;line-height:1.6;margin:0 auto 24px;white-space:pre-line">${data.message || '為了提供更好的服務，網站正在進行維護升級，請稍後再試。'}</p>
+                                <div style="font-size:0.8rem;color:#4b5563;letter-spacing:0.05em;text-transform:uppercase">GREENROOF System Engineering</div>
+                            </div>
+                        </div>
+                        <style>
+                            @keyframes pulse {
+                                0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+                                70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+                                100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+                            }
+                        </style>
+                        `;
+                        document.body.innerHTML = maintenanceHtml;
+                        throw new Error("Application suspended: System under Maintenance.");
+                    }
+                }
+            }, function(err) {
+                console.warn("Failed to listen to maintenance settings:", err);
+            });
+        }
 
         // Dark Mode startup check
         if (window.isDarkMode) {

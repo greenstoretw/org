@@ -43,7 +43,44 @@ window.loadDashboard = function() {
     
     window.renderTrendChart(analyticsSnap.docs.map(function(doc) { return doc.data(); }));
     window.renderSourceChart(subs.docs.map(function(doc) { return doc.data(); }));
+    window.loadMaintenanceSettings();
   }).catch(function(err) { console.error('loadDashboard error:', err); });
+};
+
+window.loadMaintenanceSettings = function() {
+  db.collection('settings').doc('maintenance').get().then(function(doc) {
+    if (doc.exists) {
+      var data = doc.data();
+      document.getElementById('maint-manual').checked = !!data.active;
+      document.getElementById('maint-scheduled').checked = !!data.scheduled;
+      document.getElementById('maint-start').value = data.startTime || '';
+      document.getElementById('maint-end').value = data.endTime || '';
+      document.getElementById('maint-message').value = data.message || '';
+    }
+  }).catch(function(err) {
+    console.warn("Failed to load maintenance settings:", err);
+  });
+};
+
+window.saveMaintenanceSettings = function() {
+  var manual = document.getElementById('maint-manual').checked;
+  var scheduled = document.getElementById('maint-scheduled').checked;
+  var start = document.getElementById('maint-start').value;
+  var end = document.getElementById('maint-end').value;
+  var msg = document.getElementById('maint-message').value.trim();
+
+  db.collection('settings').doc('maintenance').set({
+    active: manual,
+    scheduled: scheduled,
+    startTime: start,
+    endTime: end,
+    message: msg || '網站停服更新中，請稍後再試。',
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function() {
+    alert("維護設定儲存成功！");
+  }).catch(function(err) {
+    alert("儲存失敗：" + err.message);
+  });
 };
 
 window.renderTrendChart = function(visitData) {
