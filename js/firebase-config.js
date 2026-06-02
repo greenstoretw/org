@@ -13,9 +13,13 @@ var firebaseConfig = {
 // 初始化 Firebase (使用 Compat 模式以支援 CDN 引入)
 if (typeof firebase !== 'undefined') { firebase.initializeApp(firebaseConfig); } else { console.error('Firebase SDK not loaded.'); }
 var db = (typeof firebase.firestore === 'function') ? firebase.firestore() : null;
+window.db = db;
 var auth = (typeof firebase.auth === 'function') ? firebase.auth() : null;
+window.auth = auth;
 var storage = (typeof firebase.storage === 'function') ? firebase.storage() : null;
+window.storage = storage;
 var analytics = (typeof firebase.analytics === 'function') ? firebase.analytics() : null;
+window.analytics = analytics;
 
 console.log("Firebase 雲端連線已成功初始化！");
 

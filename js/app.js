@@ -61,7 +61,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (container && content) {
                     if (!snap.empty) {
                         var data = snap.docs[0].data();
-                        content.textContent = data.content || '';
+                        var html = '';
+                        if (data.title) {
+                            html += '<span class="text-red-500 font-extrabold mr-2">[' + data.title + ']</span>';
+                        }
+                        html += data.content || '';
+                        content.innerHTML = html;
                         container.classList.remove('hidden');
                     } else {
                         container.classList.add('hidden');
