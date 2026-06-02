@@ -27,6 +27,48 @@ window.Gateway.register('showUserDashboard', function() {
         if (treesEl) treesEl.textContent = (totalKg / 12).toFixed(1);
         if (bagsEl) bagsEl.textContent = Math.floor(totalGrams / 50);
         
+        // Populate Account Settings nickname input
+        var anonInput = document.getElementById('dashboard-anon-input');
+        if (anonInput) {
+            anonInput.value = userData.anonymousName || '';
+        }
+        
+        // Bind settings save button
+        var anonSaveBtn = document.getElementById('dashboard-anon-save-btn');
+        if (anonSaveBtn && !anonSaveBtn.dataset.bound) {
+            anonSaveBtn.dataset.bound = "true";
+            anonSaveBtn.onclick = function() {
+                var newName = anonInput ? anonInput.value.trim() : '';
+                if (!newName) {
+                    alert('請輸入一個社群匿名！');
+                    return;
+                }
+                
+                var loading = document.getElementById('app-loading');
+                if (loading) loading.classList.remove('hidden');
+                
+                db.collection('users').doc(user.uid).update({
+                    anonymousName: newName,
+                    lastActionAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(function() {
+                    if (window.currentUserData) {
+                        window.currentUserData.anonymousName = newName;
+                    }
+                    
+                    // Live-update avatar name in dashboard
+                    var dashUsername = document.getElementById('dashboard-username');
+                    if (dashUsername) dashUsername.textContent = newName;
+                    
+                    if (loading) loading.classList.add('hidden');
+                    window.showMessage("社群匿名已更新為「" + newName + "」！");
+                }).catch(function(err) {
+                    console.error("Failed to update nickname:", err);
+                    if (loading) loading.classList.add('hidden');
+                    alert('儲存失敗，請重試！');
+                });
+            };
+        }
+        
         if (carbonTextEl) {
             if (totalGrams > 5000) carbonTextEl.textContent = "太棒了！您已經是永續生活的模範！";
             else if (totalGrams > 1000) carbonTextEl.textContent = "繼續保持！您對地球的貢獻正逐漸累積。";
