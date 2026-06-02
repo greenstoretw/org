@@ -124,7 +124,7 @@
                     <option value="ko">한국어</option>
                 </select>
             </div>
-            <button id="login-btn-mobile" class="w-full bg-green-600 text-white p-5 rounded-2xl font-black text-xl shadow-xl shadow-green-100 mt-4">會員登入</button>
+            <button id="login-btn-mobile" data-i18n="login" class="w-full bg-green-600 text-white p-5 rounded-2xl font-black text-xl shadow-xl shadow-green-100 mt-4">會員登入</button>
         </div>
     </div>
 
@@ -164,20 +164,20 @@
             
             <div class="mt-4 flex flex-wrap gap-2 items-center justify-between">
                 <div class="flex flex-wrap gap-2">
-                    <button onclick="document.getElementById('tags-modal').classList.remove('hidden')" class="bg-green-100 dark:bg-slate-800 text-green-800 dark:text-green-400 px-5 py-2.5 rounded-full text-sm font-bold border border-green-200 dark:border-slate-700 hover:bg-green-200 dark:hover:bg-slate-700 transition flex items-center gap-2">
+                    <button onclick="document.getElementById('tags-modal').classList.remove('hidden')" class="bg-green-100 dark:bg-slate-800 text-green-800 dark:text-green-400 px-5 py-2.5 rounded-full text-sm font-bold border border-green-200 dark:border-slate-700 hover:bg-green-200 dark:hover:bg-slate-700 transition flex items-center gap-2" data-i18n="filterTagsBtn">
                         <i class="fa-solid fa-sliders"></i> <span data-i18n="filterTagsBtn">篩選標籤</span>
                     </button>
                 </div>
                 
                 <!-- Premium Control Tools -->
                 <div class="flex flex-wrap gap-2 mt-2 md:mt-0">
-                    <button id="closest-sort-btn" class="tag px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1.5 border-green-200 hover:border-green-600">
+                    <button id="closest-sort-btn" class="tag px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1.5 border-green-200 hover:border-green-600" data-i18n="fabClosest">
                         <i class="fa-solid fa-location-arrow text-green-600 animate-pulse"></i> <span>離我最近</span>
                     </button>
-                    <button id="surprise-me-btn" class="tag px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1.5 border-amber-200 hover:border-amber-500">
+                    <button id="surprise-me-btn" class="tag px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1.5 border-amber-200 hover:border-amber-500" data-i18n="fabSurprise">
                         <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> <span>隨機探索</span>
                     </button>
-                    <button id="routing-toggle-btn" class="tag px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1.5 border-blue-200 hover:border-blue-500">
+                    <button id="routing-toggle-btn" class="tag px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1.5 border-blue-200 hover:border-blue-500" data-i18n="fabRouting">
                         <i class="fa-solid fa-route text-blue-500"></i> <span>規劃散步路線</span>
                     </button>
                 </div>
@@ -236,7 +236,7 @@
                     <h4 class="font-black text-slate-900 dark:text-white mb-6">探索</h4>
                     <form id="issue-form" class="space-y-4">
                         <textarea id="issue" placeholder="告訴我們哪裡可以更好..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3 text-sm focus:outline-none focus:border-green-600 resize-none text-slate-900 dark:text-white transition-colors"></textarea>
-                        <button class="w-full bg-slate-900 dark:bg-white dark:text-slate-950 text-white py-3 font-bold text-xs tracking-widest hover:bg-green-600 transition">送出訊息</button>
+                        <button class="w-full bg-slate-900 dark:bg-white dark:text-slate-950 text-white py-3 font-bold text-xs tracking-widest hover:bg-green-600 transition" data-i18n="reportIssueSubmitBtn">送出訊息</button>
                     </form>
                     <p id="issue-message" class="mt-2 text-green-600 text-xs font-bold hidden">感謝您的回報！</p>
                 </div>
@@ -310,10 +310,10 @@
                 </div>
                 
                 <nav class="space-y-2">
-                    <button class="w-full text-left px-4 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-sm font-bold flex items-center gap-3"><i class="fa-solid fa-chart-pie"></i> 個人數據</button>
-                    <button class="w-full text-left px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-bold flex items-center gap-3 transition"><i class="fa-solid fa-heart"></i> 收藏店家</button>
-                    <button class="w-full text-left px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-bold flex items-center gap-3 transition"><i class="fa-solid fa-star"></i> 我的評價</button>
-                    <button id="logout-btn-dash" class="w-full text-left px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 text-sm font-bold flex items-center gap-3 transition mt-10"><i class="fa-solid fa-right-from-bracket"></i> 登出帳號</button>
+                    <button class="w-full text-left px-4 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-sm font-bold flex items-center gap-3" data-i18n="dashPersonalData"><i class="fa-solid fa-chart-pie"></i> 個人數據</button>
+                    <button class="w-full text-left px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-bold flex items-center gap-3 transition" data-i18n="dashFavorites"><i class="fa-solid fa-heart"></i> 收藏店家</button>
+                    <button class="w-full text-left px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-bold flex items-center gap-3 transition" data-i18n="dashReviews"><i class="fa-solid fa-star"></i> 我的評價</button>
+                    <button id="logout-btn-dash" data-i18n="dashLogout" class="w-full text-left px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 text-sm font-bold flex items-center gap-3 transition mt-10"><i class="fa-solid fa-right-from-bracket"></i> 登出帳號</button>
                 </nav>
             </div>
             
@@ -393,7 +393,7 @@
                             <label class="block text-xs font-black uppercase tracking-wider text-slate-400 mb-2">更改社群匿名 (Anonymous Nickname)</label>
                             <div class="flex gap-3">
                                 <input type="text" id="dashboard-anon-input" class="flex-grow bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3 text-slate-800 dark:text-white font-bold focus:outline-none focus:border-emerald-500" style="border-radius:0px" placeholder="輸入新匿名...">
-                                <button id="dashboard-anon-save-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 uppercase tracking-wider transition cursor-pointer" style="border-radius:0px">儲存</button>
+                                <button id="dashboard-anon-save-btn" data-i18n="save" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 uppercase tracking-wider transition cursor-pointer" style="border-radius:0px">儲存</button>
                             </div>
                         </div>
                     </div>
@@ -454,7 +454,7 @@
                 </div>
                 <input type="hidden" id="rate-shop-id">
                 <input type="hidden" id="rate-value" value="0">
-                <button onclick="window.submitRating()" class="w-full bg-slate-900 dark:bg-white dark:text-slate-950 text-white py-4 font-black tracking-widest hover:bg-green-600 transition shadow-xl shadow-slate-200">送出評價</button>
+                <button onclick="window.submitRating()" class="w-full bg-slate-900 dark:bg-white dark:text-slate-950 text-white py-4 font-black tracking-widest hover:bg-green-600 transition shadow-xl shadow-slate-200" data-i18n="reviewSubmit">送出評價</button>
             </div>
         </div>
     </div>
@@ -464,7 +464,7 @@
         <div class="bg-white dark:bg-slate-900 w-full max-w-md modal-content overflow-hidden transition-colors">
             <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white" data-i18n="reportModalTitle">檢舉錯誤資訊</h3>
-                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-900 dark:hover:text-white text-2xl">&times;</button>
+                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-900 dark:hover:text-white text-2xl" data-i18n="cancelBtn">&times;</button>
             </div>
             <div class="p-6">
                 <div class="form-group mb-6">
@@ -484,8 +484,8 @@
                 <input type="hidden" id="report-shop-id">
             </div>
             <div class="p-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
-                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="px-4 py-2 text-sm text-slate-600 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition dark:text-slate-400">取消</button>
-                <button onclick="window.submitReport()" class="px-6 py-2 text-sm font-bold bg-red-600 text-white hover:bg-red-700 transition">送出檢舉</button>
+                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="px-4 py-2 text-sm text-slate-600 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition dark:text-slate-400" data-i18n="cancelBtn">取消</button>
+                <button onclick="window.submitReport()" class="px-6 py-2 text-sm font-bold bg-red-600 text-white hover:bg-red-700 transition" data-i18n="reportSubmit">送出檢舉</button>
             </div>
         </div>
     </div>
@@ -516,8 +516,8 @@
             </div>
         </div>
         <div class="mt-4 flex gap-2">
-            <button id="clear-routing-btn" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 py-2.5 text-xs font-bold hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20 transition cursor-pointer">清空路線</button>
-            <button id="draw-route-polyline-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 text-xs font-bold transition cursor-pointer">於地圖連線</button>
+            <button id="clear-routing-btn" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 py-2.5 text-xs font-bold hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20 transition cursor-pointer" data-i18n="routingClear">清空路線</button>
+            <button id="draw-route-polyline-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 text-xs font-bold transition cursor-pointer" data-i18n="routingDraw">於地圖連線</button>
         </div>
     </div>
 
@@ -547,7 +547,7 @@
                 <pre id="error-details" class="text-sm text-gray-800 dark:text-red-300 whitespace-pre-wrap break-all"></pre>
             </div>
             <div class="mt-6 text-right">
-                <button id="close-error-modal" onclick="document.getElementById('error-modal').classList.add('hidden')" class="bg-red-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-700 active:scale-95 transition-all duration-200">關閉</button>
+                <button id="close-error-modal" onclick="document.getElementById('error-modal').classList.add('hidden')" class="bg-red-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-700 active:scale-95 transition-all duration-200" data-i18n="closeBtn">關閉</button>
             </div>
         </div>
     </div>
@@ -569,17 +569,17 @@
     <!-- Floating Action Panel (FAB) -->
     <div id="fab-panel" class="fab-panel-wrap">
         <div id="fab-bar" class="fab-bar hidden-fab">
-            <button id="fab-closest-btn" class="fab-btn fab-btn-geo" title="離我最近">
+            <button id="fab-closest-btn" class="fab-btn fab-btn-geo" data-i18n-title="fabClosest" title="離我最近" data-i18n="fabClosest">
                 <i class="fa-solid fa-location-arrow"></i>
                 <span>離我最近</span>
             </button>
             <div class="fab-divider"></div>
-            <button id="fab-surprise-btn" class="fab-btn fab-btn-magic" title="隨機探索">
+            <button id="fab-surprise-btn" class="fab-btn fab-btn-magic" data-i18n-title="fabSurprise" title="隨機探索" data-i18n="fabSurprise">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                 <span>隨機探索</span>
             </button>
             <div class="fab-divider"></div>
-            <button id="fab-routing-btn" class="fab-btn fab-btn-route" title="規劃路線">
+            <button id="fab-routing-btn" class="fab-btn fab-btn-route" data-i18n-title="fabRouting" title="規劃路線" data-i18n="fabRouting">
                 <i class="fa-solid fa-route"></i>
                 <span>規劃路線</span>
             </button>
@@ -591,13 +591,13 @@
         </div>
         <div class="fab-mobile-wrap">
             <div id="fab-mobile-menu" class="fab-mobile-menu hidden">
-                <button id="fab-m-closest-btn" class="fab-mobile-item fab-btn-geo">
+                <button id="fab-m-closest-btn" class="fab-mobile-item fab-btn-geo" data-i18n="fabClosest">
                     <i class="fa-solid fa-location-arrow"></i><span>離我最近</span>
                 </button>
-                <button id="fab-m-surprise-btn" class="fab-mobile-item fab-btn-magic">
+                <button id="fab-m-surprise-btn" class="fab-mobile-item fab-btn-magic" data-i18n="fabSurprise">
                     <i class="fa-solid fa-wand-magic-sparkles"></i><span>隨機探索</span>
                 </button>
-                <button id="fab-m-routing-btn" class="fab-mobile-item fab-btn-route">
+                <button id="fab-m-routing-btn" class="fab-mobile-item fab-btn-route" data-i18n="fabRouting">
                     <i class="fa-solid fa-route"></i><span>規劃路線</span>
                 </button>
                 <a href="#report-section" class="fab-mobile-item fab-btn-report" id="fab-m-report-btn">
@@ -624,7 +624,7 @@
                 </div>
                 <form id="issue-form-section" class="report-form">
                     <textarea id="issue-section" rows="3" placeholder="例如：某間商店地址錯誤、已停業..." class="report-textarea"></textarea>
-                    <button type="submit" class="report-submit">
+                    <button type="submit" class="report-submit" data-i18n="reportIssueSubmitBtn">
                         <i class="fa-solid fa-paper-plane"></i> 送出回報
                     </button>
                 </form>
@@ -640,7 +640,7 @@
                 </div>
                 <form id="newsletter-form-section" class="report-form">
                     <input type="email" id="newsletter-email-section" required placeholder="您的電子郵件地址" class="report-input">
-                    <button type="submit" class="newsletter-submit report-submit">
+                    <button type="submit" class="newsletter-submit report-submit" data-i18n="subscribeBtn">
                         <i class="fa-solid fa-leaf"></i> 立即訂閱
                     </button>
                 </form>

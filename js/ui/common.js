@@ -6,6 +6,7 @@ window.Gateway.register('setLanguage', function(lang) {
     var updateUI = function() {
         currentLang = lang;
         localStorage.setItem('lang', lang);
+        // Translate standard text content elements
         var i18nElements = document.querySelectorAll('[data-i18n]');
         for (var i = 0; i < i18nElements.length; i++) {
             var el = i18nElements[i];
@@ -17,6 +18,17 @@ window.Gateway.register('setLanguage', function(lang) {
                 } else {
                     el.textContent = translation;
                 }
+            }
+        }
+        
+        // Translate title tooltip attributes
+        var i18nTitleElements = document.querySelectorAll('[data-i18n-title]');
+        for (var t = 0; t < i18nTitleElements.length; t++) {
+            var tEl = i18nTitleElements[t];
+            var tKey = tEl.getAttribute('data-i18n-title');
+            var tTranslation = (window.locales[lang] && window.locales[lang][tKey]) || (window.locales['zh-TW'] && window.locales['zh-TW'][tKey]);
+            if (tTranslation) {
+                tEl.title = tTranslation;
             }
         }
         var navLinks = document.querySelector('.nav-links');

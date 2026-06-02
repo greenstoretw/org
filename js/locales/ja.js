@@ -92,6 +92,7 @@ window.locales['ja'] = {
     routingDraw: 'ルートを描画',
     routingTime: '徒歩所要時間 (5 km/h):',
     routingTitle: 'ルート案内',
+    save: '保存',
     searchBtn: '検索',
     searchPlaceholder: '店名または住所...',
     searchTitle: '検索',

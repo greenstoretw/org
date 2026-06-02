@@ -92,6 +92,7 @@ window.locales['ko'] = {
     routingDraw: '경로 연결 생성',
     routingTime: '도보 예상 시간 (5 km/h):',
     routingTitle: '경로 계획 및 계산',
+    save: '저장',
     searchBtn: '검색',
     searchPlaceholder: '상점명 또는 주소...',
     searchTitle: '검색',
