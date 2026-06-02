@@ -464,8 +464,12 @@ tr:hover td {
 
     <!-- USERS (Owner only) -->
     <div class="page" id="page-users">
-      <div class="card">
-        <h3>使用者管理 (僅版主可見)</h3>
+      <div class="card" style="border-radius: 0 !important;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-radius:0 !important;">
+          <h3 style="margin-bottom:0 !important;border-radius:0 !important;">用戶管理 (僅版主可見)</h3>
+          <input type="text" id="user-search-input" placeholder="搜尋匿名、姓名、信箱或UID..." style="padding:8px 14px;border:1px solid #e2e8f0;border-radius:0 !important;font-size:.85rem;width:260px;background:#ffffff;color:#1a202c;outline:none;">
+        </div>
+
         <div class="table-wrap"><table>
           <thead><tr><th>UID</th><th>角色</th><th>狀態</th><th>操作</th></tr></thead>
           <tbody id="users-tbody"></tbody>

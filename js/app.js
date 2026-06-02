@@ -284,13 +284,30 @@ document.addEventListener('DOMContentLoaded', function() {
             if (user) {
                 if (dashBtn2) dashBtn2.classList.remove('hidden');
                 window.fetchUserFavorites(user.uid);
+                
                 db.collection('users').doc(user.uid).get().then(function(doc) {
+                    var needsAnon = true;
+                    if (doc.exists) {
+                        var uData = doc.data();
+                        window.currentUserData = uData;
+                        if (uData.anonymousName) {
+                            needsAnon = false;
+                        }
+                    }
+                    
                     if (doc.exists && (doc.data().role === 'admin' || doc.data().role === 'owner')) {
                         var ind = document.getElementById('admin-indicator');
                         if (ind) ind.classList.remove('hidden');
                     }
+                    
+                    if (needsAnon) {
+                        window.promptAnonymousName(user, doc.exists ? doc.data() : null);
+                    }
+                }).catch(function(err) {
+                    console.warn("Failed to retrieve user profile:", err);
                 });
             } else {
+                window.currentUserData = null;
                 if (dashBtn2) dashBtn2.classList.add('hidden');
                 window.favoriteShops = JSON.parse(localStorage.getItem('favoriteShops') || '[]');
                 window.filterAndDisplayShops();
@@ -649,3 +666,77 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+
+// Sleek glassmorphic setup anonymous name prompt
+window.promptAnonymousName = function(user, existingData) {
+    if (document.getElementById('anon-prompt-modal')) return;
+    
+    var modal = document.createElement('div');
+    modal.id = 'anon-prompt-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.65);backdrop-filter:blur(8px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+    
+    var content = document.createElement('div');
+    content.className = 'w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 shadow-2xl relative transition-all';
+    content.style.borderRadius = '0px';
+    
+    content.innerHTML = '<div class="mb-6 text-center">' +
+        '<div class="w-16 h-16 bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">' +
+            '<i class="fa-solid fa-user-secret text-2xl"></i>' +
+        '</div>' +
+        '<h3 class="text-xl font-black text-slate-900 dark:text-white mb-2">設定您的社群匿名</h3>' +
+        '<p class="text-sm text-slate-500 dark:text-slate-400">為了維護您的隱私，請設定一個綠色社群「匿名」。本平台所有打卡、評價與憑證，均會以該匿名形式對外及後台顯示。</p>' +
+    '</div>' +
+    '<div class="space-y-4">' +
+        '<div>' +
+            '<label class="block text-xs font-black uppercase tracking-wider text-slate-400 mb-2">匿名名稱</label>' +
+            '<input type="text" id="anon-name-input" placeholder="例如: 減碳小幫手 / 綠篷衛士" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3 text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 font-bold" style="border-radius:0px">' +
+        '</div>' +
+        '<button id="anon-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 uppercase tracking-wider transition cursor-pointer" style="border-radius:0px">確認儲存</button>' +
+    '</div>';
+    
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+    
+    setTimeout(function() {
+        var input = document.getElementById('anon-name-input');
+        if (input) input.focus();
+    }, 100);
+    
+    document.getElementById('anon-submit-btn').onclick = function() {
+        var input = document.getElementById('anon-name-input');
+        var name = input ? input.value.trim() : '';
+        if (!name) {
+            alert('請輸入一個社群匿名！');
+            return;
+        }
+        
+        var loading = document.getElementById('app-loading');
+        if (loading) loading.classList.remove('hidden');
+        
+        db.collection('users').doc(user.uid).set({
+            uid: user.uid,
+            realName: user.displayName || 'Google User',
+            email: user.email || '',
+            anonymousName: name,
+            role: (existingData && existingData.role) || 'user',
+            createdAt: (existingData && existingData.createdAt) || firebase.firestore.FieldValue.serverTimestamp(),
+            lastActionAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).then(function() {
+            window.currentUserData = {
+                uid: user.uid,
+                realName: user.displayName || 'Google User',
+                email: user.email || '',
+                anonymousName: name,
+                role: (existingData && existingData.role) || 'user'
+            };
+            document.body.removeChild(modal);
+            if (loading) loading.classList.add('hidden');
+            window.showMessage("社群匿名「" + name + "」設定成功！");
+        }).catch(function(err) {
+            console.error("Failed to save anonymous name:", err);
+            if (loading) loading.classList.add('hidden');
+            alert('儲存失敗，請重試！');
+        });
+    };
+};

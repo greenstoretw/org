@@ -33,7 +33,7 @@ window.Gateway.register('handleCheckIn', function(shopId) {
         simulated = true;
     }
 
-    var userName = user.displayName || user.email || '環保旅客';
+    var userName = (window.currentUserData && window.currentUserData.anonymousName) || '熱心環保客';
 
     var loadingOverlay = document.getElementById('app-loading');
     if (loadingOverlay) loadingOverlay.classList.remove('hidden');

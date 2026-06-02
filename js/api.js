@@ -150,6 +150,7 @@ window.Gateway.register('submitRating', function() {
     batch.set(reviewRef, {
         shopId: shopId,
         userId: user.uid,
+        userName: (window.currentUserData && window.currentUserData.anonymousName) || '熱心環保客',
         rating: rating,
         comment: comment || null,
         carbonSaved: carbonSaved,

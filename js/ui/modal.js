@@ -155,7 +155,7 @@ window.Gateway.register('fetchAndRenderShopReviews', function(shopId) {
                 var commentText = data.comment ? '<p class="text-slate-600 dark:text-slate-300 text-sm mt-2">' + data.comment + '</p>' : '';
                 return '<div class="p-4 border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">' +
                        '<div class="flex justify-between items-center mb-2">' +
-                       '<div class="font-bold text-sm text-slate-700 dark:text-slate-200">熱心環保客</div>' +
+                       '<div class="font-bold text-sm text-slate-700 dark:text-slate-200">' + (data.userName || '熱心環保客') + '</div>' +
                        '<div class="text-xs text-slate-400">' + date + '</div>' +
                        '</div>' +
                        '<div class="text-yellow-500 text-sm mb-1 tracking-widest">' + stars + '</div>' +
