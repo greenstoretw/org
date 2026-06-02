@@ -336,6 +336,16 @@ document.addEventListener('DOMContentLoaded', function() {
             menuToggle.addEventListener('click', function() {
                 mobileMenu.classList.toggle('hidden');
             });
+            
+            // Mobile UX: Auto-close navigation menu overlay when a link is clicked
+            var mobileLinks = mobileMenu.querySelectorAll('a, button');
+            for (var idx = 0; idx < mobileLinks.length; idx++) {
+                // Ignore the language selector changes
+                if (mobileLinks[idx].tagName === 'SELECT' || mobileLinks[idx].id === 'language-select-mobile') continue;
+                mobileLinks[idx].addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                });
+            }
         }
 
         var newsletterForm = document.getElementById('newsletter-form');
