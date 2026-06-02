@@ -96,5 +96,11 @@ service cloud.firestore {
     match /backups/{backupId} {
       allow read, write: if isAdmin();
     }
+
+    // 14. Settings Collection (Maintenance status)
+    match /settings/{settingId} {
+      allow read: if true; // Anyone can check maintenance mode or public settings
+      allow write: if isAdmin(); // Only admins can change system settings
+    }
   }
 }
