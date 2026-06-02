@@ -5,6 +5,10 @@
     window.onerror = function(message, source, lineno, colno, error) {
         console.error("Global JS Error captured:", message, "at", source, ":", lineno);
         
+        // Ignore errors during maintenance mode or related to application suspension
+        if (message && String(message).includes("System under Maintenance")) return;
+        if (document.body && document.body.innerHTML.includes("System under Maintenance")) return;
+        
         if (window.db && window.firebase) {
             var errDesc = "Global JS Error:\n" +
                 "Message: " + message + "\n" +

@@ -48,6 +48,10 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
+  // Only intercept/cache HTTP and HTTPS requests (ignores chrome-extensions, etc.)
+  if (!event.request.url.startsWith('http')) return;
+
+  
   // Only cache GET requests
   if (event.request.method !== 'GET') return;
   
