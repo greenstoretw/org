@@ -228,14 +228,14 @@ window.Gateway.register('generateReceiptBase64', function(shopName, userName, ca
     ctx.font = 'bold 13px "Noto Sans TC", sans-serif';
     ctx.fillText('SHOP NAME (店家名稱):', 35, startY + lineH);
     ctx.font = 'normal 13px "Noto Sans TC", sans-serif';
-    ctx.fillText(shopName || 'Green Store', 220, startY + lineH);
+    ctx.fillText(shopName || 'Green Store', 220, startY + lineH, 145);
     
     drawDotLine(startY + lineH + 15);
     
     ctx.font = 'bold 13px "Noto Sans TC", sans-serif';
     ctx.fillText('TIMESTAMP (簽到時間):', 35, startY + lineH * 2);
     ctx.font = 'normal 12px "Inter", sans-serif';
-    ctx.fillText(timeStr, 200, startY + lineH * 2);
+    ctx.fillText(timeStr, 200, startY + lineH * 2, 165);
     
     drawDotLine(startY + lineH * 2 + 15);
     
@@ -253,7 +253,7 @@ window.Gateway.register('generateReceiptBase64', function(shopName, userName, ca
     ctx.fillText('RECORD ID (憑證編號):', 35, startY + lineH * 4);
     ctx.font = 'normal 12px "Inter", sans-serif';
     var recordId = 'GE-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-    ctx.fillText(recordId, 220, startY + lineH * 4);
+    ctx.fillText(recordId, 220, startY + lineH * 4, 145);
     
     drawDotLine(startY + lineH * 4 + 15);
     

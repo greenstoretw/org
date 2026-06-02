@@ -1540,3 +1540,8 @@ html:not(.dark) .leaflet-popup-content {
 .dark .leaflet-popup-content {
     color: #ffffff !important;
 }
+
+/* Body scroll lock when modals are open */
+body.modal-open {
+    overflow: hidden !important;
+}

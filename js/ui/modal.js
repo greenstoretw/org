@@ -152,7 +152,7 @@ window.Gateway.register('fetchAndRenderShopReviews', function(shopId) {
                 var r = data.rating || 0;
                 var stars = '';
                 for (var i = 0; i < 5; i++) stars += (i < r ? '★' : '☆');
-                var commentText = data.comment ? '<p class="text-slate-600 dark:text-slate-300 text-sm mt-2">' + data.comment + '</p>' : '';
+                var commentText = data.comment ? '<p class="text-slate-600 dark:text-slate-300 text-sm mt-2">' + escapeHtml(data.comment) + '</p>' : '';
                 return '<div class="p-4 border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">' +
                        '<div class="flex justify-between items-center mb-2">' +
                        '<div class="font-bold text-sm text-slate-700 dark:text-slate-200">' + (data.userName || '熱心環保客') + '</div>' +

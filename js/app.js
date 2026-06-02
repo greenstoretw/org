@@ -740,3 +740,33 @@ window.promptAnonymousName = function(user, existingData) {
         });
     };
 };
+
+
+// Automated body scroll lock observer for all active modals
+if (typeof MutationObserver !== 'undefined') {
+    var observer = new MutationObserver(function(mutations) {
+        var anyModalOpen = false;
+        var modals = document.querySelectorAll('#shop-detail-modal, #user-dashboard-modal, #rate-modal, #report-modal, #policy-modal, #receipt-preview-modal, #anon-prompt-modal');
+        for (var i = 0; i < modals.length; i++) {
+            if (modals[i] && !modals[i].classList.contains('hidden')) {
+                anyModalOpen = true;
+                break;
+            }
+        }
+        if (anyModalOpen) {
+            document.body.classList.add('modal-open');
+        } else {
+            document.body.classList.remove('modal-open');
+        }
+    });
+    
+    // Bind to DOM when ready
+    document.addEventListener('DOMContentLoaded', function() {
+        var config = { attributes: true, attributeFilter: ['class'] };
+        var ids = ['shop-detail-modal', 'user-dashboard-modal', 'rate-modal', 'report-modal', 'policy-modal', 'receipt-preview-modal'];
+        ids.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) observer.observe(el, config);
+        });
+    });
+}
