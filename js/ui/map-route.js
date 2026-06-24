@@ -7,9 +7,9 @@ window.Gateway.register('updateMapMarkers', function(filteredShops) {
     markersGroup.clearLayers();
     filteredShops.forEach(function(shop) {
         if(shop.location) {
-            var shopName = (shop.name && shop.name[currentLang]) || (shop.name && shop.name['zh-TW']) || 'Shop';
+            var shopName = (shop.name && shop.name[window.currentLang || 'zh-TW']) || (shop.name && shop.name['zh-TW']) || 'Shop';
             var marker = L.marker([shop.location.latitude, shop.location.longitude]);
-            var btnText = (window.locales[currentLang] && window.locales[currentLang].viewDetailsBtn) || 'View Details';
+            var btnText = (window.locales[window.currentLang || 'zh-TW'] && window.locales[window.currentLang || 'zh-TW'].viewDetailsBtn) || 'View Details';
             marker.bindPopup('<div class="p-1"><h3 class="font-bold text-base">' + shopName + '</h3><button onclick="window.showShopDetail(\'' + shop.id + '\')" class="text-green-600 text-sm hover:underline">' + btnText + '</button></div>');
             markersGroup.addLayer(marker);
         }

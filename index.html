@@ -418,7 +418,7 @@
                                     <div class="settings-account-name">訪客</div>
                                     <div class="settings-account-sub">尚未登入</div>
                                 </div>
-                                <button id="login-btn" class="settings-login-btn">登入</button>
+                                <button id="login-btn" class="settings-login-btn" onclick="if(window.Gateway) window.Gateway.invoke('handleLogin');">登入</button>
                             </div>
                             <!-- Logged-in state -->
                             <div id="settings-user" class="settings-account-row" style="display:none">
@@ -983,27 +983,6 @@
     <script src="js/auth.js?v=2.28"></script>
     <script src="js/app.js?v=2.28"></script>
 
-
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
-<!-- App Scripts -->
-<script src="js/firebase-config.js?v=2.28"></script>
-<script src="js/error-reporter.js?v=2.28"></script>
-<script src="js/locales/zh-TW.js?v=2.28"></script>
-<script src="js/locales/en.js?v=2.28"></script>
-<script src="js/gateway.js?v=2.28"></script>
-<script src="js/state.js?v=2.28"></script>
-<script src="js/utils.js?v=2.28"></script>
-<script src="js/ui/cards.js?v=2.28"></script>
-<script src="js/ui/modal.js?v=2.28"></script>
-<script src="js/ui/dashboard.js?v=2.28"></script>
-<script src="js/ui/map-route.js?v=2.28"></script>
-<script src="js/ui/checkin.js?v=2.28"></script>
-<script src="js/ui/common.js?v=2.28"></script>
-<script src="js/api.js?v=2.28"></script>
-<script src="js/auth.js?v=2.28"></script>
-<script src="js/app.js?v=2.28"></script>
 
 <!-- Layout runtime -->
 <script>
