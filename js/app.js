@@ -180,6 +180,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function setupEventListeners() {
+        // Sidebar drawer toggle listener
+        var sidebarToggle = document.getElementById('sidebarToggle');
+        var sidebar = document.getElementById('sidebar');
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+        }
+
         var langSelect = document.getElementById('language-select');
         var langSelectMobile = document.getElementById('language-select-mobile');
         if (langSelect) langSelect.addEventListener('change', function(e) { window.setLanguage(e.target.value); });
