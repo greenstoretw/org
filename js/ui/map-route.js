@@ -3,19 +3,19 @@
 // Compatibility is maintained globally via window.Gateway.
 
 window.Gateway.register('updateMapMarkers', function(filteredShops) {
-    if (!mapInstance) return;
-    markersGroup.clearLayers();
+    if (!window.mapInstance) return;
+    window.markersGroup.clearLayers();
     filteredShops.forEach(function(shop) {
         if(shop.location) {
             var shopName = (shop.name && shop.name[window.currentLang || 'zh-TW']) || (shop.name && shop.name['zh-TW']) || 'Shop';
             var marker = L.marker([shop.location.latitude, shop.location.longitude]);
             var btnText = (window.locales[window.currentLang || 'zh-TW'] && window.locales[window.currentLang || 'zh-TW'].viewDetailsBtn) || 'View Details';
             marker.bindPopup('<div class="p-1"><h3 class="font-bold text-base">' + shopName + '</h3><button onclick="window.showShopDetail(\'' + shop.id + '\')" class="text-green-600 text-sm hover:underline">' + btnText + '</button></div>');
-            markersGroup.addLayer(marker);
+            window.markersGroup.addLayer(marker);
         }
     });
-    if (filteredShops.length > 0 && markersGroup.getLayers().length > 0) {
-       mapInstance.fitBounds(markersGroup.getBounds(), { padding: [50, 50] });
+    if (filteredShops.length > 0 && window.markersGroup.getLayers().length > 0) {
+       window.mapInstance.fitBounds(window.markersGroup.getBounds(), { padding: [50, 50] });
     }
 });
 

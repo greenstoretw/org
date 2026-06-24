@@ -5,7 +5,7 @@
 window.Gateway.register('renderFilterButtons', function() {
     var shopTypes = [];
     var typeSet = {};
-    allShops.forEach(function(s) {
+    window.allShops.forEach(function(s) {
         var type = s.type && s.type['zh-TW'];
         if (type && !typeSet[type]) {
             typeSet[type] = true;
@@ -40,7 +40,7 @@ window.Gateway.register('renderFilterButtons', function() {
         ecoFeaturesContainer.innerHTML = '';
         var allFeatures = [];
         var featureSet = {};
-        allShops.forEach(function(s) {
+        window.allShops.forEach(function(s) {
             if (s.ecoFeatures && Array.isArray(s.ecoFeatures)) {
                 s.ecoFeatures.forEach(function(f) { 
                     var feat = f.trim();
@@ -65,7 +65,7 @@ window.Gateway.register('renderFilterButtons', function() {
 window.Gateway.register('renderShopCards', function(filteredShops) {
     var container = document.getElementById('shop-cards-container');
     var loadMoreButton = document.getElementById('load-more-button');
-    if (currentLoadedShops === 0) container.innerHTML = '';
+    if (window.currentLoadedShops === 0) container.innerHTML = '';
     
     // Sort by distance if active
     var shopsCopy = filteredShops.slice();
@@ -79,18 +79,18 @@ window.Gateway.register('renderShopCards', function(filteredShops) {
         });
     }
     
-    var shopsToDisplay = shopsCopy.slice(currentLoadedShops, currentLoadedShops + shopsPerPage);
+    var shopsToDisplay = shopsCopy.slice(window.currentLoadedShops, window.currentLoadedShops + window.shopsPerPage);
     
     shopsToDisplay.forEach(function(shop) {
-        var isFavorited = favoriteShops.indexOf(shop.id) !== -1;
+        var isFavorited = window.favoriteShops.indexOf(shop.id) !== -1;
         var shopBranches = window.allShops.filter(function(b) { return b.isBranch && b.parentId === shop.id; });
         
         var card = document.createElement('div');
         card.className = 'shop-card bg-white overflow-hidden relative';
         
-        var shopName = escapeHtml((shop.name && shop.name[currentLang]) || (shop.name && shop.name['zh-TW']) || 'Shop');
-        var shopType = escapeHtml((shop.type && shop.type[currentLang]) || (shop.type && shop.type['zh-TW']) || '');
-        var shopDesc = escapeHtml((shop.description && shop.description[currentLang]) || (shop.description && shop.description['zh-TW']) || '');
+        var shopName = escapeHtml((shop.name && shop.name[window.currentLang]) || (shop.name && shop.name['zh-TW']) || 'Shop');
+        var shopType = escapeHtml((shop.type && shop.type[window.currentLang]) || (shop.type && shop.type['zh-TW']) || '');
+        var shopDesc = escapeHtml((shop.description && shop.description[window.currentLang]) || (shop.description && shop.description['zh-TW']) || '');
 
         var html = '';
         if (shop.featured) html += '<div class="featured-badge">FEATURED</div>';
@@ -136,7 +136,7 @@ window.Gateway.register('renderShopCards', function(filteredShops) {
         }
         
         html += '</div>';
-        var btnText = (window.locales[currentLang] && window.locales[currentLang].viewDetailsBtn) || 'VIEW DETAILS';
+        var btnText = (window.locales[window.currentLang] && window.locales[window.currentLang].viewDetailsBtn) || 'VIEW DETAILS';
         html += '<button class="block w-full text-center py-3 mt-auto btn-primary text-sm tracking-widest view-details-btn" data-shop-id="' + shop.id + '">' + btnText + '</button>';
         html += '</div>';
         
@@ -144,8 +144,8 @@ window.Gateway.register('renderShopCards', function(filteredShops) {
         container.appendChild(card);
     });
 
-    currentLoadedShops += shopsToDisplay.length;
-    if (loadMoreButton) loadMoreButton.classList.toggle('hidden', currentLoadedShops >= filteredShops.length);
+    window.currentLoadedShops += shopsToDisplay.length;
+    if (loadMoreButton) loadMoreButton.classList.toggle('hidden', window.currentLoadedShops >= filteredShops.length);
 });
 
 window.Gateway.register('renderSkeletonCards', function() {

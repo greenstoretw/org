@@ -52,9 +52,9 @@ window.autofillForm = function(elementId) {
   if (!el) return;
   try {
     var data = JSON.parse(el.innerText);
-    if (data.name && document.getElementById('edit-shop-name')) document.getElementById('edit-shop-name').value = data.name;
-    if (data.category && document.getElementById('edit-shop-category')) document.getElementById('edit-shop-category').value = data.category;
-    if (data.address && document.getElementById('edit-shop-address')) document.getElementById('edit-shop-address').value = data.address;
+    if (data.name && document.getElementById('s-name-zh')) document.getElementById('s-name-zh').value = data.name;
+    if (data.category && document.getElementById('s-type-zh')) document.getElementById('s-type-zh').value = data.category;
+    if (data.address && document.getElementById('s-addr-zh')) document.getElementById('s-addr-zh').value = data.address;
     alert("表單自動填寫成功！");
   } catch (e) {
     alert("無法解析 JSON，或表單不存在。");

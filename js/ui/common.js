@@ -4,7 +4,7 @@
 
 window.Gateway.register('setLanguage', function(lang) {
     var updateUI = function() {
-        currentLang = lang;
+        window.currentLang = lang;
         localStorage.setItem('lang', lang);
         // Translate standard text content elements
         var i18nElements = document.querySelectorAll('[data-i18n]');
@@ -34,7 +34,7 @@ window.Gateway.register('setLanguage', function(lang) {
         var navLinks = document.querySelector('.nav-links');
         if (navLinks && window.innerWidth >= 768) navLinks.style.display = 'flex';
         
-        currentLoadedShops = 0;
+        window.currentLoadedShops = 0;
         if (window.filterAndDisplayShops) window.filterAndDisplayShops();
     };
 

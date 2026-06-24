@@ -3,14 +3,14 @@
 // Compatibility is maintained globally via window.Gateway.
 
 window.Gateway.register('showShopDetail', function(shopId) {
-    var shop = allShops.find(function(s) { return s.id === shopId; });
+    var shop = window.allShops.find(function(s) { return s.id === shopId; });
     if (!shop) return;
 
-    var name = escapeHtml((shop.name && shop.name[currentLang]) || (shop.name && shop.name['zh-TW']) || '');
-    var type = escapeHtml((shop.type && shop.type[currentLang]) || (shop.type && shop.type['zh-TW']) || '');
-    var addr = escapeHtml((shop.address && shop.address[currentLang]) || (shop.address && shop.address['zh-TW']) || '');
-    var desc = escapeHtml((shop.description && shop.description[currentLang]) || (shop.description && shop.description['zh-TW']) || '');
-    var isFavorited = favoriteShops.indexOf(shop.id) !== -1;
+    var name = escapeHtml((shop.name && shop.name[window.currentLang]) || (shop.name && shop.name['zh-TW']) || '');
+    var type = escapeHtml((shop.type && shop.type[window.currentLang]) || (shop.type && shop.type['zh-TW']) || '');
+    var addr = escapeHtml((shop.address && shop.address[window.currentLang]) || (shop.address && shop.address['zh-TW']) || '');
+    var desc = escapeHtml((shop.description && shop.description[window.currentLang]) || (shop.description && shop.description['zh-TW']) || '');
+    var isFavorited = window.favoriteShops.indexOf(shop.id) !== -1;
     
     var shopBranches = window.allShops.filter(function(b) { return b.isBranch && b.parentId === shop.id; });
 
@@ -97,7 +97,7 @@ window.Gateway.register('showShopDetail', function(shopId) {
     
     // Recommendations
     var recContainer = container.querySelector('#recommendations-container');
-    var similarShops = allShops.filter(function(s) { 
+    var similarShops = window.allShops.filter(function(s) { 
         return s.id !== shop.id && s.type && s.type['zh-TW'] && shop.type && shop.type['zh-TW'] && s.type['zh-TW'] === shop.type['zh-TW']; 
     }).slice(0, 3);
         
