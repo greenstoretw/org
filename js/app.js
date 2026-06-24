@@ -26,6 +26,18 @@ document.addEventListener('DOMContentLoaded', function() {
             maxZoom: 19
         }).addTo(window.mapInstance);
         window.markersGroup.addTo(window.mapInstance);
+        
+        // Ensure map renders full size and handles container resizing
+        setTimeout(function() {
+            if (window.mapInstance) {
+                window.mapInstance.invalidateSize();
+            }
+        }, 300);
+        window.addEventListener('resize', function() {
+            if (window.mapInstance) {
+                window.mapInstance.invalidateSize();
+            }
+        });
 
         // Add geolocation button
         L.Control.LocationButton = L.Control.extend({
