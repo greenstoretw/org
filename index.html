@@ -391,10 +391,6 @@
                 <span class="brand-name">GREENROOF</span>
             </a>
             <div class="header-actions">
-                <button id="dark-mode-toggle" class="icon-btn" title="切換深色模式">
-                    <i class="fa-solid fa-moon dark-icon"></i>
-                    <i class="fa-solid fa-sun light-icon" style="display:none"></i>
-                </button>
                 <select id="language-select" class="lang-select">
                     <option value="zh-TW">繁中</option>
                     <option value="en">EN</option>
@@ -404,13 +400,72 @@
                     <option value="es">ES</option>
                     <option value="de">DE</option>
                 </select>
-                <a href="admin.html" id="admin-indicator" class="icon-btn" title="後台管理" style="display:none; color:#f59e0b;">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </a>
-                <button id="dashboard-btn" class="icon-btn" style="display:none">
-                    <i class="fa-solid fa-user-circle" style="font-size:17px"></i>
-                </button>
-                <button id="login-btn" class="login-btn" data-i18n="login">登入</button>
+
+                <!-- Settings Dropdown -->
+                <div class="settings-dropdown" id="settings-dropdown">
+                    <button class="icon-btn settings-trigger" id="settings-btn" title="設定" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                    <div class="settings-menu" id="settings-menu" role="menu">
+
+                        <!-- Account Status -->
+                        <div class="settings-section">
+                            <div class="settings-label">帳號</div>
+                            <!-- Guest state -->
+                            <div id="settings-guest" class="settings-account-row">
+                                <div class="settings-account-icon"><i class="fa-regular fa-user"></i></div>
+                                <div class="settings-account-info">
+                                    <div class="settings-account-name">訪客</div>
+                                    <div class="settings-account-sub">尚未登入</div>
+                                </div>
+                                <button id="login-btn" class="settings-login-btn">登入</button>
+                            </div>
+                            <!-- Logged-in state -->
+                            <div id="settings-user" class="settings-account-row" style="display:none">
+                                <div class="settings-account-icon settings-account-icon--loggedin"><i class="fa-solid fa-user-check"></i></div>
+                                <div class="settings-account-info">
+                                    <div class="settings-account-name" id="settings-user-name">用戶</div>
+                                    <div class="settings-account-sub" id="settings-user-email"></div>
+                                </div>
+                                <button id="dashboard-btn" class="settings-icon-action" title="我的儀表板">
+                                    <i class="fa-solid fa-table-columns"></i>
+                                </button>
+                                <button id="logout-btn" class="settings-icon-action" title="登出" style="color:var(--red); border-color:var(--border);">
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-divider"></div>
+
+                        <!-- Dark Mode -->
+                        <div class="settings-section">
+                            <div class="settings-label">外觀</div>
+                            <div class="settings-row" id="dark-mode-row">
+                                <i class="fa-solid fa-moon settings-row-icon"></i>
+                                <span class="settings-row-text">深色模式</span>
+                                <button class="settings-toggle" id="dark-mode-toggle" role="switch" aria-checked="false" title="切換深色模式">
+                                    <span class="settings-toggle-thumb"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-divider"></div>
+
+                        <!-- Admin (hidden by default) -->
+                        <div class="settings-section" id="settings-admin-section" style="display:none">
+                            <div class="settings-label">管理</div>
+                            <a href="admin.html" id="admin-indicator" class="settings-row settings-row--link">
+                                <i class="fa-solid fa-shield-halved settings-row-icon" style="color:#f59e0b"></i>
+                                <span class="settings-row-text">後台管理</span>
+                                <i class="fa-solid fa-chevron-right settings-row-arrow"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- /Settings Dropdown -->
+
             </div>
         </div>
 

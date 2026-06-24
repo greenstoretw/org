@@ -809,3 +809,87 @@ if (typeof MutationObserver !== 'undefined') {
         });
     });
 }
+
+
+// ===== SETTINGS DROPDOWN LOGIC =====
+document.addEventListener('DOMContentLoaded', function() {
+    var settingsBtn = document.getElementById('settings-btn');
+    var settingsMenu = document.getElementById('settings-menu');
+    var darkToggleRow = document.getElementById('dark-mode-row');
+    var darkToggleBtn = document.getElementById('dark-mode-toggle');
+    
+    // Create backdrop if it doesn't exist
+    var backdrop = document.getElementById('settings-backdrop');
+    if (!backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.id = 'settings-backdrop';
+        document.body.appendChild(backdrop);
+    }
+    
+    function toggleSettings() {
+        var isOpen = settingsMenu.classList.contains('open');
+        if (isOpen) {
+            settingsMenu.classList.remove('open');
+            settingsBtn.classList.remove('active');
+            settingsBtn.setAttribute('aria-expanded', 'false');
+            backdrop.classList.remove('active');
+        } else {
+            settingsMenu.classList.add('open');
+            settingsBtn.classList.add('active');
+            settingsBtn.setAttribute('aria-expanded', 'true');
+            backdrop.classList.add('active');
+        }
+    }
+    
+    function closeSettings() {
+        settingsMenu.classList.remove('open');
+        settingsBtn.classList.remove('active');
+        settingsBtn.setAttribute('aria-expanded', 'false');
+        backdrop.classList.remove('active');
+    }
+    
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', toggleSettings);
+    }
+    
+    if (backdrop) {
+        backdrop.addEventListener('click', closeSettings);
+    }
+    
+    // Close on escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && settingsMenu && settingsMenu.classList.contains('open')) {
+            closeSettings();
+        }
+    });
+
+    // Dark Mode Toggle Logic
+    var toggleDark = function(e) {
+        if (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        window.isDarkMode = !window.isDarkMode;
+        if (window.isDarkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+            if (darkToggleBtn) darkToggleBtn.setAttribute('aria-checked', 'true');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+            if (darkToggleBtn) darkToggleBtn.setAttribute('aria-checked', 'false');
+        }
+    };
+    
+    if (darkToggleRow) {
+        darkToggleRow.addEventListener('click', toggleDark);
+    }
+    if (darkToggleBtn) {
+        darkToggleBtn.addEventListener('click', toggleDark);
+    }
+    
+    // Initialize dark toggle state
+    if (window.isDarkMode && darkToggleBtn) {
+        darkToggleBtn.setAttribute('aria-checked', 'true');
+    }
+});

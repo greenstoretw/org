@@ -38,9 +38,44 @@ window.Gateway.register('handleLogin', function() {
 });
 
 window.Gateway.register('updateLoginButtons', function(isLoggedIn) {
-    var text = isLoggedIn ? ((window.locales[window.currentLang] && window.locales[window.currentLang].logout) || 'Logout') : ((window.locales[window.currentLang] && window.locales[window.currentLang].login) || 'Login');
-    var btn = document.getElementById('login-btn');
-    var btnMobile = document.getElementById('login-btn-mobile');
-    if (btn) btn.textContent = text;
-    if (btnMobile) btnMobile.textContent = text;
+    // Update settings dropdown UI
+    var guestBlock = document.getElementById('settings-guest');
+    var userBlock = document.getElementById('settings-user');
+    
+    if (isLoggedIn) {
+        if (guestBlock) guestBlock.style.display = 'none';
+        if (userBlock) userBlock.style.display = 'flex';
+        
+        var user = firebase.auth().currentUser;
+        if (user) {
+            var nameEl = document.getElementById('settings-user-name');
+            var emailEl = document.getElementById('settings-user-email');
+            if (nameEl) nameEl.textContent = user.displayName || '用戶';
+            if (emailEl) emailEl.textContent = user.email || '';
+        }
+    } else {
+        if (guestBlock) guestBlock.style.display = 'flex';
+        if (userBlock) userBlock.style.display = 'none';
+        
+        // Hide admin section if logged out
+        var adminSection = document.getElementById('settings-admin-section');
+        if (adminSection) adminSection.style.display = 'none';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            if (window.Gateway && window.Gateway.handlers && window.Gateway.handlers.handleLogin) {
+                window.Gateway.handlers.handleLogin[0](); // Triggers the signout if logged in
+            } else if (firebase.auth().currentUser) {
+                firebase.auth().signOut().then(function() {
+                    localStorage.removeItem('isAdmin');
+                    window.updateLoginButtons(false);
+                    window.showMessage("已登出");
+                });
+            }
+        });
+    }
 });
