@@ -17,6 +17,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function initialize() {
         // Init Leaflet objects (Leaflet must be loaded first)
         window.markersGroup = L.featureGroup();
+        // Fix Leaflet default marker icon path (broken on CDN/static servers)
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+            iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+            iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png'
+        });
+
         var mapEl = document.getElementById('sustainability-map');
         if (!mapEl || mapEl._leaflet_id) return;
 
