@@ -13,7 +13,20 @@ if ('serviceWorker' in navigator) {
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    // ===== INITIALIZATION =====
+    // ===== GOOGLE MAPS AUTH FAILURE CATCHER =====
+    window.gm_authFailure = function() {
+        console.error("Google Maps API Auth Failure: Key restricted or Maps JavaScript API not enabled on GCP.");
+        var mapEl = document.getElementById('sustainability-map');
+        if (mapEl && !document.getElementById('gmaps-error-banner')) {
+            var notice = document.createElement('div');
+            notice.id = 'gmaps-error-banner';
+            notice.style.cssText = 'position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:9999;background:#dc2626;color:#ffffff;padding:10px 18px;font-size:13px;font-weight:bold;box-shadow:0 4px 14px rgba(0,0,0,0.4);text-align:center;max-width:90%;';
+            notice.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2"></i> Google 地圖載入失敗：請至 Google Cloud Console 啟用「Maps JavaScript API」並新增 `*.github.io/*` 網域授權。';
+            mapEl.style.position = 'relative';
+            mapEl.appendChild(notice);
+        }
+    };
+
     // ===== INITIALIZATION =====
     function initialize() {
         window.googleMarkers = [];
