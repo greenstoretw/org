@@ -1,0 +1,32 @@
+name: green_eaves
+description: "綠簷 (Green Eaves) - 永續商店地圖 Flutter 跨平台應用程式"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  google_maps_flutter: ^2.5.0
+  google_maps_flutter_web: ^0.5.4
+  provider: ^6.1.1
+  google_fonts: ^6.1.0
+  font_awesome_flutter: ^10.7.0
+  geolocator: ^10.1.0
+  image_picker: ^1.0.7
+  shared_preferences: ^2.2.2
+  url_launcher: ^6.2.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/

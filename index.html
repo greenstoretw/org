@@ -23,7 +23,7 @@
 
     <!-- Icons & Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBYVzIEA4RxUH2IxojDnln0QNKC8gyemfg&libraries=places"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Firebase SDK -->
@@ -751,6 +751,82 @@
             </div>
             <div class="p-6">
                 <div class="flex justify-center gap-2 mb-8" id="star-rating">
+                <button onclick="window.submitRating()" class="w-full bg-slate-900 dark:bg-white dark:text-slate-950 text-white py-4 font-black tracking-widest hover:bg-green-600 transition shadow-xl shadow-slate-200" data-i18n="reviewSubmit">送出評價</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div id="report-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[2000] hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md modal-content overflow-hidden transition-colors">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white" data-i18n="reportModalTitle">檢舉錯誤資訊</h3>
+                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-900 dark:hover:text-white text-2xl" data-i18n="cancelBtn">&times;</button>
+            </div>
+            <div class="p-6">
+                <div class="form-group mb-6">
+                    <label for="report-reason" class="block text-xs font-black text-slate-400 tracking-widest uppercase mb-2" data-i18n="reportReasonLabel">錯誤原因</label>
+                    <select id="report-reason" class="w-full border border-slate-200 dark:border-slate-800 p-3 text-sm focus:outline-none focus:border-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white transition-colors">
+                        <option value="closed">店家已結束營業</option>
+                        <option value="wrong-info">營業時間或電話錯誤</option>
+                        <option value="wrong-location">地圖標點位置不正確</option>
+                        <option value="not-eco">並非永續商店/名不副實</option>
+                        <option value="other">其他問題</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="report-desc" class="block text-xs font-black text-slate-400 tracking-widest uppercase mb-2" data-i18n="reportDescLabel">詳情說明</label>
+                    <textarea id="report-desc" rows="2" placeholder="請詳細描述..." class="w-full border border-slate-200 dark:border-slate-800 p-3 text-sm focus:outline-none focus:border-blue-500 resize-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white transition-colors"></textarea>
+                </div>
+                <input type="hidden" id="report-shop-id">
+            </div>
+            <div class="p-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
+                <button onclick="document.getElementById('report-modal').classList.add('hidden')" class="px-4 py-2 text-sm text-slate-600 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition dark:text-slate-400" data-i18n="cancelBtn">取消</button>
+                <button onclick="window.submitReport()" class="px-6 py-2 text-sm font-bold bg-red-600 text-white hover:bg-red-700 transition" data-i18n="reportSubmit">送出檢舉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eco-Tour Routing Panel -->
+    <div id="routing-panel" class="fixed bottom-6 right-6 z-[1200] bg-white dark:bg-slate-900 border-2 border-green-600 dark:border-green-500 p-6 shadow-2xl max-w-sm w-full hidden transition-colors">
+        <div class="flex justify-between items-center mb-4">
+            <h4 class="font-black text-slate-900 dark:text-white flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-route text-green-600"></i> 永續散步路線規劃
+            </h4>
+            <button id="close-routing-btn" class="text-slate-400 hover:text-slate-900 dark:hover:text-white text-xl cursor-pointer">&times;</button>
+        </div>
+        <div id="routing-shops-list" class="space-y-2 mb-4 max-h-40 overflow-y-auto text-xs text-slate-600 dark:text-slate-400 pr-1">
+            <!-- Injected dynamically -->
+        </div>
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-3 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+            <div class="flex justify-between">
+                <span>預估距離:</span>
+                <span id="routing-distance" class="font-bold text-slate-900 dark:text-white">0 km</span>
+            </div>
+            <div class="flex justify-between">
+                <span>步行時間 (以 5 km/h 計):</span>
+                <span id="routing-time" class="font-bold text-slate-900 dark:text-white">0 分鐘</span>
+            </div>
+            <div class="flex justify-between">
+                <span>預估減碳:</span>
+                <span id="routing-carbon" class="font-bold text-green-600">0 g 🌿</span>
+            </div>
+        </div>
+        <div class="mt-4 flex gap-2">
+            <button id="clear-routing-btn" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 py-2.5 text-xs font-bold hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20 transition cursor-pointer" data-i18n="routingClear">清空路線</button>
+            <button id="draw-route-polyline-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 text-xs font-bold transition cursor-pointer" data-i18n="routingDraw">於地圖連線</button>
+        </div>
+    </div>
+
+    <!-- Form Modals -->
+    <div id="rate-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[2000] hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md modal-content overflow-hidden transition-colors">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white" data-i18n="rateModalTitle">發表評價</h3>
+                <button onclick="document.getElementById('rate-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-900 dark:hover:text-white text-2xl">&times;</button>
+            </div>
+            <div class="p-6">
+                <div class="flex justify-center gap-2 mb-8" id="star-rating">
                     <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-value="1">★</button>
                     <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-value="2">★</button>
                     <button class="star-btn text-3xl text-slate-200 hover:text-yellow-400 transition" data-value="3">★</button>
@@ -834,7 +910,7 @@
         </div>
     </div>
 
-    <!-- Receipt Preview Modal (Click to pop up as requested by user) -->
+    <!-- Receipt Preview Modal -->
     <div id="receipt-preview-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[2500] hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 p-6 max-w-sm w-full relative modal-content flex flex-col items-center border border-slate-200 dark:border-slate-800">
             <button id="close-receipt-preview" class="absolute top-2 right-2 text-slate-400 hover:text-slate-900 dark:hover:text-white text-2xl cursor-pointer" onclick="document.getElementById('receipt-preview-modal').classList.add('hidden')">&times;</button>
@@ -846,6 +922,7 @@
         </div>
     </div>
 
+    <!-- Message Modal -->
     <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[2000] hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-xl max-w-sm mx-auto text-center border dark:border-slate-800">
             <p id="message-modal-text" class="text-gray-800 dark:text-white text-lg mb-4"></p>
@@ -853,6 +930,7 @@
         </div>
     </div>
 
+    <!-- Error Modal -->
     <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-75 z-[3000] hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-xl max-w-2xl w-full mx-auto border dark:border-slate-800">
             <h3 class="text-xl font-bold text-red-600 mb-4" data-i18n="errorModalTitle">發生錯誤</h3>
@@ -877,7 +955,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Floating Action Panel (FAB) -->
     <div id="fab-panel" class="fab-panel-wrap">
@@ -924,52 +1001,13 @@
         </div>
     </div>
 
-    <!-- Report / Newsletter Section -->
-    <section id="report-section" class="report-section-wrap">
-        <div class="report-section-inner">
-            <div class="report-card">
-                <div class="report-card-header">
-                    <i class="fa-solid fa-comment-dots report-icon report-icon-comment"></i>
-                    <div>
-                        <h3 class="report-card-title">問題回報</h3>
-                        <p class="report-card-sub">發現商店資訊有誤？讓我們知道！</p>
-                    </div>
-                </div>
-                <form id="issue-form-section" class="report-form">
-                    <textarea id="issue-section" rows="3" placeholder="例如：某間商店地址錯誤、已停業..." class="report-textarea"></textarea>
-                    <button type="submit" class="report-submit" data-i18n="reportIssueSubmitBtn">
-                        <i class="fa-solid fa-paper-plane"></i> 送出回報
-                    </button>
-                </form>
-                <p id="issue-section-message" class="report-success hidden">感謝您的回報，我們會儘快處理！</p>
-            </div>
-            <div class="report-card newsletter-card">
-                <div class="report-card-header">
-                    <i class="fa-solid fa-envelope report-icon report-icon-mail"></i>
-                    <div>
-                        <h3 class="report-card-title">訂閱電子報</h3>
-                        <p class="report-card-sub">第一時間掌握最新永續商店資訊</p>
-                    </div>
-                </div>
-                <form id="newsletter-form-section" class="report-form">
-                    <input type="email" id="newsletter-email-section" required placeholder="您的電子郵件地址" class="report-input">
-                    <button type="submit" class="newsletter-submit report-submit" data-i18n="subscribeBtn">
-                        <i class="fa-solid fa-leaf"></i> 立即訂閱
-                    </button>
-                </form>
-                <p id="newsletter-section-message" class="report-success hidden">訂閱成功！感謝您的支持。</p>
-            </div>
-        </div>
-    </section>
     <!-- Custom Scripts (Modularized) -->
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="js/firebase-config.js?v=2.28"></script>
     <script src="js/error-reporter.js?v=2.28"></script>
-    <!-- Locales (Essential only) -->
+    <!-- Locales -->
     <script src="js/locales/zh-TW.js?v=2.28"></script>
     <script src="js/locales/en.js?v=2.28"></script>
-        <!-- App scripts -->
+    <!-- App scripts -->
     <script src="js/gateway.js?v=2.28"></script>
     <script src="js/state.js?v=2.28"></script>
     <script src="js/utils.js?v=2.28"></script>

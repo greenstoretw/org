@@ -3,19 +3,49 @@
 // Compatibility is maintained globally via window.Gateway.
 
 window.Gateway.register('updateMapMarkers', function(filteredShops) {
-    if (!window.mapInstance) return;
-    window.markersGroup.clearLayers();
+    if (!window.mapInstance || !window.google || !window.google.maps) return;
+    if (window.googleMarkers && window.googleMarkers.length > 0) {
+        window.googleMarkers.forEach(function(m) { m.setMap(null); });
+    }
+    window.googleMarkers = [];
+    
+    var bounds = new google.maps.LatLngBounds();
+    var validCount = 0;
+    
     filteredShops.forEach(function(shop) {
-        if(shop.location) {
+        if(shop.location && shop.location.latitude && shop.location.longitude) {
+            validCount++;
+            var pos = { lat: Number(shop.location.latitude), lng: Number(shop.location.longitude) };
+            bounds.extend(pos);
+            
             var shopName = (shop.name && shop.name[window.currentLang || 'zh-TW']) || (shop.name && shop.name['zh-TW']) || 'Shop';
-            var marker = L.marker([shop.location.latitude, shop.location.longitude]);
             var btnText = (window.locales[window.currentLang || 'zh-TW'] && window.locales[window.currentLang || 'zh-TW'].viewDetailsBtn) || 'View Details';
-            marker.bindPopup('<div class="p-1"><h3 class="font-bold text-base">' + shopName + '</h3><button onclick="window.showShopDetail(\'' + shop.id + '\')" class="text-green-600 text-sm hover:underline">' + btnText + '</button></div>');
-            window.markersGroup.addLayer(marker);
+            
+            var marker = new google.maps.Marker({
+                position: pos,
+                map: window.mapInstance,
+                title: shopName
+            });
+            
+            var infoWindow = new google.maps.InfoWindow({
+                content: '<div class="p-1"><h3 class="font-bold text-base">' + shopName + '</h3><button onclick="window.showShopDetail(\'' + shop.id + '\')" class="text-green-600 text-sm hover:underline mt-1 block cursor-pointer">' + btnText + '</button></div>'
+            });
+            
+            marker.addListener('click', function() {
+                if (window.currentInfoWindow) window.currentInfoWindow.close();
+                infoWindow.open(window.mapInstance, marker);
+                window.currentInfoWindow = infoWindow;
+            });
+            
+            window.googleMarkers.push(marker);
         }
     });
-    if (filteredShops.length > 0 && window.markersGroup.getLayers().length > 0) {
-       window.mapInstance.fitBounds(window.markersGroup.getBounds(), { padding: [50, 50] });
+    
+    if (validCount > 0) {
+        window.mapInstance.fitBounds(bounds);
+        if (validCount === 1) {
+            window.mapInstance.setZoom(15);
+        }
     }
 });
 
@@ -33,13 +63,11 @@ window.Gateway.register('surpriseMe', function() {
     }
     var randomShop = validShops[Math.floor(Math.random() * validShops.length)];
     if (window.mapInstance) {
-        window.mapInstance.flyTo([randomShop.location.latitude, randomShop.location.longitude], 16, {
-            animate: true,
-            duration: 1.5
-        });
+        window.mapInstance.panTo({ lat: Number(randomShop.location.latitude), lng: Number(randomShop.location.longitude) });
+        window.mapInstance.setZoom(16);
         setTimeout(function() {
             window.showShopDetail(randomShop.id);
-        }, 1600);
+        }, 600);
     } else {
         window.showShopDetail(randomShop.id);
     }
@@ -137,29 +165,35 @@ window.Gateway.register('updateRoutingPanel', function() {
 });
 
 window.Gateway.register('drawRoutePolyline', function() {
-    if (!window.mapInstance) return;
+    if (!window.mapInstance || !window.google || !window.google.maps) return;
     
     if (window.routingPolyline) {
-        window.mapInstance.removeLayer(window.routingPolyline);
+        window.routingPolyline.setMap(null);
         window.routingPolyline = null;
     }
     
-    var latlngs = [];
+    var path = [];
+    var bounds = new google.maps.LatLngBounds();
+    
     window.activeRoutingList.forEach(function(id) {
         var shop = window.allShops.find(function(s) { return s.id === id; });
         if (shop && shop.location && shop.location.latitude && shop.location.longitude) {
-            latlngs.push([shop.location.latitude, shop.location.longitude]);
+            var pos = { lat: Number(shop.location.latitude), lng: Number(shop.location.longitude) };
+            path.push(pos);
+            bounds.extend(pos);
         }
     });
     
-    if (latlngs.length >= 2) {
-        window.routingPolyline = L.polyline(latlngs, {
-            color: '#3b82f6',
-            weight: 4,
-            dashArray: '10, 8',
-            opacity: 0.8
-        }).addTo(window.mapInstance);
+    if (path.length >= 2) {
+        window.routingPolyline = new google.maps.Polyline({
+            path: path,
+            geodesic: true,
+            strokeColor: '#3b82f6',
+            strokeOpacity: 0.8,
+            strokeWeight: 4,
+            map: window.mapInstance
+        });
         
-        window.mapInstance.fitBounds(window.routingPolyline.getBounds(), { padding: [50, 50] });
+        window.mapInstance.fitBounds(bounds);
     }
 });

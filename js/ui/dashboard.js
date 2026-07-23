@@ -201,35 +201,56 @@ window.Gateway.register('showUserDashboard', function() {
         
         setTimeout(function() {
             var mapContainer = document.getElementById('dashboard-footprint-map');
-            if (!mapContainer) return;
-            if (window.footprintMap) window.footprintMap.remove();
+            if (!mapContainer || !window.google || !window.google.maps) return;
             
-            window.footprintMap = L.map('dashboard-footprint-map').setView([23.6978, 120.9605], 7);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(window.footprintMap);
-            var footprintMarkers = L.featureGroup().addTo(window.footprintMap);
+            window.footprintMap = new google.maps.Map(mapContainer, {
+                center: { lat: 23.6978, lng: 120.9605 },
+                zoom: 7,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false
+            });
             
+            var bounds = new google.maps.LatLngBounds();
             var revIds = revSnap.docs.map(function(doc) { return doc.data().shopId; });
             var combinedIds = (window.favoriteShops || []).concat(revIds);
             var uniqueIds = [];
             combinedIds.forEach(function(id) { if (uniqueIds.indexOf(id) === -1) uniqueIds.push(id); });
             
-            var footprintShops = window.allShops.filter(function(s) { return uniqueIds.indexOf(s.id) !== -1 && s.location; });
+            var footprintShops = (window.allShops || []).filter(function(s) { return uniqueIds.indexOf(s.id) !== -1 && s.location && s.location.latitude && s.location.longitude; });
             
             footprintShops.forEach(function(shop) {
-                var isFav = window.favoriteShops.indexOf(shop.id) !== -1;
+                var isFav = (window.favoriteShops || []).indexOf(shop.id) !== -1;
                 var isRev = revIds.indexOf(shop.id) !== -1;
-                var iconColor = (isFav && isRev) ? 'purple' : (isFav ? 'red' : 'blue');
+                var iconColor = (isFav && isRev) ? '#a855f7' : (isFav ? '#ef4444' : '#3b82f6');
+                var pos = { lat: Number(shop.location.latitude), lng: Number(shop.location.longitude) };
+                bounds.extend(pos);
                 
-                var markerHtml = '<div style="background-color: ' + iconColor + '; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.5);"></div>';
-                var customIcon = L.divIcon({ html: markerHtml, className: 'custom-footprint-icon', iconSize: [12, 12] });
+                var marker = new google.maps.Marker({
+                    position: pos,
+                    map: window.footprintMap,
+                    title: (shop.name && shop.name['zh-TW']) || 'Footprint Shop',
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 6,
+                        fillColor: iconColor,
+                        fillOpacity: 1,
+                        strokeColor: '#ffffff',
+                        strokeWeight: 2
+                    }
+                });
                 
-                L.marker([shop.location.latitude, shop.location.longitude], { icon: customIcon })
-                    .bindPopup('<div class="text-sm font-bold">' + (shop.name && shop.name['zh-TW']) + '</div>')
-                    .addTo(footprintMarkers);
+                var infoWindow = new google.maps.InfoWindow({
+                    content: '<div class="text-sm font-bold p-1">' + ((shop.name && shop.name['zh-TW']) || 'Footprint Shop') + '</div>'
+                });
+                
+                marker.addListener('click', function() {
+                    infoWindow.open(window.footprintMap, marker);
+                });
             });
             
             if (footprintShops.length > 0) {
-                window.footprintMap.fitBounds(footprintMarkers.getBounds(), { padding: [30, 30], maxZoom: 14 });
+                window.footprintMap.fitBounds(bounds);
             }
         }, 300);
     }).catch(function(error) {
