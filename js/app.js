@@ -310,8 +310,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var loginBtn = document.getElementById('login-btn');
         var loginBtnMobile = document.getElementById('login-btn-mobile');
-        if (loginBtn) loginBtn.addEventListener('click', window.handleLogin);
-        if (loginBtnMobile) loginBtnMobile.addEventListener('click', window.handleLogin);
+        if (loginBtn) {
+            loginBtn.onclick = function(e) {
+                if (e && e.preventDefault) e.preventDefault();
+                if (window.Gateway) window.Gateway.invoke('handleLogin');
+            };
+        }
+        if (loginBtnMobile) {
+            loginBtnMobile.onclick = function(e) {
+                if (e && e.preventDefault) e.preventDefault();
+                if (window.Gateway) window.Gateway.invoke('handleLogin');
+            };
+        }
 
         var dashBtn = document.getElementById('dashboard-btn');
         if (dashBtn) dashBtn.addEventListener('click', window.showUserDashboard);
