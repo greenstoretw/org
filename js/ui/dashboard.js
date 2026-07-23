@@ -206,6 +206,7 @@ window.Gateway.register('showUserDashboard', function() {
             window.footprintMap = new google.maps.Map(mapContainer, {
                 center: { lat: 23.6978, lng: 120.9605 },
                 zoom: 7,
+                mapId: 'DEMO_MAP_ID',
                 mapTypeControl: false,
                 streetViewControl: false,
                 fullscreenControl: false
@@ -226,18 +227,14 @@ window.Gateway.register('showUserDashboard', function() {
                 var pos = { lat: Number(shop.location.latitude), lng: Number(shop.location.longitude) };
                 bounds.extend(pos);
                 
-                var marker = new google.maps.Marker({
+                var marker = window.createMarker ? window.createMarker({
                     position: pos,
                     map: window.footprintMap,
-                    title: (shop.name && shop.name['zh-TW']) || 'Footprint Shop',
-                    icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        scale: 6,
-                        fillColor: iconColor,
-                        fillOpacity: 1,
-                        strokeColor: '#ffffff',
-                        strokeWeight: 2
-                    }
+                    title: (shop.name && shop.name['zh-TW']) || 'Footprint Shop'
+                }) : new google.maps.Marker({
+                    position: pos,
+                    map: window.footprintMap,
+                    title: (shop.name && shop.name['zh-TW']) || 'Footprint Shop'
                 });
                 
                 var infoWindow = new google.maps.InfoWindow({

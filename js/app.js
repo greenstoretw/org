@@ -27,6 +27,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    // ===== HELPER: ADVANCED MARKER FACTORY =====
+    window.createMarker = function(opts) {
+        if (window.google && window.google.maps && window.google.maps.marker && window.google.maps.marker.AdvancedMarkerElement) {
+            return new google.maps.marker.AdvancedMarkerElement(opts);
+        } else if (window.google && window.google.maps && window.google.maps.Marker) {
+            return new google.maps.Marker(opts);
+        }
+        return null;
+    };
+
     // ===== INITIALIZATION =====
     function initialize() {
         window.googleMarkers = [];
@@ -37,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.mapInstance = new google.maps.Map(mapEl, {
             center: { lat: 25.0330, lng: 121.5654 },
             zoom: 12,
+            mapId: 'DEMO_MAP_ID',
             mapTypeControl: false,
             streetViewControl: true,
             fullscreenControl: false
@@ -56,18 +67,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (window.userMarker) {
                         window.userMarker.setPosition(posLatLng);
                     } else {
-                        window.userMarker = new google.maps.Marker({
+                        window.userMarker = window.createMarker({
                             position: posLatLng,
                             map: window.mapInstance,
-                            title: '您的目前位置',
-                            icon: {
-                                path: google.maps.SymbolPath.CIRCLE,
-                                scale: 7,
-                                fillColor: '#3b82f6',
-                                fillOpacity: 1,
-                                strokeColor: '#ffffff',
-                                strokeWeight: 3
-                            }
+                            title: '您的目前位置'
                         });
                     }
                 }, function() { alert('無法取得您的位置。'); });

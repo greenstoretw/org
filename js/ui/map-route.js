@@ -21,7 +21,11 @@ window.Gateway.register('updateMapMarkers', function(filteredShops) {
             var shopName = (shop.name && shop.name[window.currentLang || 'zh-TW']) || (shop.name && shop.name['zh-TW']) || 'Shop';
             var btnText = (window.locales[window.currentLang || 'zh-TW'] && window.locales[window.currentLang || 'zh-TW'].viewDetailsBtn) || 'View Details';
             
-            var marker = new google.maps.Marker({
+            var marker = window.createMarker ? window.createMarker({
+                position: pos,
+                map: window.mapInstance,
+                title: shopName
+            }) : new google.maps.Marker({
                 position: pos,
                 map: window.mapInstance,
                 title: shopName
