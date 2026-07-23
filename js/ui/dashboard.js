@@ -217,26 +217,31 @@ window.Gateway.register('showUserDashboard', function() {
             var uniqueIds = [];
             combinedIds.forEach(function(id) { if (uniqueIds.indexOf(id) === -1) uniqueIds.push(id); });
             
-            var footprintShops = (window.allShops || []).filter(function(s) { return uniqueIds.indexOf(s.id) !== -1 && s.location && s.location.latitude && s.location.longitude; });
+            var validFootprintCount = 0;
+            var footprintShops = (window.allShops || []).filter(function(s) { return uniqueIds.indexOf(s.id) !== -1 && s.location && s.location.latitude != null && s.location.longitude != null; });
             
             footprintShops.forEach(function(shop) {
                 var isFav = (window.favoriteShops || []).indexOf(shop.id) !== -1;
                 var isRev = revIds.indexOf(shop.id) !== -1;
                 var iconColor = (isFav && isRev) ? '#a855f7' : (isFav ? '#ef4444' : '#3b82f6');
-                var lng = Number(shop.location.longitude);
-                var lat = Number(shop.location.latitude);
-                bounds.extend([lng, lat]);
+                var lng = parseFloat(shop.location.longitude);
+                var lat = parseFloat(shop.location.latitude);
                 
-                var shopName = (shop.name && shop.name['zh-TW']) || 'Footprint Shop';
-                var popup = new maptilersdk.Popup({ offset: 25 }).setHTML('<div class="text-sm font-bold p-1">' + shopName + '</div>');
-                
-                new maptilersdk.Marker({ color: iconColor })
-                    .setLngLat([lng, lat])
-                    .setPopup(popup)
-                    .addTo(window.footprintMap);
+                if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
+                    validFootprintCount++;
+                    bounds.extend([lng, lat]);
+                    
+                    var shopName = (shop.name && shop.name['zh-TW']) || 'Footprint Shop';
+                    var popup = new maptilersdk.Popup({ offset: 25 }).setHTML('<div class="text-sm font-bold p-1 text-gray-900">' + shopName + '</div>');
+                    
+                    new maptilersdk.Marker({ color: iconColor })
+                        .setLngLat([lng, lat])
+                        .setPopup(popup)
+                        .addTo(window.footprintMap);
+                }
             });
             
-            if (footprintShops.length > 0) {
+            if (validFootprintCount > 0) {
                 window.footprintMap.fitBounds(bounds, { padding: 40 });
             }
         }, 300);

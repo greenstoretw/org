@@ -13,24 +13,26 @@ window.Gateway.register('updateMapMarkers', function(filteredShops) {
     var validCount = 0;
     
     filteredShops.forEach(function(shop) {
-        if (shop.location && shop.location.latitude && shop.location.longitude) {
-            validCount++;
-            var lng = Number(shop.location.longitude);
-            var lat = Number(shop.location.latitude);
-            bounds.extend([lng, lat]);
-            
-            var shopName = (shop.name && shop.name[window.currentLang || 'zh-TW']) || (shop.name && shop.name['zh-TW']) || 'Shop';
-            var btnText = (window.locales[window.currentLang || 'zh-TW'] && window.locales[window.currentLang || 'zh-TW'].viewDetailsBtn) || 'View Details';
-            
-            var popupHTML = '<div class="p-2"><h3 class="font-bold text-base text-gray-900 mb-1">' + shopName + '</h3><button onclick="window.showShopDetail(\'' + shop.id + '\')" class="text-green-600 font-bold text-xs hover:underline block cursor-pointer">' + btnText + '</button></div>';
-            var popup = new maptilersdk.Popup({ offset: 25 }).setHTML(popupHTML);
-            
-            var marker = new maptilersdk.Marker({ color: '#16a34a' })
-                .setLngLat([lng, lat])
-                .setPopup(popup)
-                .addTo(window.mapInstance);
+        if (shop.location && shop.location.latitude != null && shop.location.longitude != null) {
+            var lat = parseFloat(shop.location.latitude);
+            var lng = parseFloat(shop.location.longitude);
+            if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
+                validCount++;
+                bounds.extend([lng, lat]);
                 
-            window.googleMarkers.push(marker);
+                var shopName = (shop.name && shop.name[window.currentLang || 'zh-TW']) || (shop.name && shop.name['zh-TW']) || 'Shop';
+                var btnText = (window.locales[window.currentLang || 'zh-TW'] && window.locales[window.currentLang || 'zh-TW'].viewDetailsBtn) || 'View Details';
+                
+                var popupHTML = '<div class="p-2"><h3 class="font-bold text-base text-gray-900 mb-1">' + shopName + '</h3><button onclick="window.showShopDetail(\'' + shop.id + '\')" class="text-green-600 font-bold text-xs hover:underline block cursor-pointer">' + btnText + '</button></div>';
+                var popup = new maptilersdk.Popup({ offset: 25 }).setHTML(popupHTML);
+                
+                var marker = new maptilersdk.Marker({ color: '#16a34a' })
+                    .setLngLat([lng, lat])
+                    .setPopup(popup)
+                    .addTo(window.mapInstance);
+                    
+                window.googleMarkers.push(marker);
+            }
         }
     });
     
