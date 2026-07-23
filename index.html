@@ -603,6 +603,40 @@
         </div>
     </div>
 
+    <!-- User Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2500] hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 p-6 md:p-8 shadow-2xl w-full max-w-md border dark:border-slate-800 relative" style="border-radius:0!important">
+            <button onclick="document.getElementById('login-modal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold p-2 cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-green-100 dark:bg-green-950/60 text-green-600 dark:text-green-400 border border-green-500/30 flex items-center justify-center text-2xl mx-auto mb-3" style="border-radius:0!important">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">登入 GREENROOF</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">解鎖商店收藏、個人足跡紀錄與綠色評分功能</p>
+            </div>
+
+            <div class="space-y-3">
+                <button id="google-popup-login-btn" onclick="window.doGoogleLogin()" class="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-bold py-3.5 px-4 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm cursor-pointer" style="border-radius:0!important">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                    <span>使用 Google 帳號快速登入</span>
+                </button>
+
+                <button onclick="window.doGoogleLoginRedirect()" class="w-full text-center text-xs text-slate-500 hover:text-green-600 dark:hover:text-green-400 font-bold underline py-2 cursor-pointer block">
+                    <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i>若彈窗被瀏覽器阻擋，點此改用網頁轉向登入
+                </button>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+                <button onclick="document.getElementById('login-modal').classList.add('hidden')" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 font-bold uppercase tracking-wider">
+                    先以訪客身份繼續瀏覽
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="shop-detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[1500] hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 w-full max-w-5xl max-h-[90vh] overflow-y-auto modal-content shadow-2xl relative transition-colors">
             <div id="shop-detail-container"></div>
@@ -1003,24 +1037,24 @@
     </div>
 
     <!-- Custom Scripts (Modularized) -->
-    <script src="js/firebase-config.js?v=2.33"></script>
-    <script src="js/error-reporter.js?v=2.33"></script>
+    <script src="js/firebase-config.js?v=2.34"></script>
+    <script src="js/error-reporter.js?v=2.34"></script>
     <!-- Locales -->
-    <script src="js/locales/zh-TW.js?v=2.33"></script>
-    <script src="js/locales/en.js?v=2.33"></script>
+    <script src="js/locales/zh-TW.js?v=2.34"></script>
+    <script src="js/locales/en.js?v=2.34"></script>
     <!-- App scripts -->
-    <script src="js/gateway.js?v=2.33"></script>
-    <script src="js/state.js?v=2.33"></script>
-    <script src="js/utils.js?v=2.33"></script>
-    <script src="js/ui/cards.js?v=2.33"></script>
-    <script src="js/ui/modal.js?v=2.33"></script>
-    <script src="js/ui/dashboard.js?v=2.33"></script>
-    <script src="js/ui/map-route.js?v=2.33"></script>
-    <script src="js/ui/checkin.js?v=2.33"></script>
-    <script src="js/ui/common.js?v=2.33"></script>
-    <script src="js/api.js?v=2.33"></script>
-    <script src="js/auth.js?v=2.33"></script>
-    <script src="js/app.js?v=2.33"></script>
+    <script src="js/gateway.js?v=2.34"></script>
+    <script src="js/state.js?v=2.34"></script>
+    <script src="js/utils.js?v=2.34"></script>
+    <script src="js/ui/cards.js?v=2.34"></script>
+    <script src="js/ui/modal.js?v=2.34"></script>
+    <script src="js/ui/dashboard.js?v=2.34"></script>
+    <script src="js/ui/map-route.js?v=2.34"></script>
+    <script src="js/ui/checkin.js?v=2.34"></script>
+    <script src="js/ui/common.js?v=2.34"></script>
+    <script src="js/api.js?v=2.34"></script>
+    <script src="js/auth.js?v=2.34"></script>
+    <script src="js/app.js?v=2.34"></script>
 
 
 <!-- Layout runtime -->

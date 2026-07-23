@@ -1,9 +1,9 @@
 // ===== AUTHENTICATION LOGIC =====
 var isLoggingIn = false;
 
+// Open Login Modal or Sign Out if already logged in
 window.Gateway.register('handleLogin', function() {
-    if (isLoggingIn) return;
-    if (auth.currentUser) {
+    if (auth && auth.currentUser) {
         auth.signOut().then(function() {
             localStorage.removeItem('isAdmin');
             var indicator = document.getElementById('admin-indicator');
@@ -14,9 +14,24 @@ window.Gateway.register('handleLogin', function() {
         return;
     }
 
+    var loginModal = document.getElementById('login-modal');
+    if (loginModal) {
+        loginModal.classList.remove('hidden');
+    } else {
+        window.doGoogleLogin();
+    }
+});
+
+// Google Popup Login
+window.doGoogleLogin = function() {
+    if (isLoggingIn || !auth) return;
     isLoggingIn = true;
+
+    var modal = document.getElementById('login-modal');
     var provider = new firebase.auth.GoogleAuthProvider();
+    
     auth.signInWithPopup(provider).then(function(result) {
+        if (modal) modal.classList.add('hidden');
         var user = result.user;
         window.updateLoginButtons(true);
         
@@ -29,16 +44,26 @@ window.Gateway.register('handleLogin', function() {
             window.showMessage(user.displayName + " 登入成功");
         });
     }).catch(function(error) {
-        if (error.code !== 'auth/cancelled-popup-request' && error.code !== 'auth/popup-closed-by-user') {
-            window.showErrorModal(error, "Login");
+        console.error("Popup Login Error:", error);
+        if (error.code === 'auth/popup-blocked') {
+            window.showMessage("瀏覽器已阻擋彈窗，為您啟動網頁轉向登入模式...");
+            setTimeout(function() { window.doGoogleLoginRedirect(); }, 1200);
+        } else if (error.code !== 'auth/cancelled-popup-request' && error.code !== 'auth/popup-closed-by-user') {
+            window.showErrorModal(error, "Google 登入失敗");
         }
     }).finally(function() {
         isLoggingIn = false;
     });
-});
+};
+
+// Google Redirect Login (Fallback for mobile/popup-blocked environments)
+window.doGoogleLoginRedirect = function() {
+    if (!auth) return;
+    var provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithRedirect(provider);
+};
 
 window.Gateway.register('updateLoginButtons', function(isLoggedIn) {
-    // Update settings dropdown UI
     var guestBlock = document.getElementById('settings-guest');
     var userBlock = document.getElementById('settings-user');
     
@@ -46,7 +71,7 @@ window.Gateway.register('updateLoginButtons', function(isLoggedIn) {
         if (guestBlock) guestBlock.style.display = 'none';
         if (userBlock) userBlock.style.display = 'flex';
         
-        var user = firebase.auth().currentUser;
+        var user = firebase.auth && firebase.auth().currentUser;
         if (user) {
             var nameEl = document.getElementById('settings-user-name');
             var emailEl = document.getElementById('settings-user-email');
@@ -57,20 +82,30 @@ window.Gateway.register('updateLoginButtons', function(isLoggedIn) {
         if (guestBlock) guestBlock.style.display = 'flex';
         if (userBlock) userBlock.style.display = 'none';
         
-        // Hide admin section if logged out
         var adminSection = document.getElementById('settings-admin-section');
         if (adminSection) adminSection.style.display = 'none';
     }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Check redirect result on load
+    if (window.auth) {
+        auth.getRedirectResult().then(function(result) {
+            if (result && result.user) {
+                var user = result.user;
+                window.updateLoginButtons(true);
+                window.showMessage(user.displayName + " 登入成功");
+            }
+        }).catch(function(err) {
+            console.warn("Redirect result check:", err);
+        });
+    }
+
     var logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function() {
-            if (window.Gateway && window.Gateway.handlers && window.Gateway.handlers.handleLogin) {
-                window.Gateway.handlers.handleLogin[0](); // Triggers the signout if logged in
-            } else if (firebase.auth().currentUser) {
-                firebase.auth().signOut().then(function() {
+            if (auth && auth.currentUser) {
+                auth.signOut().then(function() {
                     localStorage.removeItem('isAdmin');
                     window.updateLoginButtons(false);
                     window.showMessage("已登出");
