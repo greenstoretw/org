@@ -1,31 +1,33 @@
-var CACHE_NAME = 'greenroof-v2.32';
+var CACHE_NAME = 'greenroof-v2.33';
 var ASSETS = [
   './',
   './index.html',
-  './css/main.css?v=2.32',
-  './js/gateway.js?v=2.32',
-  './js/state.js?v=2.32',
-  './js/utils.js?v=2.32',
-  './js/ui/cards.js?v=2.32',
-  './js/ui/modal.js?v=2.32',
-  './js/ui/dashboard.js?v=2.32',
-  './js/ui/map-route.js?v=2.32',
-  './js/ui/checkin.js?v=2.32',
-  './js/ui/common.js?v=2.32',
-  './js/api.js?v=2.32',
-  './js/auth.js?v=2.32',
-  './js/app.js?v=2.32',
-  './js/firebase-config.js?v=2.32',
-  './js/error-reporter.js?v=2.32',
-  './js/locales/zh-TW.js?v=2.32',
-  './js/locales/en.js?v=2.32',
+  './css/main.css?v=2.33',
+  './js/gateway.js?v=2.33',
+  './js/state.js?v=2.33',
+  './js/utils.js?v=2.33',
+  './js/ui/cards.js?v=2.33',
+  './js/ui/modal.js?v=2.33',
+  './js/ui/dashboard.js?v=2.33',
+  './js/ui/map-route.js?v=2.33',
+  './js/ui/checkin.js?v=2.33',
+  './js/ui/common.js?v=2.33',
+  './js/api.js?v=2.33',
+  './js/auth.js?v=2.33',
+  './js/app.js?v=2.33',
+  './js/firebase-config.js?v=2.33',
+  './js/error-reporter.js?v=2.33',
+  './js/locales/zh-TW.js?v=2.33',
+  './js/locales/en.js?v=2.33',
   './png.png'
 ];
 
 self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(ASSETS);
+      return cache.addAll(ASSETS).catch(function(err) {
+        console.warn("PWA install caching warning:", err);
+      });
     })
   );
   self.skipWaiting();
@@ -48,21 +50,21 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-  // Only intercept/cache HTTP and HTTPS requests (ignores chrome-extensions, etc.)
-  if (!event.request.url.startsWith('http')) return;
-
-  // Only cache GET requests
+  // Only handle GET requests
   if (event.request.method !== 'GET') return;
   
-  // Skip external APIs (Firebase, Google Maps) to avoid caching errors
-  var url = event.request.url;
-  if (url.includes('firestore.googleapis.com') || url.includes('identitytoolkit.googleapis.com')) return;
-  if (url.includes('generativelanguage.googleapis.com') || url.includes('maps.googleapis.com')) return;
+  // Only intercept same-origin requests (ignore MapTiler, Firebase, FontAwesome, etc.)
+  var reqUrl;
+  try {
+    reqUrl = new URL(event.request.url);
+  } catch (e) {
+    return;
+  }
+  if (reqUrl.origin !== location.origin) return;
 
   event.respondWith(
     caches.match(event.request).then(function(cachedResponse) {
       if (cachedResponse) {
-        // Stale-while-revalidate: return cached response, update cache in the background
         fetch(event.request).then(function(networkResponse) {
           if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
             var responseToCache = networkResponse.clone();
@@ -71,12 +73,11 @@ self.addEventListener('fetch', function(event) {
             });
           }
         }).catch(function() {
-          // Ignore background fetch errors
+          // Ignore background revalidation failure
         });
         return cachedResponse;
       }
       
-      // If not in cache, fetch from network directly and return it
       return fetch(event.request).then(function(networkResponse) {
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           var responseToCache = networkResponse.clone();
@@ -86,11 +87,11 @@ self.addEventListener('fetch', function(event) {
         }
         return networkResponse;
       }).catch(function(err) {
-        // Safe fallback for navigation requests when offline
         if (event.request.mode === 'navigate') {
           return caches.match('./index.html') || caches.match('./');
         }
-        throw err;
+        // Return empty response for missing static assets instead of uncaught promise rejection
+        return new Response('', { status: 404, statusText: 'Not Found' });
       });
     })
   );
