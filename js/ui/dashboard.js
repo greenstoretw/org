@@ -211,6 +211,14 @@ window.Gateway.register('showUserDashboard', function() {
                 zoom: 7
             });
             
+            window.footprintMap.on('styleimagemissing', function(e) {
+                var id = e.id;
+                if (!window.footprintMap.hasImage(id)) {
+                    var data = new Uint8Array(4);
+                    window.footprintMap.addImage(id, { width: 1, height: 1, data: data });
+                }
+            });
+            
             var bounds = new maptilersdk.LngLatBounds();
             var revIds = revSnap.docs.map(function(doc) { return doc.data().shopId; });
             var combinedIds = (window.favoriteShops || []).concat(revIds);

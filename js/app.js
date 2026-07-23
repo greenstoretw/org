@@ -32,6 +32,14 @@ document.addEventListener('DOMContentLoaded', function() {
             zoom: 12
         });
         
+        window.mapInstance.on('styleimagemissing', function(e) {
+            var id = e.id;
+            if (!window.mapInstance.hasImage(id)) {
+                var data = new Uint8Array(4);
+                window.mapInstance.addImage(id, { width: 1, height: 1, data: data });
+            }
+        });
+        
         window.mapInstance.addControl(new maptilersdk.NavigationControl(), 'top-right');
         var geolocate = new maptilersdk.GeolocateControl({
             positionOptions: { enableHighAccuracy: true },
