@@ -1,55 +1,41 @@
 // ===== GREENROOF UI MODULE: MAP-ROUTE =====
-// This file is modularly extracted and registered with the Gateway router.
-// Compatibility is maintained globally via window.Gateway.
+// Optimized for MapTiler SDK & Vector Maps
 
 window.Gateway.register('updateMapMarkers', function(filteredShops) {
-    if (!window.mapInstance || !window.google || !window.google.maps) return;
+    if (!window.mapInstance || !window.maptilersdk) return;
+    
     if (window.googleMarkers && window.googleMarkers.length > 0) {
-        window.googleMarkers.forEach(function(m) { m.setMap(null); });
+        window.googleMarkers.forEach(function(m) { if (m.remove) m.remove(); });
     }
     window.googleMarkers = [];
     
-    var bounds = new google.maps.LatLngBounds();
+    var bounds = new maptilersdk.LngLatBounds();
     var validCount = 0;
     
     filteredShops.forEach(function(shop) {
-        if(shop.location && shop.location.latitude && shop.location.longitude) {
+        if (shop.location && shop.location.latitude && shop.location.longitude) {
             validCount++;
-            var pos = { lat: Number(shop.location.latitude), lng: Number(shop.location.longitude) };
-            bounds.extend(pos);
+            var lng = Number(shop.location.longitude);
+            var lat = Number(shop.location.latitude);
+            bounds.extend([lng, lat]);
             
             var shopName = (shop.name && shop.name[window.currentLang || 'zh-TW']) || (shop.name && shop.name['zh-TW']) || 'Shop';
             var btnText = (window.locales[window.currentLang || 'zh-TW'] && window.locales[window.currentLang || 'zh-TW'].viewDetailsBtn) || 'View Details';
             
-            var marker = window.createMarker ? window.createMarker({
-                position: pos,
-                map: window.mapInstance,
-                title: shopName
-            }) : new google.maps.Marker({
-                position: pos,
-                map: window.mapInstance,
-                title: shopName
-            });
+            var popupHTML = '<div class="p-2"><h3 class="font-bold text-base text-gray-900 mb-1">' + shopName + '</h3><button onclick="window.showShopDetail(\'' + shop.id + '\')" class="text-green-600 font-bold text-xs hover:underline block cursor-pointer">' + btnText + '</button></div>';
+            var popup = new maptilersdk.Popup({ offset: 25 }).setHTML(popupHTML);
             
-            var infoWindow = new google.maps.InfoWindow({
-                content: '<div class="p-1"><h3 class="font-bold text-base">' + shopName + '</h3><button onclick="window.showShopDetail(\'' + shop.id + '\')" class="text-green-600 text-sm hover:underline mt-1 block cursor-pointer">' + btnText + '</button></div>'
-            });
-            
-            marker.addListener('click', function() {
-                if (window.currentInfoWindow) window.currentInfoWindow.close();
-                infoWindow.open(window.mapInstance, marker);
-                window.currentInfoWindow = infoWindow;
-            });
-            
+            var marker = new maptilersdk.Marker({ color: '#16a34a' })
+                .setLngLat([lng, lat])
+                .setPopup(popup)
+                .addTo(window.mapInstance);
+                
             window.googleMarkers.push(marker);
         }
     });
     
     if (validCount > 0) {
-        window.mapInstance.fitBounds(bounds);
-        if (validCount === 1) {
-            window.mapInstance.setZoom(15);
-        }
+        window.mapInstance.fitBounds(bounds, { padding: 60, maxZoom: 16 });
     }
 });
 
@@ -67,11 +53,12 @@ window.Gateway.register('surpriseMe', function() {
     }
     var randomShop = validShops[Math.floor(Math.random() * validShops.length)];
     if (window.mapInstance) {
-        window.mapInstance.panTo({ lat: Number(randomShop.location.latitude), lng: Number(randomShop.location.longitude) });
-        window.mapInstance.setZoom(16);
+        var lng = Number(randomShop.location.longitude);
+        var lat = Number(randomShop.location.latitude);
+        window.mapInstance.flyTo({ center: [lng, lat], zoom: 16, duration: 1500 });
         setTimeout(function() {
             window.showShopDetail(randomShop.id);
-        }, 600);
+        }, 800);
     } else {
         window.showShopDetail(randomShop.id);
     }
@@ -169,35 +156,49 @@ window.Gateway.register('updateRoutingPanel', function() {
 });
 
 window.Gateway.register('drawRoutePolyline', function() {
-    if (!window.mapInstance || !window.google || !window.google.maps) return;
+    if (!window.mapInstance || !window.maptilersdk) return;
     
-    if (window.routingPolyline) {
-        window.routingPolyline.setMap(null);
-        window.routingPolyline = null;
-    }
-    
-    var path = [];
-    var bounds = new google.maps.LatLngBounds();
+    var coords = [];
+    var bounds = new maptilersdk.LngLatBounds();
     
     window.activeRoutingList.forEach(function(id) {
         var shop = window.allShops.find(function(s) { return s.id === id; });
         if (shop && shop.location && shop.location.latitude && shop.location.longitude) {
-            var pos = { lat: Number(shop.location.latitude), lng: Number(shop.location.longitude) };
-            path.push(pos);
-            bounds.extend(pos);
+            var lng = Number(shop.location.longitude);
+            var lat = Number(shop.location.latitude);
+            coords.push([lng, lat]);
+            bounds.extend([lng, lat]);
         }
     });
     
-    if (path.length >= 2) {
-        window.routingPolyline = new google.maps.Polyline({
-            path: path,
-            geodesic: true,
-            strokeColor: '#3b82f6',
-            strokeOpacity: 0.8,
-            strokeWeight: 4,
-            map: window.mapInstance
+    var geoJson = {
+        type: 'Feature',
+        geometry: {
+            type: 'LineString',
+            coordinates: coords
+        }
+    };
+    
+    if (window.mapInstance.getSource('route-source')) {
+        window.mapInstance.getSource('route-source').setData(geoJson);
+    } else {
+        window.mapInstance.addSource('route-source', {
+            type: 'geojson',
+            data: geoJson
         });
-        
-        window.mapInstance.fitBounds(bounds);
+        window.mapInstance.addLayer({
+            id: 'route-layer',
+            type: 'line',
+            source: 'route-source',
+            paint: {
+                'line-color': '#3b82f6',
+                'line-width': 4,
+                'line-dasharray': [2, 2]
+            }
+        });
+    }
+    
+    if (coords.length >= 2) {
+        window.mapInstance.fitBounds(bounds, { padding: 60 });
     }
 });

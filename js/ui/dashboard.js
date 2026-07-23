@@ -201,18 +201,17 @@ window.Gateway.register('showUserDashboard', function() {
         
         setTimeout(function() {
             var mapContainer = document.getElementById('dashboard-footprint-map');
-            if (!mapContainer || !window.google || !window.google.maps) return;
+            if (!mapContainer || !window.maptilersdk) return;
             
-            window.footprintMap = new google.maps.Map(mapContainer, {
-                center: { lat: 23.6978, lng: 120.9605 },
-                zoom: 7,
-                mapId: 'DEMO_MAP_ID',
-                mapTypeControl: false,
-                streetViewControl: false,
-                fullscreenControl: false
+            var MAPTILER_STYLE = 'https://api.maptiler.com/maps/019f8f74-6acf-7944-9ae6-cb857a17cb9e/style.json?key=fuvXKLSUGiHN5hILbMVG';
+            window.footprintMap = new maptilersdk.Map({
+                container: 'dashboard-footprint-map',
+                style: MAPTILER_STYLE,
+                center: [120.9605, 23.6978],
+                zoom: 7
             });
             
-            var bounds = new google.maps.LatLngBounds();
+            var bounds = new maptilersdk.LngLatBounds();
             var revIds = revSnap.docs.map(function(doc) { return doc.data().shopId; });
             var combinedIds = (window.favoriteShops || []).concat(revIds);
             var uniqueIds = [];
@@ -224,30 +223,21 @@ window.Gateway.register('showUserDashboard', function() {
                 var isFav = (window.favoriteShops || []).indexOf(shop.id) !== -1;
                 var isRev = revIds.indexOf(shop.id) !== -1;
                 var iconColor = (isFav && isRev) ? '#a855f7' : (isFav ? '#ef4444' : '#3b82f6');
-                var pos = { lat: Number(shop.location.latitude), lng: Number(shop.location.longitude) };
-                bounds.extend(pos);
+                var lng = Number(shop.location.longitude);
+                var lat = Number(shop.location.latitude);
+                bounds.extend([lng, lat]);
                 
-                var marker = window.createMarker ? window.createMarker({
-                    position: pos,
-                    map: window.footprintMap,
-                    title: (shop.name && shop.name['zh-TW']) || 'Footprint Shop'
-                }) : new google.maps.Marker({
-                    position: pos,
-                    map: window.footprintMap,
-                    title: (shop.name && shop.name['zh-TW']) || 'Footprint Shop'
-                });
+                var shopName = (shop.name && shop.name['zh-TW']) || 'Footprint Shop';
+                var popup = new maptilersdk.Popup({ offset: 25 }).setHTML('<div class="text-sm font-bold p-1">' + shopName + '</div>');
                 
-                var infoWindow = new google.maps.InfoWindow({
-                    content: '<div class="text-sm font-bold p-1">' + ((shop.name && shop.name['zh-TW']) || 'Footprint Shop') + '</div>'
-                });
-                
-                marker.addListener('click', function() {
-                    infoWindow.open(window.footprintMap, marker);
-                });
+                new maptilersdk.Marker({ color: iconColor })
+                    .setLngLat([lng, lat])
+                    .setPopup(popup)
+                    .addTo(window.footprintMap);
             });
             
             if (footprintShops.length > 0) {
-                window.footprintMap.fitBounds(bounds);
+                window.footprintMap.fitBounds(bounds, { padding: 40 });
             }
         }, 300);
     }).catch(function(error) {

@@ -12,73 +12,32 @@ if ('serviceWorker' in navigator) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-
-    // ===== GOOGLE MAPS AUTH FAILURE CATCHER =====
-    window.gm_authFailure = function() {
-        console.error("Google Maps API Auth Failure: Key restricted or Maps JavaScript API not enabled on GCP.");
-        var mapEl = document.getElementById('sustainability-map');
-        if (mapEl && !document.getElementById('gmaps-error-banner')) {
-            var notice = document.createElement('div');
-            notice.id = 'gmaps-error-banner';
-            notice.style.cssText = 'position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:9999;background:#dc2626;color:#ffffff;padding:10px 18px;font-size:13px;font-weight:bold;box-shadow:0 4px 14px rgba(0,0,0,0.4);text-align:center;max-width:90%;';
-            notice.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2"></i> Google 地圖載入失敗：請至 Google Cloud Console 啟用「Maps JavaScript API」並新增 `*.github.io/*` 網域授權。';
-            mapEl.style.position = 'relative';
-            mapEl.appendChild(notice);
-        }
-    };
-
-    // ===== HELPER: ADVANCED MARKER FACTORY =====
-    window.createMarker = function(opts) {
-        if (window.google && window.google.maps && window.google.maps.marker && window.google.maps.marker.AdvancedMarkerElement) {
-            return new google.maps.marker.AdvancedMarkerElement(opts);
-        } else if (window.google && window.google.maps && window.google.maps.Marker) {
-            return new google.maps.Marker(opts);
-        }
-        return null;
-    };
+    // ===== MAPTILER API KEY & STYLE CONFIGURATION =====
+    if (window.maptilersdk) {
+        maptilersdk.config.apiKey = 'fuvXKLSUGiHN5hILbMVG';
+    }
+    var MAPTILER_STYLE = 'https://api.maptiler.com/maps/019f8f74-6acf-7944-9ae6-cb857a17cb9e/style.json?key=fuvXKLSUGiHN5hILbMVG';
 
     // ===== INITIALIZATION =====
     function initialize() {
         window.googleMarkers = [];
 
         var mapEl = document.getElementById('sustainability-map');
-        if (!mapEl || !window.google || !window.google.maps) return;
+        if (!mapEl || !window.maptilersdk) return;
 
-        window.mapInstance = new google.maps.Map(mapEl, {
-            center: { lat: 25.0330, lng: 121.5654 },
-            zoom: 12,
-            mapId: 'DEMO_MAP_ID',
-            mapTypeControl: false,
-            streetViewControl: true,
-            fullscreenControl: false
+        window.mapInstance = new maptilersdk.Map({
+            container: 'sustainability-map',
+            style: MAPTILER_STYLE,
+            center: [121.5654, 25.0330],
+            zoom: 12
         });
         
-        // Add geolocation custom control button
-        var locationBtn = document.createElement('button');
-        locationBtn.title = '我的位置';
-        locationBtn.style.cssText = 'background:#fff;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:10px;border:2px solid rgba(0,0,0,0.2);border-radius:2px;box-shadow:0 1px 4px rgba(0,0,0,0.3);';
-        locationBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#333"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>';
-        locationBtn.onclick = function() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(pos) {
-                    var posLatLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                    window.mapInstance.setCenter(posLatLng);
-                    window.mapInstance.setZoom(15);
-                    if (window.userMarker) {
-                        window.userMarker.setPosition(posLatLng);
-                    } else {
-                        window.userMarker = window.createMarker({
-                            position: posLatLng,
-                            map: window.mapInstance,
-                            title: '您的目前位置'
-                        });
-                    }
-                }, function() { alert('無法取得您的位置。'); });
-            } else {
-                alert('您的瀏覽器不支援地理位置功能。');
-            }
-        };
-        window.mapInstance.controls[google.maps.ControlPosition.TOP_LEFT].push(locationBtn);
+        window.mapInstance.addControl(new maptilersdk.NavigationControl(), 'top-right');
+        var geolocate = new maptilersdk.GeolocateControl({
+            positionOptions: { enableHighAccuracy: true },
+            trackUserLocation: true
+        });
+        window.mapInstance.addControl(geolocate, 'top-left');
 
         // Force show nav-links on desktop
         var navLinks = document.querySelector('.nav-links');
@@ -162,29 +121,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Geolocation Position Watcher Setup
         if (navigator.geolocation) {
             navigator.geolocation.watchPosition(function(pos) {
-                var posLatLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                 window.userLocation = {
                     latitude: pos.coords.latitude,
                     longitude: pos.coords.longitude
                 };
-                
-                if (window.mapInstance && window.google && window.google.maps) {
+                if (window.mapInstance && window.maptilersdk) {
                     if (window.userMarker) {
-                        window.userMarker.setPosition(posLatLng);
+                        window.userMarker.setLngLat([pos.coords.longitude, pos.coords.latitude]);
                     } else {
-                        window.userMarker = new google.maps.Marker({
-                            position: posLatLng,
-                            map: window.mapInstance,
-                            title: '您的目前位置',
-                            icon: {
-                                path: google.maps.SymbolPath.CIRCLE,
-                                scale: 7,
-                                fillColor: '#3b82f6',
-                                fillOpacity: 1,
-                                strokeColor: '#ffffff',
-                                strokeWeight: 3
-                            }
-                        });
+                        var el = document.createElement('div');
+                        el.style.cssText = 'background:#3b82f6;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 8px rgba(59,130,246,0.8);';
+                        window.userMarker = new maptilersdk.Marker({ element: el })
+                            .setLngLat([pos.coords.longitude, pos.coords.latitude])
+                            .addTo(window.mapInstance);
                     }
                 }
             }, function(err) {
